@@ -18,6 +18,7 @@ import {
   Typography,
   Paper,
   CircularProgress,
+  Grid, // تم إضافة Grid من Material-UI
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -81,45 +82,54 @@ export default function User({ title, fetchUrl, role, createPath, editPath }) {
           {title} List
         </Typography>
 
-        <div className="d-flex justify-content-end mb-4">
-          <Button
-            variant="contained"
-            color="primary"
-            component={Link}
-            to={`${createPath}`} // تأكد من أن القيمة هنا سلسلة نصية
-            sx={{ py: 1.5, px: 5 }}
+        {/* الجزء العلوي: زر Create وأدوات التحكم */}
+        <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+  <Grid item>
+    <Grid container spacing={2} alignItems="center">
+      <Grid item>
+        {/* القائمة المنسدلة للتحكم في عدد الإدخالات */}
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="entries-label">Show</InputLabel>
+          <Select
+            labelId="entries-label"
+            id="entries-select"
+            value={entriesToShow}
+            onChange={(e) => setEntriesToShow(e.target.value)}
+            label="Show"
           >
-            <Edit sx={{ mr: 1 }} /> Create {title}
-          </Button>
-        </div>
-
-        {/* البحث والتحكم في عدد الإدخالات */}
-        <div className="d-flex justify-content-between mb-3">
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="entries-label">Show</InputLabel>
-            <Select
-              labelId="entries-label"
-              id="entries-select"
-              value={entriesToShow}
-              onChange={(e) => setEntriesToShow(e.target.value)}
-              label="Show"
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={20}>20</MenuItem>
-              <MenuItem value={30}>30</MenuItem>
-              <MenuItem value={40}>40</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-            </Select>
-          </FormControl>
-
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ width: 250 }}
-          />
-        </div>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={30}>30</MenuItem>
+            <MenuItem value={40}>40</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item>
+        {/* حقل البحث */}
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: 250 }}
+        />
+      </Grid>
+    </Grid>
+  </Grid>
+  <Grid item>
+    {/* زر Create */}
+    <Button
+      variant="contained"
+      color="primary"
+      component={Link}
+      to={createPath}
+      sx={{ py: 1.5, px: 5 }}
+    >
+      <Edit sx={{ mr: 1 }} /> Create {title}
+    </Button>
+  </Grid>
+</Grid>
 
         {/* عرض مؤشر التحميل إذا كانت البيانات لا تزال تُجلب */}
         {loading ? (
@@ -158,7 +168,7 @@ export default function User({ title, fetchUrl, role, createPath, editPath }) {
                             variant="contained"
                             color="primary"
                             component={Link}
-                            to={`${editPath}/${user.id}`} // تأكد من أن القيمة هنا سلسلة نصية
+                            to={`${editPath}/${user.id}`}
                             sx={{ mr: 1 }}
                           >
                             <Edit />

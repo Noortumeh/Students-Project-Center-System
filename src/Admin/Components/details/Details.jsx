@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Avatar, Box, Grid, Typography, Paper, List, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@mui/material';
+import {
+  Avatar, Box, Grid, Typography, Paper, List,
+  ListItem, ListItemIcon, ListItemText, Divider,
+} from '@mui/material';
 import { AccountCircle, Work, Group, PostAdd, BarChart, Logout } from '@mui/icons-material';
 
 export default function Details() {
@@ -23,7 +26,6 @@ export default function Details() {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
-      {/* Sidebar */}
       <Paper sx={{ width: 280, padding: 2, backgroundColor: '#3f51b5', color: 'white' }} elevation={3}>
         <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
           <Avatar alt="User Avatar" src="https://github.com/mdo.png" sx={{ width: 56, height: 56 }} />
@@ -82,7 +84,6 @@ export default function Details() {
         </List>
       </Paper>
 
-      {/* User Details */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4" gutterBottom>
           User Details

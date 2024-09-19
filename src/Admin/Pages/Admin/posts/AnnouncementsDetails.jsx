@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button, Modal, Pagination } from 'react-bootstrap';
-import Dashboard from '../../../shared/dashbord/Dashbord'; // استدعاء مكون الداشبورد
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx'; // استدعاء مكون الداشبورد
 
 // بيانات الإعلانات (يمكن لاحقًا استبدالها ببيانات من API)
 const announcementsData = [

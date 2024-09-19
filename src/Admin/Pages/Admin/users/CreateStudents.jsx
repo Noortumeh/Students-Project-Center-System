@@ -1,6 +1,6 @@
 import React from 'react';
-import Dashboard from '../../../shared/dashbord/Dashbord.jsx';
-import Create from '../../../component/createuser/CreateUser.jsx'; 
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Create from '../../../Components/createuser/CreateUser.jsx'; 
 
 export default function CreateUser() {
   return (

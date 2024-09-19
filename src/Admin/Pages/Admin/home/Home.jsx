@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Divider, Avatar, IconButton, InputBase } from '@mui/material';
-import { Business, CheckCircle, HourglassEmpty, Group, Search, Notifications } from '@mui/icons-material';
-import Dashboard from '../../../shared/dashbord/Dashbord.jsx';
+import React, { useEffect, useState, useRef } from 'react';
+import { Box, Typography, Grid, Card, CardContent, Divider, Avatar } from '@mui/material';
+import { Business, CheckCircle, HourglassEmpty, Group } from '@mui/icons-material';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 import { styled } from '@mui/system';
-import Chart from 'chart.js/auto';
 import { Doughnut } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
 
 // تخصيص نمط المدخلات للبحث
 const SearchBox = styled(Box)({
@@ -27,12 +27,19 @@ export default function ProjectCenterDashboard() {
     totalClients: 0,
   });
 
+  // مرجع للرسم البياني
+  const chartRef = useRef(null);
+
   // جلب البيانات من API
   useEffect(() => {
     async function fetchData() {
       try {
         // استخدم API لجلب البيانات
-        const response = await fetch('/api/dashboardData'); // استبدل هذا بـ API الخاصة بك
+        const response = await fetch('/api/dashboardData'); // تأكد من أن هذا هو الـ API الصحيح
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const result = await response.json();
         
         setData({
@@ -60,6 +67,13 @@ export default function ProjectCenterDashboard() {
       },
     ],
   };
+
+  // التأكد من التخلص من الرسم البياني عند التدمير
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.destroy();
+    }
+  }, [data]);
 
   return (
     <Dashboard>
@@ -141,7 +155,7 @@ export default function ProjectCenterDashboard() {
             <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>Projects Status</Typography>
-                <Doughnut data={completedVsActiveData} />
+                <Doughnut data={completedVsActiveData} ref={chartRef} />
               </CardContent>
             </Card>
           </Grid>
@@ -149,7 +163,6 @@ export default function ProjectCenterDashboard() {
 
         <Divider sx={{ my: 4 }} />
 
-       
       </Box>
     </Dashboard>
   );

@@ -16,29 +16,95 @@ import {
 } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import Dashboard from '../../../shared/dashbord/Dashbord';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
 export default function WorkGroups() {
   const [entriesToShow, setEntriesToShow] = useState(20);
   const [searchTerm, setSearchTerm] = useState('');
-  const [workgroups, setWorkgroups] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [workgroups, setWorkgroups] = useState([
+    {
+      id: 1,
+      workgroupName: 'Group Alpha',
+      supervisorName: 'Dr. John Doe',
+      customerName: 'Customer A',
+      team: 'Team Alpha',
+      projectName: 'Project Alpha',
+    },
+    {
+      id: 2,
+      workgroupName: 'Group Beta',
+      supervisorName: 'Dr. Jane Smith',
+      customerName: 'Customer B',
+      team: 'Team Beta',
+      projectName: 'Project Beta',
+    },
+    {
+      id: 3,
+      workgroupName: 'Group Gamma',
+      supervisorName: 'Dr. Emily Davis',
+      customerName: 'Customer C',
+      team: 'Team Gamma',
+      projectName: 'Project Gamma',
+    },
+    {
+      id: 4,
+      workgroupName: 'Group Delta',
+      supervisorName: 'Dr. Michael Johnson',
+      customerName: 'Customer D',
+      team: 'Team Delta',
+      projectName: 'Project Delta',
+    },
+    {
+      id: 5,
+      workgroupName: 'Group Epsilon',
+      supervisorName: 'Dr. Sarah Brown',
+      customerName: 'Customer E',
+      team: 'Team Epsilon',
+      projectName: 'Project Epsilon',
+    },
+    {
+      id: 6,
+      workgroupName: 'Group Zeta',
+      supervisorName: 'Dr. William White',
+      customerName: 'Customer F',
+      team: 'Team Zeta',
+      projectName: 'Project Zeta',
+    },
+    {
+      id: 7,
+      workgroupName: 'Group Eta',
+      supervisorName: 'Dr. Olivia Harris',
+      customerName: 'Customer G',
+      team: 'Team Eta',
+      projectName: 'Project Eta',
+    },
+    {
+      id: 8,
+      workgroupName: 'Group Theta',
+      supervisorName: 'Dr. Alexander Martinez',
+      customerName: 'Customer H',
+      team: 'Team Theta',
+      projectName: 'Project Theta',
+    },
+    {
+      id: 9,
+      workgroupName: 'Group Iota',
+      supervisorName: 'Dr. Sophia Clark',
+      customerName: 'Customer I',
+      team: 'Team Iota',
+      projectName: 'Project Iota',
+    },
+    {
+      id: 10,
+      workgroupName: 'Group Kappa',
+      supervisorName: 'Dr. Benjamin Lee',
+      customerName: 'Customer J',
+      team: 'Team Kappa',
+      projectName: 'Project Kappa',
+    },
+  ]);
+  const [loading, setLoading] = useState(false); // Set to false since we have static data for now
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchWorkgroups = async () => {
-      try {
-        // تأكد من صحة عنوان URL للـ API
-        const { data } = await axios.get('http://localhost:3000/api/v1/workgroups');
-        setWorkgroups(data);
-      } catch (error) {
-        Swal.fire('Error!', 'An error occurred while fetching workgroups.', 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWorkgroups();
-  }, []);
 
   const handleDetailsClick = (id) => {
     navigate(`/workgroup/workgroupdetails/${id}`);

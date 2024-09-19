@@ -5,9 +5,7 @@ import * as Yup from 'yup'; // للتحقق من الإدخالات
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import Dashboard from '../../../shared/dashbord/Dashbord'; // استدعاء الداشبورد
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 function EditWorkGroup() {
   const navigate = useNavigate();
   const { id } = useParams(); // الحصول على ID المجموعة

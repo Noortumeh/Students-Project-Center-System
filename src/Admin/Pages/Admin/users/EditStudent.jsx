@@ -1,6 +1,6 @@
 import React from 'react';
-import Dashboard from '../../../shared/dashbord/Dashbord';
-import EditUser from '../../../component/edituser/EditUser.jsx';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import EditUser from '../../../Components/edituser/EditUser.jsx'; 
 
 export default function EditStudent() {
   return (
