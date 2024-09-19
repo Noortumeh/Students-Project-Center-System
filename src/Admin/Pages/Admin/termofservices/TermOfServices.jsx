@@ -13,57 +13,58 @@ import {
   Snackbar,
   Divider
 } from '@mui/material';
-import Dashboard from '../dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
 const styles = {
   title: {
-    fontFamily: "'Roboto', sans-serif",
-    fontWeight: 'bold',
-    color: '#1976d2',
-    marginBottom: '10px',
+    fontFamily: "'Poppins', sans-serif",
+    fontWeight: '700',
+    color: '#1E88E5',
+    marginBottom: '20px',
     textAlign: 'center',
   },
   sectionTitle: {
-    fontFamily: "'Roboto', sans-serif",
-    fontWeight: '500',
-    color: '#1976d2',
-    marginBottom: '10px',
+    fontFamily: "'Poppins', sans-serif",
+    fontWeight: '600',
+    color: '#424242',
+    marginBottom: '15px',
     textAlign: 'left',
     display: 'flex',
     alignItems: 'center',
-    borderBottom: '2px solid #1976d2',
+    borderBottom: '3px solid #1E88E5',
     paddingBottom: '5px',
   },
   paragraph: {
     marginBottom: '20px',
-    lineHeight: '1.6',
-    color: '#333',
+    lineHeight: '1.8',
+    color: '#616161',
+    fontFamily: "'Roboto', sans-serif",
   },
   list: {
     marginBottom: '20px',
     paddingLeft: '20px',
-    color: '#333',
+    color: '#616161',
   },
   button: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#FF6F61',
     color: '#fff',
-    fontWeight: 'bold',
-    padding: '10px 20px',
-    borderRadius: '20px',
+    fontWeight: '600',
+    padding: '10px 30px',
+    borderRadius: '30px',
     transition: 'all 0.3s ease',
     '&:hover': {
-      backgroundColor: '#115293',
+      backgroundColor: '#E64A19',
     },
   },
   card: {
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    marginBottom: '20px',
-    padding: '20px',
+    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+    borderRadius: '15px',
+    marginBottom: '30px',
+    padding: '25px',
   },
   divider: {
     margin: '20px 0',
-    backgroundColor: '#1976d2',
+    backgroundColor: '#1E88E5',
   },
 };
 

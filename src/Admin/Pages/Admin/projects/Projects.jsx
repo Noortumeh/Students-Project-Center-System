@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Dashboard from '../../../shared/dashbord/Dashbord';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 import { Button, Table, Typography, TextField, IconButton, Box, FormControl, Select, MenuItem } from '@mui/material';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function Projects() {
   const [entriesToShow, setEntriesToShow] = useState(20);
@@ -87,13 +90,38 @@ export default function Projects() {
       customer: 'AgriConnect',
       team: 'Team Kappa',
       workGroup: 'Group J',
-    }
+    },
   ]);
-
   const [favorite, setFavorite] = useState({});
 
+  // Toggle favorite status
   const toggleFavorite = (id) => {
     setFavorite((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Delete project
+  const deleteProject = async (id) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Assuming an API endpoint for deleting projects
+        await axios.delete(`https://your-real-api-url/projects/${id}`);
+        toast.success('Project deleted successfully');
+        setProjects(projects.filter((project) => project.id !== id));
+        Swal.fire('Deleted!', 'The project has been deleted.', 'success');
+      } catch (error) {
+        toast.error('Failed to delete the project.');
+      }
+    }
   };
 
   const filteredProjects = projects.filter((project) =>
@@ -109,7 +137,7 @@ export default function Projects() {
           Projects
         </Typography>
 
-        {/* زر إنشاء مشروع جديد */}
+        {/* Create Project Button */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
           <Button
             component={Link}
@@ -122,7 +150,7 @@ export default function Projects() {
           </Button>
         </Box>
 
-        {/* التحكم في عدد الإدخالات والبحث */}
+        {/* Entries Control and Search */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <FormControl sx={{ width: 100 }}>
             <Select
@@ -151,7 +179,7 @@ export default function Projects() {
           />
         </Box>
 
-        {/* جدول المشاريع */}
+        {/* Projects Table */}
         <Box sx={{ mt: 4 }}>
           <Table>
             <thead>
@@ -179,7 +207,7 @@ export default function Projects() {
                   <td>
                     <Button
                       component={Link}
-                      to={`/projects/ProjectDetails/${project.id}`} // تمرير معرّف المشروع بشكل صحيح
+                      to={`/projects/ProjectDetails/${project.id}`}
                       variant="outlined"
                       color="info"
                       sx={{ px: 2 }}
@@ -189,6 +217,8 @@ export default function Projects() {
                   </td>
                   <td>
                     <Button
+                      component={Link}
+                      to={`/projects/EditProject/${project.id}`}
                       variant="contained"
                       color="primary"
                       sx={{ mr: 1 }}
@@ -198,14 +228,13 @@ export default function Projects() {
                     <Button
                       variant="contained"
                       color="error"
+                      onClick={() => deleteProject(project.id)} // Attach delete handler here
                     >
                       Delete
                     </Button>
                   </td>
                   <td>
-                    <IconButton
-                      onClick={() => toggleFavorite(project.id)}
-                    >
+                    <IconButton onClick={() => toggleFavorite(project.id)}>
                       {favorite[project.id] ? <AiFillStar color="blue" /> : <AiOutlineStar />}
                     </IconButton>
                   </td>

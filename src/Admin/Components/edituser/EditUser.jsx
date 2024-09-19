@@ -66,22 +66,18 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
   useEffect(() => {
     const getUser = async () => {
       try {
-        // عرض معرف المستخدم والتحقق من عنوان الـ API
         console.log(`Fetching data for user ID: ${id}`);
         console.log(`Full API Path: ${apiPath}/${id}`);
 
         // محاولة جلب البيانات من الـ API
         const response = await axios.get(`${apiPath}/${id}`);
         
-        // تحقق من نوع المحتوى في الاستجابة
         if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
           const data = response.data;
           console.log("Fetched user data:", data);
 
           if (data) {
             const names = data.name ? data.name.split(' ') : ['', '', ''];
-
-            // استخدم setFieldValue لكل حقل على حدة لضمان تحديثها
             formik.setFieldValue('firstName', names[0] || '');
             formik.setFieldValue('middleName', names[1] || '');
             formik.setFieldValue('lastName', names[2] || '');
@@ -123,7 +119,6 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
               helperText={formik.touched.firstName && formik.errors.firstName}
               fullWidth
             />
-
             <TextField
               id="middleName"
               label="Middle Name"
@@ -135,7 +130,6 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
               helperText={formik.touched.middleName && formik.errors.middleName}
               fullWidth
             />
-
             <TextField
               id="lastName"
               label="Last Name"
@@ -147,7 +141,6 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
               helperText={formik.touched.lastName && formik.errors.lastName}
               fullWidth
             />
-
             <TextField
               id="email"
               label="Email"
@@ -160,7 +153,6 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
               helperText={formik.touched.email && formik.errors.email}
               fullWidth
             />
-
             <TextField
               id="workGroup"
               label="Work Group"
@@ -172,7 +164,6 @@ export default function EditUserForm({ userType = "User", apiPath = "https://api
               helperText={formik.touched.workGroup && formik.errors.workGroup}
               fullWidth
             />
-
             <Button
               type="submit"
               variant="contained"

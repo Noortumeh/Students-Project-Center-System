@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Container, Spinner } from 'react-bootstrap';
-import Dashboard from '../../../shared/dashbord/Dashbord'; // استدعاء الداشبورد
+import Dashboard from '../../Components/dashbord/Dashbord.jsx'; // استدعاء الداشبورد
 
 function EditUser() {
   const navigate = useNavigate();

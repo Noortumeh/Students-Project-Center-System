@@ -1,14 +1,16 @@
 import React from 'react';
-import Dashboard from '../../../shared/dashbord/Dashbord';
-import EditUser from '../../../component/edituser/EditUser.jsx';
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import User from '../../../Components/user/User.jsx';
 
-export default function EditSupervisor() {
+export default function IndexSupervisor() {
   return (
     <Dashboard>
-      <EditUser
-        userType="supervisior"
-        apiPath="https://api.escuelajs.co/api/v1/users"
-        redirectPath="/users/supervisor"
+      <User 
+        title="Supervisor" 
+        fetchUrl="https://api.escuelajs.co/api/v1/users" 
+        role="admin" 
+        createPath="/users/CreateSupervisior" 
+        editPath="/users/edit" 
       />
     </Dashboard>
   );
