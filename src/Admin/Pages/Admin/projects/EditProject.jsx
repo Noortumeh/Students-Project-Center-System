@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditProject() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); // الحصول على معرف المشروع من عنوان URL
 
   const formik = useFormik({
     initialValues: {
@@ -18,7 +18,7 @@ export default function EditProject() {
       team: '',
       workGroup: '',
     },
-    enableReinitialize: true,
+    enableReinitialize: true, // إعادة التهيئة عند تحديث البيانات
     onSubmit: async (values) => {
       const result = await Swal.fire({
         title: 'Are you sure?',
@@ -32,6 +32,7 @@ export default function EditProject() {
 
       if (result.isConfirmed) {
         try {
+          // تحديث بيانات المشروع
           const updatedProject = {
             projectName: values.projectName,
             supervisor: values.supervisor,
@@ -40,6 +41,7 @@ export default function EditProject() {
             workGroup: values.workGroup,
           };
 
+          // إرسال التحديث إلى الـ API
           await axios.patch(`https://api.example.com/projects/${id}`, updatedProject);
 
           Swal.fire({
@@ -49,7 +51,7 @@ export default function EditProject() {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'OK',
           }).then(() => {
-            navigate('/projects');
+            navigate('/projects'); // إعادة التوجيه إلى صفحة المشاريع
           });
         } catch (error) {
           toast.error(error.response?.data?.message || 'An unknown error occurred.');
@@ -57,6 +59,29 @@ export default function EditProject() {
       }
     },
   });
+
+  // جلب بيانات المشروع عند تحميل الصفحة
+  useEffect(() => {
+    const getProjectData = async () => {
+      try {
+        const response = await axios.get(`https://api.example.com/projects/${id}`);
+        const project = response.data;
+
+        // تعبئة الحقول بالبيانات المستردة
+        formik.setValues({
+          projectName: project.projectName || '',
+          supervisor: project.supervisor || '',
+          customer: project.customer || '',
+          team: project.team || '',
+          workGroup: project.workGroup || '',
+        });
+      } catch (error) {
+        toast.error('Failed to fetch project data.');
+      }
+    };
+
+    getProjectData(); // استدعاء الدالة لجلب البيانات
+  }, [id, formik]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
@@ -73,6 +98,7 @@ export default function EditProject() {
               value={formik.values.projectName}
               onChange={formik.handleChange}
               fullWidth
+              required // جعل الحقل مطلوب
             />
             <TextField
               id="supervisor"
@@ -81,6 +107,7 @@ export default function EditProject() {
               value={formik.values.supervisor}
               onChange={formik.handleChange}
               fullWidth
+              required // جعل الحقل مطلوب
             />
             <TextField
               id="customer"
@@ -89,6 +116,7 @@ export default function EditProject() {
               value={formik.values.customer}
               onChange={formik.handleChange}
               fullWidth
+              required // جعل الحقل مطلوب
             />
             <TextField
               id="team"
@@ -97,6 +125,7 @@ export default function EditProject() {
               value={formik.values.team}
               onChange={formik.handleChange}
               fullWidth
+              required // جعل الحقل مطلوب
             />
             <TextField
               id="workGroup"
@@ -105,6 +134,7 @@ export default function EditProject() {
               value={formik.values.workGroup}
               onChange={formik.handleChange}
               fullWidth
+              required // جعل الحقل مطلوب
             />
             <Button
               type="submit"

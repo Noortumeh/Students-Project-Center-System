@@ -1,181 +1,110 @@
-import React, { useEffect } from 'react';
-import { useFormik } from 'formik';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
 
-export default function EditUserForm({ userType = "User", apiPath = "https://api.example.com/users", redirectPath = "/users" }) {
-  const navigate = useNavigate();
+const EditUserPage = () => {
   const { id } = useParams();
-
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      email: '',
-      workGroup: '',
-    },
-    enableReinitialize: true,
-    onSubmit: async (values) => {
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to save the changes?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save changes!',
-      });
-
-      if (result.isConfirmed) {
-        try {
-          // إعداد البيانات قبل الإرسال
-          const updatedUser = {
-            name: `${values.firstName} ${values.middleName} ${values.lastName}`,
-            email: values.email,
-            workGroup: values.workGroup,
-          };
-
-          console.log(`API Path: ${apiPath}`);
-          console.log(`User ID: ${id}`);
-          console.log(`Sending updated ${userType} data:`, updatedUser);
-
-          // إرسال البيانات إلى الـ API
-          await axios.patch(`${apiPath}/${id}`, updatedUser);
-
-          Swal.fire({
-            title: 'Updated!',
-            text: `${userType} data has been updated successfully.`,
-            icon: 'success',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK',
-          }).then(() => {
-            navigate(redirectPath);
-          });
-        } catch (error) {
-          console.error("Error response:", error.response?.data || error.message);
-          toast.error(error.response?.data?.message || 'An unknown error occurred.');
-        }
-      }
-    },
-  });
+  const navigate = useNavigate();
+  const [user, setUser] = useState({ name: '', email: '', type: '' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
+    const fetchUserDetails = async () => {
       try {
-        console.log(`Fetching data for user ID: ${id}`);
-        console.log(`Full API Path: ${apiPath}/${id}`);
-
-        // محاولة جلب البيانات من الـ API
-        const response = await axios.get(`${apiPath}/${id}`);
-        
-        if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
-          const data = response.data;
-          console.log("Fetched user data:", data);
-
-          if (data) {
-            const names = data.name ? data.name.split(' ') : ['', '', ''];
-            formik.setFieldValue('firstName', names[0] || '');
-            formik.setFieldValue('middleName', names[1] || '');
-            formik.setFieldValue('lastName', names[2] || '');
-            formik.setFieldValue('email', data.email || '');
-            formik.setFieldValue('workGroup', data.workGroup || '');
-          } else {
-            console.error("No data returned from the API.");
-            toast.error('Failed to fetch user data. No data returned.');
-          }
-        } else {
-          console.error("Unexpected response format:", response);
-          toast.error('Failed to fetch user data. Unexpected response format.');
-        }
+        const response = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
+        setUser(response.data);
       } catch (error) {
-        console.error("Failed to fetch data:", error.response?.data || error.message);
-        toast.error(`Failed to fetch ${userType} data.`);
+        console.error('Error fetching user details:', error);
+        toast.error('Failed to fetch user details.');
+      } finally {
+        setLoading(false);
       }
     };
 
-    getUser();
-  }, [id, apiPath, userType]);
+    fetchUserDetails();
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (loading) {
+      return; // تأكد من عدم السماح بالتعديل أثناء التحميل
+    }
+
+    const confirmUpdate = window.confirm('Are you sure you want to update the user?');
+    if (!confirmUpdate) return;
+
+    try {
+      await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, user);
+      toast.success('User updated successfully');
+
+      // توجيه المستخدم بناءً على نوعه مع الروابط الصحيحة
+      if (user.type === 'student') {
+        navigate('/users/student'); // توجيه إلى صفحة الطلاب
+      } else if (user.type === 'customer') {
+        navigate('/users/customer'); // توجيه إلى صفحة العملاء
+      } else if (user.type === 'supervisor') {
+        navigate('/users/supervisor'); // توجيه إلى صفحة المشرفين
+      } else {
+        navigate('/Action/UsersList'); // توجيه إلى قائمة المستخدمين
+      }
+
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Failed to update user.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 5 }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Edit {userType} Data
-        </Typography>
-        <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              id="firstName"
-              label="First Name"
-              variant="outlined"
-              value={formik.values.firstName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-              helperText={formik.touched.firstName && formik.errors.firstName}
-              fullWidth
-            />
-            <TextField
-              id="middleName"
-              label="Middle Name"
-              variant="outlined"
-              value={formik.values.middleName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.middleName && Boolean(formik.errors.middleName)}
-              helperText={formik.touched.middleName && formik.errors.middleName}
-              fullWidth
-            />
-            <TextField
-              id="lastName"
-              label="Last Name"
-              variant="outlined"
-              value={formik.values.lastName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-              helperText={formik.touched.lastName && formik.errors.lastName}
-              fullWidth
-            />
-            <TextField
-              id="email"
-              label="Email"
-              variant="outlined"
-              type="email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-              fullWidth
-            />
-            <TextField
-              id="workGroup"
-              label="Work Group"
-              variant="outlined"
-              value={formik.values.workGroup}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.workGroup && Boolean(formik.errors.workGroup)}
-              helperText={formik.touched.workGroup && formik.errors.workGroup}
-              fullWidth
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ py: 1.5 }}
-            >
-              Update {userType}
-            </Button>
-          </Box>
-        </form>
-      </Paper>
+      <Typography variant="h4">Edit User</Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="Name"
+          name="name"
+          value={user.name}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Email"
+          name="email"
+          value={user.email}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        {/* حقل نوع المستخدم للعرض فقط */}
+        <TextField
+          label="User Type"
+          name="type"
+          value={user.type}
+          fullWidth
+          margin="normal"
+          disabled
+        />
+        <Button type="submit" variant="contained" color="primary" disabled={loading}>
+          Update User
+        </Button>
+      </form>
     </Container>
   );
-}
+};
+
+export default EditUserPage;

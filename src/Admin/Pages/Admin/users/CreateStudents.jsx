@@ -1,14 +1,55 @@
-import React from 'react';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
-import Create from '../../../Components/createuser/CreateUser.jsx'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { TextField, Button, Container, Typography, Paper } from '@mui/material';
+import { toast } from 'react-toastify';
 
-export default function CreateUser() {
+export default function CreateStudents() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('https://api.escuelajs.co/api/v1/users', {
+        name,
+        email,
+        role: 'student',
+      });
+      toast.success('Student created successfully!');
+      navigate('/users/student');
+    } catch (error) {
+      toast.error('Failed to create student.');
+    }
+  };
+
   return (
-    <Dashboard>
-      <Create 
-        formTitle="Create New User" 
-        redirectPath="/users/student" 
-      />
-    </Dashboard>
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Create Student
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Create Student
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 }

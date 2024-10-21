@@ -1,17 +1,16 @@
 import React from 'react';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
- import User from '../../../Components/user/User.jsx'; 
-import axios from 'axios';
+import UserManagement from '../../../Components/user/User.jsx';
 
 export default function IndexStudent() {
   return (
     <Dashboard>
-      <User 
+      <UserManagement 
         title="Student" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="admin" 
-        createPath="/user/CreateStudents/:id" 
-        editPath="/user/edit"
+        role="customer"  // تعديل الدور هنا إلى "student"
+        createPath="/users/create-student"   
+        editPath="/users/edit"               
       />
     </Dashboard>
   );

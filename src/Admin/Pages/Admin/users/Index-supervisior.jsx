@@ -1,17 +1,16 @@
 import React from 'react';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
- import User from '../../../Components/user/User.jsx'; 
-import axios from 'axios';
+import UserManagement from '../../../Components/user/User.jsx';
 
 export default function IndexSupervisor() {
   return (
     <Dashboard>
-      <User 
+      <UserManagement 
         title="Supervisor" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="admin" 
-        createPath="/user/CreateSupervisior/:id" 
-        editPath="/user/edit"
+        role="admin"  // تعديل الدور هنا إلى "supervisor"
+        createPath="/users/create-supervisor"  
+        editPath="/users/edit"                  
       />
     </Dashboard>
   );

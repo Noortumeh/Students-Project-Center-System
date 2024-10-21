@@ -8,8 +8,8 @@ export default function EditCustomer() {
         <EditUser
           userType="Customer"
           apiPath="https://api.escuelajs.co/api/v1/users"
-          redirectPath="/users/customer"
+          redirectPath="/users/customer/edit/:id"  // تعديل المسار هنا
         />
       </Dashboard>
     );
-  }
+}

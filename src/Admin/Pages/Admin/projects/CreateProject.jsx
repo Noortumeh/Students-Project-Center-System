@@ -1,39 +1,136 @@
-// CreateProject.jsx
-import React, { useState } from 'react';
-import { Box, Button, Container, TextField, Typography, Paper, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Paper,
+  FormControl,
+  MenuItem,
+  TextField,
+  InputLabel,
+  Select as MuiSelect,
+} from '@mui/material';
+import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 export default function CreateProject({ onAddProject }) {
   const [projectName, setProjectName] = useState('');
-  const [supervisor, setSupervisor] = useState('');
-  const [customer, setCustomer] = useState('');
+  const [supervisors, setSupervisors] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [workgroups, setWorkgroups] = useState([]); // حالة لتخزين قائمة مجموعات العمل
+  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedWorkgroup, setSelectedWorkgroup] = useState(null); // الحالة الخاصة بمجموعة العمل المختارة
   const [team, setTeam] = useState('');
-  const [workgroup, setWorkgroup] = useState('');
+  const [showFields, setShowFields] = useState(true);
+  const [isSupervisorOpen, setIsSupervisorOpen] = useState(false);
+  const [isCustomerOpen, setIsCustomerOpen] = useState(false);
+  const [isWorkgroupOpen, setIsWorkgroupOpen] = useState(false); // لتتبع حالة فتح القائمة المنسدلة لمجموعة العمل
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // جلب المشرفين
+    const fetchSupervisors = async () => {
+      try {
+        const response = await axios.get('https://api.escuelajs.co/api/v1/users');
+        const supervisorData = response.data
+          .filter((user) => user.role === 'admin')
+          .map((supervisor) => ({
+            value: supervisor.id,
+            label: supervisor.name || `${supervisor.firstName || ''} ${supervisor.lastName || ''}`,
+          }));
+        setSupervisors(supervisorData);
+      } catch (error) {
+        toast.error('Failed to fetch supervisors');
+      }
+    };
+
+    // جلب العملاء
+    const fetchCustomers = async () => {
+      try {
+        const response = await axios.get('https://api.escuelajs.co/api/v1/users');
+        const customerData = response.data
+          .filter((user) => user.role === 'customer')
+          .map((customer) => ({
+            value: customer.id,
+            label: customer.name || `${customer.firstName || ''} ${customer.lastName || ''}`,
+          }));
+        setCustomers(customerData);
+      } catch (error) {
+        toast.error('Failed to fetch customers');
+      }
+    };
+
+    // جلب مجموعات العمل
+    const fetchWorkgroups = async () => {
+      try {
+        const response = await axios.get('https://api.escuelajs.co/api/v1/workgroups');
+        const workgroupData = response.data.map((workgroup) => ({
+          value: workgroup.id,
+          label: workgroup.name,
+        }));
+        setWorkgroups(workgroupData);
+      } catch (error) {
+        toast.error('Failed to fetch workgroups');
+      }
+    };
+
+    fetchSupervisors();
+    fetchCustomers();
+    fetchWorkgroups(); // استدعاء الدالة لجلب مجموعات العمل
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // إنشاء المشروع الجديد
+
     const newProject = {
-      id: Date.now(), // معرّف فريد للمشروع
+      id: Date.now(),
       projectName,
-      supervisor,
-      customer,
+      supervisor: selectedSupervisor?.label,
+      customer: selectedCustomer?.label,
+      workgroup: selectedWorkgroup?.label, // استخدام اسم مجموعة العمل المختارة
       team,
-      workgroup
     };
-    
-    // استدعاء الدالة من المكون الرئيسي لإضافة المشروع
+
     onAddProject(newProject);
-    
-    // عرض رسالة النجاح باستخدام toast
     toast.success('Project created successfully!');
-    
-    // إعادة التوجيه إلى صفحة المشاريع
     navigate('/projects/Projects');
+  };
+
+  // تحديد متى يتم فتح أو إغلاق القوائم المنسدلة
+  const handleSupervisorMenuOpen = () => {
+    setIsSupervisorOpen(true);
+    setShowFields(false);
+  };
+
+  const handleSupervisorMenuClose = () => {
+    setIsSupervisorOpen(false);
+    setShowFields(true);
+  };
+
+  const handleCustomerMenuOpen = () => {
+    setIsCustomerOpen(true);
+    setShowFields(false);
+  };
+
+  const handleCustomerMenuClose = () => {
+    setIsCustomerOpen(false);
+    setShowFields(true);
+  };
+
+  const handleWorkgroupMenuOpen = () => {
+    setIsWorkgroupOpen(true);
+    setShowFields(false);
+  };
+
+  const handleWorkgroupMenuClose = () => {
+    setIsWorkgroupOpen(false);
+    setShowFields(true);
   };
 
   return (
@@ -43,7 +140,6 @@ export default function CreateProject({ onAddProject }) {
           Create New Project
         </Typography>
         <form onSubmit={handleSubmit}>
-          {/* حقل اسم المشروع */}
           <TextField
             label="Project Name"
             variant="outlined"
@@ -54,65 +150,67 @@ export default function CreateProject({ onAddProject }) {
             sx={{ mb: 3 }}
           />
 
-          {/* حقل اسم المشرف */}
-          <TextField
-            label="Supervisor"
-            variant="outlined"
-            fullWidth
-            required
-            value={supervisor}
-            onChange={(e) => setSupervisor(e.target.value)}
-            sx={{ mb: 3 }}
-          />
-
-          {/* حقل اسم العميل */}
-          <TextField
-            label="Customer"
-            variant="outlined"
-            fullWidth
-            required
-            value={customer}
-            onChange={(e) => setCustomer(e.target.value)}
-            sx={{ mb: 3 }}
-          />
-
-          {/* قائمة الفرق */}
           <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel id="team-label">Team</InputLabel>
             <Select
-              labelId="team-label"
-              value={team}
-              onChange={(e) => setTeam(e.target.value)}
-              label="Team"
-            >
-              <MenuItem value="Team A">Team A</MenuItem>
-              <MenuItem value="Team B">Team B</MenuItem>
-              <MenuItem value="Team C">Team C</MenuItem>
-            </Select>
+              options={supervisors}
+              value={selectedSupervisor}
+              onChange={setSelectedSupervisor}
+              placeholder="Select Supervisor"
+              isSearchable
+              styles={{ control: (base) => ({ ...base, height: '56px' }) }}
+              onMenuOpen={handleSupervisorMenuOpen}
+              onMenuClose={handleSupervisorMenuClose}
+            />
           </FormControl>
 
-          {/* قائمة مجموعة العمل */}
           <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel id="workgroup-label">Workgroup</InputLabel>
             <Select
-              labelId="workgroup-label"
-              value={workgroup}
-              onChange={(e) => setWorkgroup(e.target.value)}
-              label="Workgroup"
-            >
-              <MenuItem value="Group 1">Group 1</MenuItem>
-              <MenuItem value="Group 2">Group 2</MenuItem>
-              <MenuItem value="Group 3">Group 3</MenuItem>
-            </Select>
+              options={customers}
+              value={selectedCustomer}
+              onChange={setSelectedCustomer}
+              placeholder="Select Customer"
+              isSearchable
+              styles={{ control: (base) => ({ ...base, height: '56px' }) }}
+              onMenuOpen={handleCustomerMenuOpen}
+              onMenuClose={handleCustomerMenuClose}
+            />
           </FormControl>
 
-          {/* زر الإرسال */}
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <Select
+              options={workgroups}
+              value={selectedWorkgroup}
+              onChange={setSelectedWorkgroup}
+              placeholder="Select Workgroup"
+              isSearchable
+              styles={{ control: (base) => ({ ...base, height: '56px' }) }}
+              onMenuOpen={handleWorkgroupMenuOpen}
+              onMenuClose={handleWorkgroupMenuClose}
+            />
+          </FormControl>
+
+          {showFields && (
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel id="team-label">Team</InputLabel>
+              <MuiSelect
+                labelId="team-label"
+                value={team}
+                onChange={(e) => setTeam(e.target.value)}
+                label="Team"
+              >
+                <MenuItem value="Team A">Team A</MenuItem>
+                <MenuItem value="Team B">Team B</MenuItem>
+                <MenuItem value="Team C">Team C</MenuItem>
+              </MuiSelect>
+            </FormControl>
+          )}
+
           <Button
             variant="contained"
             color="primary"
             type="submit"
             fullWidth
-            sx={{ py: 1.5, fontWeight: 'bold', fontSize: '1rem' }}
+            sx={{ py: 1.5, fontWeight: 'bold', fontSize: '1rem', mb: 2 }}
           >
             Create Project
           </Button>

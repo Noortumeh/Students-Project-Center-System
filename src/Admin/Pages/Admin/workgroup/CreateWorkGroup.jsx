@@ -1,109 +1,189 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Card,
+  CardContent,
+  CircularProgress,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+} from '@mui/material';
+
+import axios from 'axios';
+import { MultiSelect } from 'react-multi-select-component';
 
 function CreateWorkGroup() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [workgroupName, setWorkgroupName] = useState('');
+  const [customers, setCustomers] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
+  const [students, setStudents] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [selectedSupervisor, setSelectedSupervisor] = useState('');
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [workgroupName, setWorkgroupName] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // جلب البيانات عند تحميل الصفحة
   useEffect(() => {
-    // استرجاع البيانات من location.state بعد العودة من الصفحات
-    if (location.state && location.state.selectedCustomer) {
-      setSelectedCustomer(location.state.selectedCustomer);
-    }
-    if (location.state && location.state.selectedSupervisor) {
-      setSelectedSupervisor(location.state.selectedSupervisor);
-    }
-    if (location.state && location.state.selectedStudents) {
-      setSelectedStudents(location.state.selectedStudents);
+    const fetchData = async () => {
+      try {
+        const [customersData, supervisorsData, studentsData] = await Promise.all([
+          axios.get('https://api.escuelajs.co/api/v1/users'), // رابط وهمي لجلب العملاء
+          axios.get('https://api.escuelajs.co/api/v1/users'), // رابط وهمي لجلب المشرفين
+          axios.get('https://api.escuelajs.co/api/v1/users'), // رابط وهمي لجلب الطلاب
+        ]);
+
+        // تصفية البيانات لتحديد الأدوار المناسبة
+        setCustomers(customersData.data.filter((user) => user.role === 'customer'));
+        setSupervisors(supervisorsData.data.filter((user) => user.role === 'admin'));
+        setStudents(studentsData.data.map((student) => ({ label: student.name, value: student.id }))); // students بصيغة يدعمها react-select
+      } catch (error) {
+        toast.error('Failed to fetch data');
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // استرجاع البيانات من location.state إذا تم التحديد مسبقاً من الصفحات الفرعية
+  useEffect(() => {
+    if (location.state) {
+      if (location.state.selectedCustomer) {
+        setSelectedCustomer(location.state.selectedCustomer);
+      }
+      if (location.state.selectedSupervisor) {
+        setSelectedSupervisor(location.state.selectedSupervisor);
+      }
+      if (location.state.selectedStudents) {
+        setSelectedStudents(location.state.selectedStudents);
+      }
     }
   }, [location.state]);
 
-  const handleSelectCustomer = () => {
-    navigate('/workgroup/SelectCustomer', { state: { workgroupName, selectedSupervisor, selectedStudents } });
-  };
-
-  const handleSelectSupervisor = () => {
-    navigate('/workgroup/SelectSupervisor', { state: { workgroupName, selectedCustomer, selectedStudents } });
-  };
-
-  const handleSelectStudent = () => {
-    navigate('/workgroup/SelectStudent', { state: { workgroupName, selectedCustomer, selectedSupervisor } });
-  };
-
-  const handleSave = () => {
+  // حفظ مجموعة العمل
+  const handleSave = async () => {
     if (!workgroupName || !selectedCustomer || !selectedSupervisor || selectedStudents.length < 1) {
-      toast.error("Please fill in all fields");
+      toast.error('Please fill in all fields');
       return;
     }
 
     setLoading(true);
-    // محاكاة عملية الحفظ
-    setTimeout(() => {
+
+    // البيانات التي سيتم إرسالها
+    const newWorkGroup = {
+      id: Date.now(), // معرّف فريد
+      workgroupName,
+      customer: selectedCustomer,
+      supervisor: selectedSupervisor,
+      team: selectedStudents.map((student) => student.label),
+    };
+
+    try {
+      // إرسال البيانات إلى الـ API أو إضافتها للـ state المحلي في حال عدم وجود API
+      await axios.post('https://api.escuelajs.co/api/v1/workgroups', newWorkGroup);
+
+      // عرض رسالة نجاح باستخدام toast
+      toast.success('Workgroup created successfully!');
+
+      // إعادة التوجيه إلى صفحة مجموعات العمل
+      navigate('/workgroup', { state: { newWorkGroup } });
+    } catch (error) {
+      toast.error('Failed to create workgroup');
+    } finally {
       setLoading(false);
-      toast.success("Workgroup created successfully");
-      navigate('/workgroup/WorkGroup');
-    }, 2000);
+    }
   };
 
   return (
-    <div className="container mt-5">
-      <h1>Create Workgroup</h1>
-      <div className="card p-4">
-        <h3 className="mb-4">Create</h3>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Workgroup Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter workgroup name"
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Card sx={{ width: 500, p: 4 }}>
+        <CardContent>
+          <Typography variant="h4" component="h1" gutterBottom align="center">
+            Create New Workgroup
+          </Typography>
+
+          <Box component="form">
+            {/* Workgroup Name */}
+            <TextField
+              label="Workgroup Name *"
+              variant="outlined"
+              fullWidth
+              margin="normal"
               value={workgroupName}
               onChange={(e) => setWorkgroupName(e.target.value)}
             />
-          </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Customer</Form.Label>
-            <Button variant="primary" onClick={handleSelectCustomer}>
-              {selectedCustomer ? `Selected: ${selectedCustomer}` : 'Select Customer'}
-            </Button>
-          </Form.Group>
+            {/* Customer Selection */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="customer-label">Select Customer</InputLabel>
+              <Select
+                labelId="customer-label"
+                value={selectedCustomer}
+                onChange={(e) => setSelectedCustomer(e.target.value)}
+                label="Select Customer"
+              >
+                {customers.map((customer) => (
+                  <MenuItem key={customer.id} value={customer.name}>
+                    {customer.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Supervisor</Form.Label>
-            <Button variant="primary" onClick={handleSelectSupervisor}>
-              {selectedSupervisor ? `Selected: ${selectedSupervisor}` : 'Select Supervisor'}
-            </Button>
-          </Form.Group>
+            {/* Supervisor Selection */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="supervisor-label">Select Supervisor</InputLabel>
+              <Select
+                labelId="supervisor-label"
+                value={selectedSupervisor}
+                onChange={(e) => setSelectedSupervisor(e.target.value)}
+                label="Select Supervisor"
+              >
+                {supervisors.map((supervisor) => (
+                  <MenuItem key={supervisor.id} value={supervisor.name}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Team</Form.Label>
-            {selectedStudents.map((student, index) => (
-              <Button key={index} variant="primary" className="mb-2 me-2">
-                {student}
+            {/* Student Selection */}
+            <Box sx={{ mb: 2 }}>
+              <MultiSelect
+                options={students}
+                value={selectedStudents}
+                onChange={setSelectedStudents}
+                labelledBy="Select Students"
+                overrideStrings={{
+                  selectSomeItems: 'Select Students...',
+                  allItemsAreSelected: 'All students are selected',
+                  selectAll: 'Select All',
+                  search: 'Search Students',
+                }}
+              />
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button variant="outlined" color="error" onClick={() => navigate('/workgroup')}>
+                Cancel
               </Button>
-            ))}
-            <Button variant="primary" onClick={handleSelectStudent}>
-              Select Students
-            </Button>
-          </Form.Group>
-
-          <div className="d-flex justify-content-between">
-            <Button variant="danger" onClick={() => navigate('/workgroup/WorkGroup')}>Cancel</Button>
-            <Button variant="success" onClick={handleSave} disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : 'Save Workgroup'}
-            </Button>
-          </div>
-        </Form>
-      </div>
-    </div>
+              <Button variant="contained" color="success" onClick={handleSave} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : 'Create Workgroup'}
+              </Button>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
 

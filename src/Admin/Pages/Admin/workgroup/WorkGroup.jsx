@@ -12,8 +12,10 @@ import {
   CircularProgress,
   Grid,
   Paper,
-  Box
+  Box,
+  IconButton
 } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
@@ -225,22 +227,21 @@ export default function WorkGroups() {
                         </Button>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          component={Link}
-                          to={`/workgroup/edit/${workgroup.id}`}
-                          sx={{ mr: 1 }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => handleDeleteClick(workgroup.id)}
-                        >
-                          Delete
-                        </Button>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                          <IconButton
+                            component={Link}
+                            to={`/workgroup/edit/${workgroup.id}`}
+                            sx={{ backgroundColor: '#2196f3', color: '#fff' }}
+                          >
+                            <Edit />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleDeleteClick(workgroup.id)}
+                            sx={{ backgroundColor: '#f44336', color: '#fff' }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}

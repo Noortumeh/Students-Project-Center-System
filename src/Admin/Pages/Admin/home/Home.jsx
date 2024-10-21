@@ -27,21 +27,18 @@ export default function ProjectCenterDashboard() {
     totalClients: 0,
   });
 
-  // مرجع للرسم البياني
   const chartRef = useRef(null);
 
-  // جلب البيانات من API
   useEffect(() => {
     async function fetchData() {
       try {
-        // استخدم API لجلب البيانات
-        const response = await fetch('/api/dashboardData'); // تأكد من أن هذا هو الـ API الصحيح
+        const response = await fetch('/api/dashboardData');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         setData({
           totalProjects: result.totalProjects,
           completedProjects: result.completedProjects,
@@ -68,10 +65,12 @@ export default function ProjectCenterDashboard() {
     ],
   };
 
-  // التأكد من التخلص من الرسم البياني عند التدمير
+  // التأكد من تدمير الرسم البياني عند التدمير
   useEffect(() => {
     if (chartRef.current) {
+      // التحقق من وجود الرسم البياني قبل تدميره
       chartRef.current.destroy();
+      chartRef.current = null;
     }
   }, [data]);
 
@@ -162,7 +161,6 @@ export default function ProjectCenterDashboard() {
         </Grid>
 
         <Divider sx={{ my: 4 }} />
-
       </Box>
     </Dashboard>
   );
