@@ -1,205 +1,153 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Card,
-  CardContent,
   Box,
+  TextField,
+  Button,
+  Container,
   Typography,
-  Snackbar,
-  Divider
+  Paper,
+  CircularProgress,
 } from '@mui/material';
-import Dashboard from '../dashbord/Dashbord.jsx';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import Swal from 'sweetalert2';
+import 'react-toastify/dist/ReactToastify.css';
 
 const styles = {
-  title: {
-    fontFamily: "'Roboto', sans-serif",
-    fontWeight: 'bold',
-    color: '#1976d2',
-    marginBottom: '10px',
-    textAlign: 'center',
-  },
-  sectionTitle: {
-    fontFamily: "'Roboto', sans-serif",
-    fontWeight: '500',
-    color: '#1976d2',
-    marginBottom: '10px',
-    textAlign: 'left',
+  formContainer: {
     display: 'flex',
-    alignItems: 'center',
-    borderBottom: '2px solid #1976d2',
-    paddingBottom: '5px',
-  },
-  paragraph: {
-    marginBottom: '20px',
-    lineHeight: '1.6',
-    color: '#333',
-  },
-  list: {
-    marginBottom: '20px',
-    paddingLeft: '20px',
-    color: '#333',
+    flexDirection: 'column',
+    gap: '20px',
+    padding: '30px',
   },
   button: {
     backgroundColor: '#1976d2',
     color: '#fff',
     fontWeight: 'bold',
-    padding: '10px 20px',
-    borderRadius: '20px',
-    transition: 'all 0.3s ease',
+    padding: '12px 20px',
+    borderRadius: '8px',
+    fontSize: '18px',
     '&:hover': {
       backgroundColor: '#115293',
     },
   },
-  card: {
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    marginBottom: '20px',
-    padding: '20px',
-  },
-  divider: {
-    margin: '20px 0',
-    backgroundColor: '#1976d2',
-  },
 };
 
-export default function TermOfServices() {
-  const [termsText, setTermsText] = useState(() => {
-    return localStorage.getItem('termsText') || `Acceptance of Terms
-By accessing or using the Student Project Center System ("the System"), you agree to be bound by these Terms of Service ("Terms").
-If you do not agree to these Terms, please do not use the System.
-...`;
+export default function CreateUser({ title = 'User', redirectPath }) {
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    password: '', // إضافة حقل كلمة المرور
+    avatar: '',   // إضافة حقل الصورة الرمزية
   });
 
-  const [lastUpdated, setLastUpdated] = useState(() => {
-    return localStorage.getItem('lastUpdated') || 'May 2024';
-  });
+  const [loading, setLoading] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-  const [modalText, setModalText] = useState(termsText);
-  const [isCreating, setIsCreating] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false); 
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('termsText', termsText);
-  }, [termsText]);
-
-  useEffect(() => {
-    localStorage.setItem('lastUpdated', lastUpdated);
-  }, [lastUpdated]);
-
-  const handleEdit = () => {
-    setIsCreating(false);
-    setModalText(termsText);
-    setShowModal(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
   };
 
-  const handleCreate = () => {
-    setIsCreating(true);
-    setModalText('');
-    setShowModal(true);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleSave = async () => {
-    if (!modalText.trim()) {
-      setSnackbarMessage('Terms of service text cannot be empty.');
-      setOpenSnackbar(true);
-      return;
-    }
+    // تأكيد باستخدام SweetAlert2
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to add this user?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, add it!',
+      cancelButtonText: 'Cancel',
+    });
 
-    try {
-      if (isCreating) {
-        setTermsText((prevText) => prevText + '\n\n' + modalText);
-      } else {
-        setTermsText(modalText);
+    if (result.isConfirmed) {
+      setLoading(true);
+      try {
+        // تأكد من أن البيانات المرسلة تتوافق مع ما يتوقعه الـ API
+        const response = await axios.post('https://api.escuelajs.co/api/v1/users', userData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        toast.success(`${title} created successfully 👌`);
+
+        // إعادة التوجيه في حال كانت العملية ناجحة
+        if (redirectPath) {
+          window.location.href = redirectPath;
+        }
+      } catch (error) {
+        // عرض تفاصيل الخطأ إذا حدث
+        console.error('Error creating user:', error.response ? error.response.data : error.message);
+        toast.error(`Failed to create ${title} 🤯`);
+      } finally {
+        setLoading(false);
       }
-
-      const currentDate = new Date().toLocaleString();
-      setLastUpdated(currentDate);
-
-      setShowModal(false);
-      setSnackbarMessage('Your changes have been saved.');
-      setOpenSnackbar(true);
-    } catch (error) {
-      setSnackbarMessage('Failed to save changes.');
-      setOpenSnackbar(true);
+    } else {
+      toast.info('Creation cancelled');
     }
-  };
-
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
   };
 
   return (
-    <Dashboard>
-      <Box sx={{ mt: 5, mx: 'auto', maxWidth: 'lg' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <Typography variant="h4" sx={styles.title}>
-            Terms Of Services
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <ToastContainer />
+      <Paper elevation={3}>
+        <Box component="form" sx={styles.formContainer} onSubmit={handleSubmit}>
+          <Typography variant="h4" gutterBottom align="center">
+            Create {title}
           </Typography>
-          <Button variant="contained" sx={styles.button} onClick={handleCreate}>
-            Create Term of Services
+          <TextField
+            label="Name"
+            name="name"
+            value={userData.name}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            required
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            required
+            type="email"
+          />
+          <TextField
+            label="Password"
+            name="password"
+            value={userData.password}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            required
+            type="password"
+          />
+          <TextField
+            label="Avatar URL"
+            name="avatar"
+            value={userData.avatar}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            required
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            sx={styles.button}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Create'}
           </Button>
         </Box>
-
-        <Card sx={styles.card}>
-          <CardContent>
-            <Typography variant="h5" sx={styles.sectionTitle}>
-              Terms of Service
-            </Typography>
-            <Typography variant="subtitle2" color="textSecondary" align="center">
-              Last updated: {lastUpdated}
-            </Typography>
-            <Divider sx={styles.divider} />
-            <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-              {termsText}
-            </Typography>
-            <Box display="flex" justifyContent="center" mt={4}>
-              <Button variant="contained" sx={styles.button} onClick={handleEdit}>
-                Edit
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-
-        {/* Dialog for adding or editing the terms */}
-        <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="md" fullWidth>
-          <DialogTitle>{isCreating ? 'Create Term of Services' : 'Edit Term of Services'}</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="Terms of Services Text"
-              multiline
-              rows={10}
-              fullWidth
-              value={modalText}
-              onChange={(e) => setModalText(e.target.value)}
-              variant="outlined"
-              margin="normal"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowModal(false)} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleSave} sx={styles.button}>
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Snackbar for notifications */}
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={4000}
-          onClose={handleSnackbarClose}
-          message={snackbarMessage}
-        />
-      </Box>
-    </Dashboard>
+      </Paper>
+    </Container>
   );
 }

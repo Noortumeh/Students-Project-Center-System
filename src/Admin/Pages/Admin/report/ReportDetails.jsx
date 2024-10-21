@@ -157,42 +157,42 @@ function ProjectInfo({ report }) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Project Title" secondary={report.title} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Supervisor" secondary={report.supervisor} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Customer" secondary={report.customer} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Project Start Date" secondary={report.startDate} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Project Completion Date" secondary={report.endDate} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Budget" secondary={report.budget} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Progress" secondary={report.progress} />
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 2, boxShadow: 3 }}>
+        <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#ffe8d6' }}>
           <ListItemText primary="Deadline" secondary={report.deadline} />
         </Card>
       </Grid>
@@ -203,12 +203,12 @@ function ProjectInfo({ report }) {
 function ProjectTeam({ team }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>Project Team</Typography>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Project Team</Typography>
       <Grid container spacing={2}>
         {team.map((member, index) => (
           <Grid item xs={12} sm={6} key={index}>
-            <Card sx={{ p: 2, display: 'flex', alignItems: 'center', boxShadow: 3 }}>
-              <Avatar sx={{ mr: 2 }}>{member.charAt(0)}</Avatar>
+            <Card sx={{ p: 2, display: 'flex', alignItems: 'center', boxShadow: 3, backgroundColor: '#edf2f4' }}>
+              <Avatar sx={{ mr: 2, backgroundColor: '#e63946' }}>{member.charAt(0)}</Avatar>
               <Typography variant="body1">{member}</Typography>
             </Card>
           </Grid>
@@ -221,8 +221,8 @@ function ProjectTeam({ team }) {
 function ProjectObjectives({ objectives }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>Objectives</Typography>
-      <Card sx={{ p: 2, boxShadow: 3 }}>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Objectives</Typography>
+      <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
         <ul>
           {objectives.map((objective, index) => (
             <li key={index}><Typography variant="body1">{objective}</Typography></li>
@@ -236,8 +236,8 @@ function ProjectObjectives({ objectives }) {
 function ChallengesAndSolutions({ challenges }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>Challenges and Solutions</Typography>
-      <Card sx={{ p: 2, boxShadow: 3 }}>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Challenges and Solutions</Typography>
+      <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
         <ul>
           {challenges.map((challenge, index) => (
             <li key={index}>
@@ -289,7 +289,7 @@ export default function ReportDetails() {
         <Grid item lg={10}>
           <Card sx={{ p: 3, boxShadow: 5 }}>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#1d3557' }}>
                 Project Report: {report.title}
               </Typography>
               <Divider sx={{ mb: 4 }} />
@@ -300,8 +300,8 @@ export default function ReportDetails() {
               <ChallengesAndSolutions challenges={report.challenges} />
 
               <Box mt={4}>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>Conclusion and Recommendations</Typography>
-                <Card sx={{ p: 2, boxShadow: 3 }}>
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Conclusion and Recommendations</Typography>
+                <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
                   <Typography>
                     The system successfully provided a robust platform for managing student projects, improving communication and tracking progress.
                   </Typography>

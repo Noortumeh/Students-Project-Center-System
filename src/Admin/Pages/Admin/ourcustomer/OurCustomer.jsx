@@ -8,8 +8,6 @@ import {
   Grid,
   Typography,
   Button,
-  TextField,
-  MenuItem,
   Card,
   CardContent,
   CardMedia,
@@ -61,7 +59,7 @@ export default function OurCustomer() {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
     });
 
     if (result.isConfirmed) {
@@ -115,7 +113,7 @@ export default function OurCustomer() {
             variant="contained"
             color="primary"
             component={Link}
-            to="/user/create"
+            to={"/users/CreateStudents"} // تم تعديل الرابط ليكون بدون :id
             sx={{ padding: '10px 20px', fontSize: '1rem', borderRadius: '8px' }}
           >
             Create User
@@ -153,7 +151,7 @@ export default function OurCustomer() {
                     </Box>
                   </Box>
                   <Box sx={{ textAlign: 'center' }}>
-                    <IconButton color="primary" component={Link} to={`/user/edit/${user.id}`}>
+                    <IconButton color="primary" component={Link} to={`/Action/edit/${user.id}`}>
                       <EditIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => deleteUser(user.id)}>

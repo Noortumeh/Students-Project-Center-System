@@ -1,16 +1,16 @@
 import React from 'react';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
-import User from '../../../Components/user/User.jsx';
+import UserManagement from '../../../Components/user/User.jsx';
 
 export default function IndexCustomer() {
   return (
     <Dashboard>
-      <User
+      <UserManagement 
         title="Customer" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="customer" 
-        createPath="/users/CreateCustomer" 
-        editPath="/users/edit" 
+        role="customer"  // تعديل الدور هنا إلى "customer"
+        createPath="/users/create-customer"   
+        editPath="/Action/edit/:id"                
       />
     </Dashboard>
   );

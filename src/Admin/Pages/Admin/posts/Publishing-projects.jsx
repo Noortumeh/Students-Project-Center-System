@@ -13,9 +13,16 @@ const PublishingProjects = () => {
     setProjects(newProjects);
   };
 
+  const addProject = () => {
+    const newProject = { title: `Project ${String.fromCharCode(67 + projects.length)}`, status: 'Draft' };
+    setProjects([...projects, newProject]);
+  };
+
   return (
     <Paper elevation={3} sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom>Publishing Projects</Typography>
+      <Typography variant="h4" gutterBottom>
+        Publishing Projects
+      </Typography>
       <List>
         {projects.map((project, index) => (
           <ListItem key={index}>
@@ -29,9 +36,11 @@ const PublishingProjects = () => {
           </ListItem>
         ))}
       </List>
-      <Button variant="contained" color="primary" sx={{ mt: 2 }}>Add Project</Button>
+      <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={addProject}>
+        Add Project
+      </Button>
     </Paper>
   );
-}
+};
 
 export default PublishingProjects;

@@ -1,112 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  Avatar, Box, Grid, Typography, Paper, List,
-  ListItem, ListItemIcon, ListItemText, Divider,
-} from '@mui/material';
-import { AccountCircle, Work, Group, PostAdd, BarChart, Logout } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
+import { CircularProgress, Typography, Paper, Container } from '@mui/material';
+import { toast } from 'react-toastify';
 
-export default function Details() {
-  const [user, setUser] = useState(null);
+const Details = () => {
   const { id } = useParams();
-
-  const getUser = async () => {
-    try {
-      const { data } = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
-      setUser(data);
-    } catch (error) {
-      console.error("Failed to fetch user details", error);
-    }
-  };
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUser();
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error(error); // تسجيل الخطأ في وحدة التحكم
+        toast.error('فشل في جلب تفاصيل المستخدم.'); // رسالة خطأ للمستخدم
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetails();
   }, [id]);
 
-  return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-      <Paper sx={{ width: 280, padding: 2, backgroundColor: '#3f51b5', color: 'white' }} elevation={3}>
-        <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-          <Avatar alt="User Avatar" src="https://github.com/mdo.png" sx={{ width: 56, height: 56 }} />
-          <Typography variant="h6" mt={2}>User</Typography>
-        </Box>
-        <Divider sx={{ backgroundColor: 'white' }} />
-        <List>
-          <ListItem button component={Link} to="/">
-            <ListItemIcon>
-              <AccountCircle sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItem>
-          <ListItem button component={Link} to="/users/student">
-            <ListItemIcon>
-              <Group sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Students" />
-          </ListItem>
-          <ListItem button component={Link} to="/users/customer">
-            <ListItemIcon>
-              <Group sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Customers" />
-          </ListItem>
-          <ListItem button component={Link} to="/users/supervisor">
-            <ListItemIcon>
-              <Group sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Supervisors" />
-          </ListItem>
-          <ListItem button component={Link} to="#">
-            <ListItemIcon>
-              <Work sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="WorkGroups" />
-          </ListItem>
-          <ListItem button component={Link} to="#">
-            <ListItemIcon>
-              <PostAdd sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Posts" />
-          </ListItem>
-          <ListItem button component={Link} to="#">
-            <ListItemIcon>
-              <BarChart sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Reports" />
-          </ListItem>
-          <ListItem button component={Link} to="#">
-            <ListItemIcon>
-              <Logout sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemText primary="Sign Out" />
-          </ListItem>
-        </List>
-      </Paper>
+  if (loading) {
+    return <CircularProgress />;
+  }
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          User Details
+  if (!user) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 5 }}>
+        <Typography variant="h6" color="error">
+          لم يتم العثور على مستخدم بهذا المعرف.
         </Typography>
-        <Divider />
-        <Grid container spacing={2} mt={3}>
-          <Grid item xs={12} md={6}>
-            {user ? (
-              <Paper sx={{ padding: 2 }}>
-                <Typography variant="h6"><strong>Name:</strong> {user.name}</Typography>
-                <Typography variant="h6"><strong>Email:</strong> {user.email}</Typography>
-                <Typography variant="h6"><strong>Role:</strong> {user.role}</Typography>
-                <Box display="flex" alignItems="center" mt={2}>
-                  <Typography variant="h6"><strong>Avatar:</strong></Typography>
-                  <Avatar src={user.avatar} alt="avatar" sx={{ ml: 2, width: 56, height: 56 }} />
-                </Box>
-              </Paper>
-            ) : (
-              <Typography variant="h6" color="error">No user details available.</Typography>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h5">{user.name}</Typography>
+        <Typography variant="body1">البريد الإلكتروني: {user.email}</Typography>
+        <Typography variant="body1">الدور: {user.role}</Typography>
+      </Paper>
+    </Container>
   );
-}
+};
+
+export default Details;

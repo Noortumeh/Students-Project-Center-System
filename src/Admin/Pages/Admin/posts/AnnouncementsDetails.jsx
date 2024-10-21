@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Button, Modal, Pagination } from 'react-bootstrap';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx'; // استدعاء مكون الداشبورد
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
-// بيانات الإعلانات (يمكن لاحقًا استبدالها ببيانات من API)
-const announcementsData = [
+const AnnouncementsDetails = [
   {
     id: 1,
     projectTitle: 'Student Project Management System',
@@ -57,18 +56,13 @@ const announcementsData = [
 export default function Announcements() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 3;
 
-  // حساب عدد الصفحات بناءً على عدد الإعلانات والمشاريع في كل صفحة
-  const totalPages = Math.ceil(announcementsData.length / projectsPerPage);
-
-  // المشاريع المعروضة في الصفحة الحالية فقط
+  const totalPages = Math.ceil(AnnouncementsDetails.length / projectsPerPage);
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = announcementsData.slice(indexOfFirstProject, indexOfLastProject);
+  const currentProjects = AnnouncementsDetails.slice(indexOfFirstProject, indexOfLastProject);
 
   const handleShowDetails = (project) => {
     setSelectedProject(project);
@@ -77,9 +71,9 @@ export default function Announcements() {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedProject(null); // إلغاء تحديد المشروع عند إغلاق النافذة
   };
 
-  // تغيير الصفحة عند الضغط على أزرار الـ Pagination
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -88,7 +82,7 @@ export default function Announcements() {
     <Dashboard>
       <div className="container mt-5">
         <h1 className="mb-4 text-center">Announcements</h1>
-        
+
         {currentProjects.length > 0 ? (
           <div className="row">
             {currentProjects.map((announcement) => (
@@ -115,7 +109,6 @@ export default function Announcements() {
           <p>No announcements available.</p>
         )}
 
-        {/* Pagination Component */}
         <Pagination className="justify-content-center mt-4">
           {[...Array(totalPages)].map((_, pageIndex) => (
             <Pagination.Item
@@ -128,25 +121,26 @@ export default function Announcements() {
           ))}
         </Pagination>
 
-        {/* Modal to show details */}
-        {selectedProject && (
-          <Modal show={showModal} onHide={handleCloseModal}>
-            <Modal.Header closeButton>
-              <Modal.Title>{selectedProject.projectTitle}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p><strong>Customer Name:</strong> {selectedProject.customerName}</p>
-              <p><strong>Supervisor:</strong> {selectedProject.supervisorName}</p>
-              <p><strong>Description:</strong> {selectedProject.description}</p>
-              <p><strong>Date:</strong> {selectedProject.date}</p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        )}
+        <Modal show={showModal} onHide={handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedProject?.projectTitle}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedProject && (
+              <>
+                <h5>Customer: {selectedProject.customerName}</h5>
+                <h6>Supervisor: {selectedProject.supervisorName}</h6>
+                <p>{selectedProject.description}</p>
+                <p>Date: {selectedProject.date}</p>
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </Dashboard>
   );

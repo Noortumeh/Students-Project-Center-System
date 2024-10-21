@@ -1,19 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as Yup from 'yup'; // للتحقق من الإدخالات
+import * as Yup from 'yup';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import {
+  Box,
+  Button,
+  TextField,
+  MenuItem,
+  Typography,
+  Select,
+  FormControl,
+  InputLabel,
+  CircularProgress,
+  Card,
+  CardContent,
+} from '@mui/material';
+
 function EditWorkGroup() {
   const navigate = useNavigate();
-  const { id } = useParams(); // الحصول على ID المجموعة
-  const [loading, setLoading] = useState(false); // حالة التحميل
-  const [customers, setCustomers] = useState([]); // قائمة العملاء
-  const [supervisors, setSupervisors] = useState([]); // قائمة المشرفين
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
 
-  // جلب العملاء والمشرفين من الـ API
+  // Fetch customers and supervisors data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,6 +44,7 @@ function EditWorkGroup() {
     fetchData();
   }, []);
 
+  // Formik for handling form validation and submission
   const formik = useFormik({
     initialValues: {
       workgroupName: '',
@@ -58,7 +73,7 @@ function EditWorkGroup() {
       });
 
       if (result.isConfirmed) {
-        setLoading(true); // تعيين حالة التحميل
+        setLoading(true);
         try {
           const response = await axios.put(`http://localhost:3000/api/v1/workgroups/${id}`, {
             workgroupName: values.workgroupName,
@@ -75,7 +90,7 @@ function EditWorkGroup() {
               confirmButtonColor: '#3085d6',
               confirmButtonText: 'OK'
             }).then(() => {
-              navigate('/workgroup/WorkGroup');  // إعادة التوجيه بعد التحديث
+              navigate('/workgroup');  // Redirect after updating
             });
           } else {
             toast.error("Failed to update workgroup.");
@@ -83,12 +98,13 @@ function EditWorkGroup() {
         } catch (error) {
           handleError(error);
         } finally {
-          setLoading(false); // إيقاف حالة التحميل
+          setLoading(false);
         }
       }
     },
   });
 
+  // Handle errors
   const handleError = (error) => {
     if (error.response) {
       toast.error(`Error: ${error.response.data.message || "Failed to update workgroup."}`);
@@ -99,6 +115,7 @@ function EditWorkGroup() {
     }
   };
 
+  // Fetch workgroup data for editing
   useEffect(() => {
     const getWorkGroup = async () => {
       setLoading(true);
@@ -125,131 +142,95 @@ function EditWorkGroup() {
 
   return (
     <Dashboard>
-      <div className="container mt-5">
-        {loading ? (
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={formik.handleSubmit} className="form-group">
-            <h3>Edit Workgroup</h3>
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Card sx={{ width: 600, p: 3 }}>
+          <CardContent>
+            <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+              Edit Workgroup Data
+            </Typography>
 
-            <div className="mb-3">
-              <label htmlFor="workgroupName" className="form-label">Workgroup Name</label>
-              <input
-                id="workgroupName"
-                name="workgroupName"
-                type="text"
-                className={`form-control ${formik.touched.workgroupName && formik.errors.workgroupName ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.workgroupName}
-              />
-              {formik.touched.workgroupName && formik.errors.workgroupName ? (
-                <div className="invalid-feedback">{formik.errors.workgroupName}</div>
-              ) : null}
-            </div>
+            {loading ? (
+              <Box display="flex" justifyContent="center">
+                <CircularProgress />
+              </Box>
+            ) : (
+              <form onSubmit={formik.handleSubmit}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Workgroup Name"
+                  id="workgroupName"
+                  name="workgroupName"
+                  value={formik.values.workgroupName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.workgroupName && Boolean(formik.errors.workgroupName)}
+                  helperText={formik.touched.workgroupName && formik.errors.workgroupName}
+                />
 
-            <div className="mb-3">
-              <label htmlFor="customer" className="form-label">Customer</label>
-              <select
-                id="customer"
-                name="customer"
-                className={`form-select ${formik.touched.customer && formik.errors.customer ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.customer}
-              >
-                <option value="">Select Customer</option>
-                {customers.map((customer) => (
-                  <option key={customer.id} value={customer.name}>{customer.name}</option>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Customer</InputLabel>
+                  <Select
+                    id="customer"
+                    name="customer"
+                    value={formik.values.customer}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.customer && Boolean(formik.errors.customer)}
+                  >
+                    <MenuItem value="">Select Customer</MenuItem>
+                    {customers.map((customer) => (
+                      <MenuItem key={customer.id} value={customer.name}>{customer.name}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Supervisor</InputLabel>
+                  <Select
+                    id="supervisor"
+                    name="supervisor"
+                    value={formik.values.supervisor}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.supervisor && Boolean(formik.errors.supervisor)}
+                  >
+                    <MenuItem value="">Select Supervisor</MenuItem>
+                    {supervisors.map((supervisor) => (
+                      <MenuItem key={supervisor.id} value={supervisor.name}>{supervisor.name}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="subtitle1" gutterBottom>
+                  Team
+                </Typography>
+                {['student1', 'student2', 'student3', 'student4'].map((student, index) => (
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    key={index}
+                    label={`Student ${index + 1}`}
+                    name={student}
+                    value={formik.values[student]}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
                 ))}
-              </select>
-              {formik.touched.customer && formik.errors.customer ? (
-                <div className="invalid-feedback">{formik.errors.customer}</div>
-              ) : null}
-            </div>
 
-            <div className="mb-3">
-              <label htmlFor="supervisor" className="form-label">Supervisor</label>
-              <select
-                id="supervisor"
-                name="supervisor"
-                className={`form-select ${formik.touched.supervisor && formik.errors.supervisor ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.supervisor}
-              >
-                <option value="">Select Supervisor</option>
-                {supervisors.map((supervisor) => (
-                  <option key={supervisor.id} value={supervisor.name}>{supervisor.name}</option>
-                ))}
-              </select>
-              {formik.touched.supervisor && formik.errors.supervisor ? (
-                <div className="invalid-feedback">{formik.errors.supervisor}</div>
-              ) : null}
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Team</label>
-              <input
-                id="student1"
-                name="student1"
-                type="text"
-                placeholder="Student 1"
-                className={`form-control mb-2 ${formik.touched.student1 && formik.errors.student1 ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.student1}
-              />
-              {formik.touched.student1 && formik.errors.student1 ? (
-                <div className="invalid-feedback">{formik.errors.student1}</div>
-              ) : null}
-              <input
-                id="student2"
-                name="student2"
-                type="text"
-                placeholder="Student 2"
-                className="form-control mb-2"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.student2}
-              />
-              <input
-                id="student3"
-                name="student3"
-                type="text"
-                placeholder="Student 3"
-                className="form-control mb-2"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.student3}
-              />
-              <input
-                id="student4"
-                name="student4"
-                type="text"
-                placeholder="Student 4"
-                className="form-control mb-2"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.student4}
-              />
-            </div>
-
-            <div className="d-flex justify-content-between">
-              <button type="button" className="btn btn-danger" onClick={() => navigate('/workgroup/WorkGroup')}>
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-success" disabled={loading}>
-                {loading ? 'Saving...' : 'Save Edit'}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
+                <Box display="flex" justifyContent="space-between" mt={3}>
+                  <Button variant="outlined" color="error" onClick={() => navigate('/workgroup')}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                    {loading ? 'Saving...' : 'Update WorkGroup'}
+                  </Button>
+                </Box>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
     </Dashboard>
   );
 }

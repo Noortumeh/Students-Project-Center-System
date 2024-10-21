@@ -29,6 +29,12 @@ import {
   PostAdd as PostAddIcon,
   Rule as RuleIcon,
   BarChart as BarChartIcon,
+  School as SchoolIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Announcement as AnnouncementIcon,
+  Publish as PublishIcon,
+  Assignment as AssignmentIcon,
+  Group as GroupIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
@@ -38,9 +44,11 @@ function Dashboard({ children }) {
   const [isUsersOpen, setIsUsersOpen] = useState(false);
   const [isPostsOpen, setIsPostsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [fetchedData, setFetchedData] = useState(null);
   const openMenu = Boolean(anchorEl);
   const location = useLocation();
 
+  // تحديد المسار النشط
   const activePath = useMemo(() => {
     const currentPath = location.pathname;
     if (currentPath.startsWith('/users/student')) return 'students';
@@ -49,11 +57,12 @@ function Dashboard({ children }) {
     if (currentPath.startsWith('/posts/Announcements')) return 'announcements';
     if (currentPath.startsWith('/posts/Publishing-projects')) return 'publishing';
     if (currentPath.startsWith('/posts/Form')) return 'form';
-    if (currentPath.startsWith('/termofservices/TermOfServices')) return 'termOfServices';
+    if (currentPath.startsWith('/termofservices/TermOfServices')) return 'TermOfServices';
     if (currentPath.startsWith('/report/Reports')) return 'reports';
     return 'home';
   }, [location]);
 
+  // تحديث المسار النشط عند تغييره
   useEffect(() => {
     setActiveLink(activePath);
   }, [activePath]);
@@ -68,6 +77,31 @@ function Dashboard({ children }) {
 
   const toggleUsersMenu = () => setIsUsersOpen((prev) => !prev);
   const togglePostsMenu = () => setIsPostsOpen((prev) => !prev);
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch("https://localhost:7206/api/Project?PageSize=6&PageNumber=1", {
+  //       headers: {
+  //         'Accept': 'application/json',
+  //       }
+  //     });
+
+  //     const contentType = response.headers.get("content-type");
+  //     if (!contentType || !contentType.includes("application/json")) {
+  //       throw new Error("Received response is not JSON");
+  //     }
+
+  //     const data = await response.json();
+  //     setFetchedData(data); // حفظ البيانات المستردة في الحالة
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     // يمكن عرض رسالة خطأ للمستخدم هنا إذا رغبت
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []); // تشغيل fetchData مرة واحدة عند تحميل المكون
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -122,12 +156,21 @@ function Dashboard({ children }) {
           <Collapse in={isUsersOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/users/student" selected={activeLink === 'students'}>
+                <ListItemIcon>
+                  <SchoolIcon />
+                </ListItemIcon>
                 <ListItemText primary="Students" />
               </ListItem>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/users/customer" selected={activeLink === 'customers'}>
+                <ListItemIcon>
+                  <GroupIcon />
+                </ListItemIcon>
                 <ListItemText primary="Customers" />
               </ListItem>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/users/supervisor" selected={activeLink === 'supervisors'}>
+                <ListItemIcon>
+                  <SupervisorAccountIcon />
+                </ListItemIcon>
                 <ListItemText primary="Supervisors" />
               </ListItem>
             </List>
@@ -149,7 +192,7 @@ function Dashboard({ children }) {
 
           <ListItem button component={Link} to="/ourcustomer/OurCustomer" selected={activeLink === 'ourcustomer'}>
             <ListItemIcon>
-              <PeopleIcon />
+              <GroupIcon />
             </ListItemIcon>
             <ListItemText primary="Our Customer" />
           </ListItem>
@@ -164,12 +207,21 @@ function Dashboard({ children }) {
           <Collapse in={isPostsOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Announcements" selected={activeLink === 'announcements'}>
+                <ListItemIcon>
+                  <AnnouncementIcon />
+                </ListItemIcon>
                 <ListItemText primary="Announcements" />
               </ListItem>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Publishing-projects" selected={activeLink === 'publishing'}>
+                <ListItemIcon>
+                  <PublishIcon />
+                </ListItemIcon>
                 <ListItemText primary="Publishing Projects" />
               </ListItem>
               <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Form" selected={activeLink === 'form'}>
+                <ListItemIcon>
+                  <AssignmentIcon />
+                </ListItemIcon>
                 <ListItemText primary="Form" />
               </ListItem>
             </List>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Import all components
@@ -30,6 +29,7 @@ import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import AnnouncementsDetails from './Admin/Pages/Admin/posts/AnnouncementsDetails.jsx';
 import PageNotFound from './PageNotFound.jsx'; 
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
+
 function App() {
   return (
     <div>
@@ -76,11 +76,8 @@ function App() {
         <Route path="/projects/Projects" element={<Projects />} />
         <Route path="/projects/ProjectDetails/:id" element={<ProjectDetails />} />
         <Route path="/projects/CreateProject/" element={<CreateProject />} />
-        <Route path='projects/EditProject/:id' element={<EditProject/>}/>
+        <Route path='projects/EditProject/:id' element={<EditProject />} />
 
-
-
-  
         {/* Catch-all route for undefined paths */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>

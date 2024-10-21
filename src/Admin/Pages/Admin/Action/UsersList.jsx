@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// مكون الداشبورد
 function Dashboard() {
   const [activeLink, setActiveLink] = useState('');
   const location = useLocation();
@@ -55,58 +54,56 @@ function Dashboard() {
         <Button color="inherit" component={Link} to="/shared/Reports" fullWidth sx={{ justifyContent: 'flex-start' }}>
           Reports
         </Button>
-        {/* Add more buttons for navigation if needed */}
       </Grid>
     </Grid>
   );
 }
 
-// مكون UsersList مع الداشبورد
 const UsersList = () => {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // حالة التحميل
-  const [error, setError] = useState(null); // حالة الخطأ
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
   const getUsers = async () => {
     try {
       const { data } = await axios.get("https://api.escuelajs.co/api/v1/users");
       setUsers(data);
-      setLoading(false); // إيقاف حالة التحميل عند جلب البيانات
+      setLoading(false); 
     } catch (error) {
       console.error("Failed to fetch users", error);
       setError("Failed to fetch users.");
-      setLoading(false); // إيقاف التحميل عند الخطأ
+      setLoading(false); 
       toast.error("Failed to fetch users.");
     }
   };
 
   const deleteUser = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      title: 'هل أنت متأكد؟',
+      text: "لن تتمكن من التراجع عن هذا!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'نعم، احذف!'
     });
 
     if (result.isConfirmed) {
       try {
         const userToDelete = users.find(user => user.id === id);
         if (!userToDelete) {
-          toast.error("User not found.");
+          toast.error("المستخدم غير موجود.");
           return;
         }
 
         await axios.delete(`https://api.escuelajs.co/api/v1/users/${id}`);
-        toast.success("User deleted successfully");
+        toast.success("تم حذف المستخدم بنجاح");
         setUsers(users.filter((user) => user.id !== id));
 
-        Swal.fire('Deleted!', 'The user has been deleted.', 'success');
+        Swal.fire('تم الحذف!', 'تم حذف المستخدم.', 'success');
       } catch (error) {
-        console.error("Failed to delete user", error);
-        toast.error("Failed to delete user. Please check the data.");
+        console.error("فشل حذف المستخدم", error);
+        toast.error("فشل حذف المستخدم. الرجاء التحقق من البيانات.");
       }
     }
   };
@@ -116,15 +113,15 @@ const UsersList = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // حالة التحميل
+    return <div>جار التحميل...</div>; 
   }
 
   if (error) {
-    return <div>{error}</div>; // حالة الخطأ
+    return <div>{error}</div>; 
   }
 
   if (users.length === 0) {
-    return <div>No users available</div>; // حالة عدم وجود مستخدمين
+    return <div>لا يوجد مستخدمين متاحين</div>; 
   }
 
   return (
@@ -133,30 +130,30 @@ const UsersList = () => {
         <Dashboard />
         <Grid item md={9} xl={10} sx={{ mt: 4 }}>
           <Typography variant="h4" gutterBottom>
-            Users List
+            قائمة المستخدمين
           </Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Student ID</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Middle Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Workgroup</TableCell>
-                  <TableCell>Action</TableCell>
+                  <TableCell>رقم الطالب</TableCell>
+                  <TableCell>الاسم الأول</TableCell>
+                  <TableCell>الاسم الأوسط</TableCell>
+                  <TableCell>الاسم الأخير</TableCell>
+                  <TableCell>البريد الإلكتروني</TableCell>
+                  <TableCell>مجموعة العمل</TableCell>
+                  <TableCell>إجراءات</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.name.split(' ')[0]}</TableCell>
-                    <TableCell>{user.name.split(' ')[1] || ''}</TableCell>
-                    <TableCell>{user.name.split(' ')[2] || ''}</TableCell>
+                    <TableCell>{user.firstName || ''}</TableCell> {/* عرض الاسم الأول */}
+                    <TableCell>{user.middleName || ''}</TableCell> {/* عرض الاسم الأوسط */}
+                    <TableCell>{user.lastName || ''}</TableCell> {/* عرض الاسم الأخير */}
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.workGroup || 'N/A'}</TableCell>
                     <TableCell>
                       <IconButton color="primary" component={Link} to={`/user/edit/${user.id}`}>
                         <EditIcon />
