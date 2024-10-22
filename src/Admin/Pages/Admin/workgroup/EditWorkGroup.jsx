@@ -223,7 +223,7 @@ function EditWorkGroup() {
                     Cancel
                   </Button>
                   <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                    {loading ? 'Saving...' : 'Update WorkGroup'}
+                    {loading ? <CircularProgress size={24} /> : 'Update WorkGroup'}
                   </Button>
                 </Box>
               </form>

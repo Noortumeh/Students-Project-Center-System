@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { TextField, Button, Container, Typography, Paper } from '@mui/material';
+import { TextField, Button, Container, Typography, Paper, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
-export default function CreateSupervisior() {
+export default function CreateSupervisor() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false); // حالة التحميل
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // بدء التحميل
     try {
       await axios.post('https://api.escuelajs.co/api/v1/users', {
         name,
@@ -21,6 +23,8 @@ export default function CreateSupervisior() {
       navigate('/users/supervisor');
     } catch (error) {
       toast.error('Failed to create supervisor.');
+    } finally {
+      setLoading(false); // إنهاء التحميل
     }
   };
 
@@ -37,6 +41,7 @@ export default function CreateSupervisior() {
             onChange={(e) => setName(e.target.value)}
             fullWidth
             margin="normal"
+            disabled={loading} // تعطيل الحقول أثناء التحميل
           />
           <TextField
             label="Email"
@@ -44,9 +49,10 @@ export default function CreateSupervisior() {
             onChange={(e) => setEmail(e.target.value)}
             fullWidth
             margin="normal"
+            disabled={loading} // تعطيل الحقول أثناء التحميل
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Create Supervisor
+          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Supervisor'} {/* عرض اللودر بدلاً من النص */}
           </Button>
         </form>
       </Paper>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Divider, Avatar } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Divider, Avatar, CircularProgress } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group } from '@mui/icons-material';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 import { styled } from '@mui/system';
@@ -7,7 +7,7 @@ import { Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 
 // تخصيص نمط المدخلات للبحث
-const SearchBox = styled(Box)({
+const SearchBox = styled(Box)( {
   display: 'flex',
   alignItems: 'center',
   backgroundColor: '#fff',
@@ -26,6 +26,7 @@ export default function ProjectCenterDashboard() {
     favoriteCustomers: 0,
     totalClients: 0,
   });
+  const [loading, setLoading] = useState(true); // حالة التحميل
 
   const chartRef = useRef(null);
 
@@ -38,7 +39,6 @@ export default function ProjectCenterDashboard() {
         }
 
         const result = await response.json();
-
         setData({
           totalProjects: result.totalProjects,
           completedProjects: result.completedProjects,
@@ -47,6 +47,8 @@ export default function ProjectCenterDashboard() {
         });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false); // إنهاء حالة التحميل بعد إتمام العملية
       }
     }
 
@@ -154,7 +156,13 @@ export default function ProjectCenterDashboard() {
             <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>Projects Status</Typography>
-                <Doughnut data={completedVsActiveData} ref={chartRef} />
+                {loading ? ( // عرض دائرة التحميل أثناء التحميل
+                  <Grid container justifyContent="center">
+                    <CircularProgress />
+                  </Grid>
+                ) : (
+                  <Doughnut data={completedVsActiveData} ref={chartRef} />
+                )}
               </CardContent>
             </Card>
           </Grid>

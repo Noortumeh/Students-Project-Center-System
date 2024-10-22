@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Typography, List, ListItem, ListItemText, Paper, IconButton } from '@mui/material';
+import { Button, Typography, List, ListItem, ListItemText, Paper, IconButton, CircularProgress } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const PublishingProjects = () => {
@@ -7,6 +7,7 @@ const PublishingProjects = () => {
     { title: 'Project A', status: 'Published' },
     { title: 'Project B', status: 'Draft' },
   ]);
+  const [loading, setLoading] = useState(false); // حالة التحميل
 
   const deleteProject = (index) => {
     const newProjects = projects.filter((_, i) => i !== index);
@@ -14,8 +15,14 @@ const PublishingProjects = () => {
   };
 
   const addProject = () => {
-    const newProject = { title: `Project ${String.fromCharCode(67 + projects.length)}`, status: 'Draft' };
-    setProjects([...projects, newProject]);
+    setLoading(true); // بدء التحميل
+
+    // محاكاة عملية إضافة المشروع
+    setTimeout(() => {
+      const newProject = { title: `Project ${String.fromCharCode(67 + projects.length)}`, status: 'Draft' };
+      setProjects([...projects, newProject]);
+      setLoading(false); // إنهاء التحميل
+    }, 2000); // محاكاة تأخير 2 ثانية
   };
 
   return (
@@ -36,8 +43,8 @@ const PublishingProjects = () => {
           </ListItem>
         ))}
       </List>
-      <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={addProject}>
-        Add Project
+      <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={addProject} disabled={loading}>
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Add Project'}
       </Button>
     </Paper>
   );

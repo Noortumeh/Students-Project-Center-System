@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Button, Typography, Grid } from '@mui/material';
+import { Box, Button, Typography, Grid, CircularProgress } from '@mui/material';
 
 function SelectSupervisor() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(false); // حالة اللودر
 
-  const handleSelect = (supervisor) => {
+  const handleSelect = async (supervisor) => {
+    setLoading(true); // بدء التحميل
+
+    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     navigate('/workgroup/CreateWorkGroup', {
       state: { ...location.state, selectedSupervisor: supervisor }
     });
+
+    setLoading(false); // إنهاء التحميل
   };
 
   return (
@@ -27,8 +35,9 @@ function SelectSupervisor() {
             fullWidth
             onClick={() => handleSelect('Supervisor 1')}
             sx={{ padding: '10px', fontSize: '1rem' }}
+            disabled={loading} // تعطيل الزر أثناء التحميل
           >
-            Supervisor 1
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Supervisor 1'}
           </Button>
         </Grid>
 
@@ -38,8 +47,9 @@ function SelectSupervisor() {
             fullWidth
             onClick={() => handleSelect('Supervisor 2')}
             sx={{ padding: '10px', fontSize: '1rem' }}
+            disabled={loading} // تعطيل الزر أثناء التحميل
           >
-            Supervisor 2
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Supervisor 2'}
           </Button>
         </Grid>
       </Grid>

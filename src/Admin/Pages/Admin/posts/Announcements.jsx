@@ -1,7 +1,48 @@
-import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, Typography, CircularProgress, Box } from '@mui/material';
 
-const Announcements = ({ project }) => {
+const Announcements = ({ projectId }) => {
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`https://api.example.com/projects/${projectId}`);
+        if (!response.ok) {
+          throw new Error(`Error fetching project: ${response.status}`);
+        }
+        const data = await response.json();
+        setProject(data);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch project data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Typography color="error" align="center">
+        {error}
+      </Typography>
+    );
+  }
+
   // تحقق من وجود المشروع
   if (!project) {
     return null; // إذا لم يكن المشروع موجودًا، عد فارغًا

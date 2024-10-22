@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Button, Modal, Pagination } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Modal, Pagination, Spinner } from 'react-bootstrap';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
 const AnnouncementsDetails = [
@@ -57,7 +57,18 @@ export default function Announcements() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true); // حالة تحميل البيانات
   const projectsPerPage = 3;
+
+  useEffect(() => {
+    const loadData = async () => {
+      // محاكاة تحميل البيانات (يمكنك استبدالها بعملية جلب البيانات الحقيقية)
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // محاكاة تأخير 1 ثانية
+      setLoading(false);
+    };
+    loadData();
+  }, []);
 
   const totalPages = Math.ceil(AnnouncementsDetails.length / projectsPerPage);
   const indexOfLastProject = currentPage * projectsPerPage;
@@ -83,43 +94,51 @@ export default function Announcements() {
       <div className="container mt-5">
         <h1 className="mb-4 text-center">Announcements</h1>
 
-        {currentProjects.length > 0 ? (
-          <div className="row">
-            {currentProjects.map((announcement) => (
-              <div className="col-md-4 mb-4" key={announcement.id}>
-                <Card className="h-100" style={{ boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
-                  <Card.Body>
-                    <Card.Title>{announcement.projectTitle}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{announcement.customerName}</Card.Subtitle>
-                    <Card.Text>
-                      {announcement.description.length > 60
-                        ? announcement.description.substring(0, 60) + '...'
-                        : announcement.description}
-                    </Card.Text>
-                    <Button variant="primary" onClick={() => handleShowDetails(announcement)}>
-                      View Details
-                    </Button>
-                  </Card.Body>
-                  <Card.Footer className="text-muted">Date: {announcement.date}</Card.Footer>
-                </Card>
-              </div>
-            ))}
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" />
           </div>
         ) : (
-          <p>No announcements available.</p>
-        )}
+          <>
+            {currentProjects.length > 0 ? (
+              <div className="row">
+                {currentProjects.map((announcement) => (
+                  <div className="col-md-4 mb-4" key={announcement.id}>
+                    <Card className="h-100" style={{ boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
+                      <Card.Body>
+                        <Card.Title>{announcement.projectTitle}</Card.Title>
+                        <Card.Subtitle className="mb-2 text-muted">{announcement.customerName}</Card.Subtitle>
+                        <Card.Text>
+                          {announcement.description.length > 60
+                            ? announcement.description.substring(0, 60) + '...'
+                            : announcement.description}
+                        </Card.Text>
+                        <Button variant="primary" onClick={() => handleShowDetails(announcement)}>
+                          View Details
+                        </Button>
+                      </Card.Body>
+                      <Card.Footer className="text-muted">Date: {announcement.date}</Card.Footer>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No announcements available.</p>
+            )}
 
-        <Pagination className="justify-content-center mt-4">
-          {[...Array(totalPages)].map((_, pageIndex) => (
-            <Pagination.Item
-              key={pageIndex + 1}
-              active={pageIndex + 1 === currentPage}
-              onClick={() => handlePageChange(pageIndex + 1)}
-            >
-              {pageIndex + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
+            <Pagination className="justify-content-center mt-4">
+              {[...Array(totalPages)].map((_, pageIndex) => (
+                <Pagination.Item
+                  key={pageIndex + 1}
+                  active={pageIndex + 1 === currentPage}
+                  onClick={() => handlePageChange(pageIndex + 1)}
+                >
+                  {pageIndex + 1}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </>
+        )}
 
         <Modal show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>

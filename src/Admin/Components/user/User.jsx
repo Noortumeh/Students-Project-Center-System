@@ -15,10 +15,10 @@ import {
   Paper,
   CircularProgress,
   Grid,
+  Box,
   TableSortLabel,
   TablePagination,
   IconButton,
-  Box,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -45,7 +45,7 @@ export default function UserManagement({ title, fetchUrl, role }) {
       const filteredUsers = role ? data.filter(user => user.role === role) : data;
       setUsers(filteredUsers);
     } catch (error) {
-      toast.error(`Failed to fetch ${title.toLowerCase()}s. ${error.message}`);
+      toast.error(`فشل في جلب ${title.toLowerCase()}s. ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export default function UserManagement({ title, fetchUrl, role }) {
         toast.success(`${title} deleted successfully`);
         Swal.fire('Deleted!', `${title.toLowerCase()} deleted successfully.`, 'success');
       } catch (error) {
-        toast.error(`Failed to delete ${title.toLowerCase()}. ${error.message}`);
+        toast.error(`فشل في حذف ${title.toLowerCase()}. ${error.message}`);
       }
     }
   };
@@ -168,7 +168,7 @@ export default function UserManagement({ title, fetchUrl, role }) {
                   {displayedUsers.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={3} align="center">
-                        No data to display
+                        لا توجد بيانات لعرضها
                       </TableCell>
                     </TableRow>
                   ) : (
