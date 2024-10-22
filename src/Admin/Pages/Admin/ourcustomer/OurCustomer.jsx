@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx'; 
+import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
 export default function OurCustomer() {
   const [users, setUsers] = useState([]);

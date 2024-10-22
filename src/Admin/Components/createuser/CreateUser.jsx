@@ -8,6 +8,7 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
+import { useLoaderData } from 'react-router-dom'; // استخدام useLoaderData لجلب البيانات من الـ loader
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -34,11 +35,12 @@ const styles = {
 };
 
 export default function CreateUser({ title = 'User', redirectPath }) {
+  const loadedUserData = useLoaderData();  // جلب البيانات من الـ loader
   const [userData, setUserData] = useState({
     name: '',
     email: '',
-    password: '', // إضافة حقل كلمة المرور
-    avatar: '',   // إضافة حقل الصورة الرمزية
+    password: '', 
+    avatar: '',   
   });
 
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,6 @@ export default function CreateUser({ title = 'User', redirectPath }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // تأكيد باستخدام SweetAlert2
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to add this user?",
@@ -66,7 +67,6 @@ export default function CreateUser({ title = 'User', redirectPath }) {
     if (result.isConfirmed) {
       setLoading(true);
       try {
-        // تأكد من أن البيانات المرسلة تتوافق مع ما يتوقعه الـ API
         const response = await axios.post('https://api.escuelajs.co/api/v1/users', userData, {
           headers: {
             'Content-Type': 'application/json',
@@ -75,12 +75,10 @@ export default function CreateUser({ title = 'User', redirectPath }) {
         
         toast.success(`${title} created successfully 👌`);
 
-        // إعادة التوجيه في حال كانت العملية ناجحة
         if (redirectPath) {
           window.location.href = redirectPath;
         }
       } catch (error) {
-        // عرض تفاصيل الخطأ إذا حدث
         console.error('Error creating user:', error.response ? error.response.data : error.message);
         toast.error(`Failed to create ${title} 🤯`);
       } finally {
@@ -99,6 +97,7 @@ export default function CreateUser({ title = 'User', redirectPath }) {
           <Typography variant="h4" gutterBottom align="center">
             Create {title}
           </Typography>
+          {/* استخدام البيانات المحملة في النموذج */}
           <TextField
             label="Name"
             name="name"

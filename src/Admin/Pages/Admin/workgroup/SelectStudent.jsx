@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Grid, Chip } from '@mui/material';
+import { Button, Box, Typography, Grid, Chip, CircularProgress } from '@mui/material';
 
 function SelectStudent() {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [loading, setLoading] = useState(false); // حالة اللودر
 
   const handleSelect = (student) => {
     if (!selectedStudents.includes(student)) {
@@ -17,10 +18,17 @@ function SelectStudent() {
     setSelectedStudents(selectedStudents.filter(s => s !== student));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setLoading(true); // بدء التحميل
+
+    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     navigate('/workgroup/CreateWorkGroup', {
       state: { ...location.state, selectedStudents }
     });
+
+    setLoading(false); // إنهاء التحميل
   };
 
   return (
@@ -82,8 +90,9 @@ function SelectStudent() {
             fullWidth
             onClick={handleSave}
             sx={{ padding: '10px', fontSize: '1.1rem' }}
+            disabled={loading} // تعطيل الزر أثناء التحميل
           >
-            Save Students
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Students'}
           </Button>
         </Grid>
       </Grid>

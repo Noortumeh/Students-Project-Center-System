@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -17,7 +17,8 @@ import {
   Select,
   MenuItem,
   styled,
-  Grid, // تم إضافة Grid من Material-UI
+  Grid,
+  CircularProgress,
 } from '@mui/material';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +40,7 @@ export default function Reports() {
   const [semester, setSemester] = useState('');
   const [reportType, setReportType] = useState('');
   const [writtenBy, setWrittenBy] = useState('');
+  const [loading, setLoading] = useState(true); // حالة التحميل
 
   const navigate = useNavigate();
 
@@ -111,6 +113,18 @@ export default function Reports() {
       (reportType === '' || report.reportType === reportType) &&
       (writtenBy === '' || report.writtenBy === writtenBy)
   );
+
+  useEffect(() => {
+    const loadReports = () => {
+      setLoading(true);
+      // يمكنك محاكاة وقت التحميل هنا
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000); // محاكاة تحميل البيانات لمدة 1 ثانية
+    };
+
+    loadReports();
+  }, []);
 
   return (
     <Dashboard>
@@ -189,51 +203,57 @@ export default function Reports() {
           </CardContent>
         </Card>
 
-        <TableContainer component={Paper} sx={{ boxShadow: '0 3px 6px rgba(0,0,0,0.1)' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Report ID</StyledTableCell>
-                <StyledTableCell>Customer Name</StyledTableCell>
-                <StyledTableCell>Supervisor Name</StyledTableCell>
-                <StyledTableCell>Project Name</StyledTableCell>
-                <StyledTableCell>Date</StyledTableCell>
-                <StyledTableCell>Written By</StyledTableCell>
-                <StyledTableCell>Action</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredReports.length > 0 ? (
-                filteredReports.map((report, index) => (
-                  <StyledTableRow key={index}>
-                    <TableCell>{report.reportId}</TableCell>
-                    <TableCell>{report.customerName}</TableCell>
-                    <TableCell>{report.supervisorName}</TableCell>
-                    <TableCell>{report.projectName}</TableCell>
-                    <TableCell>{report.date}</TableCell>
-                    <TableCell>{report.writtenBy}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        onClick={() => goToReportDetails(report.reportId)}
-                      >
-                        Go to Report
-                      </Button>
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableContainer component={Paper} sx={{ boxShadow: '0 3px 6px rgba(0,0,0,0.1)' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Report ID</StyledTableCell>
+                  <StyledTableCell>Customer Name</StyledTableCell>
+                  <StyledTableCell>Supervisor Name</StyledTableCell>
+                  <StyledTableCell>Project Name</StyledTableCell>
+                  <StyledTableCell>Date</StyledTableCell>
+                  <StyledTableCell>Written By</StyledTableCell>
+                  <StyledTableCell>Action</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredReports.length > 0 ? (
+                  filteredReports.map((report, index) => (
+                    <StyledTableRow key={index}>
+                      <TableCell>{report.reportId}</TableCell>
+                      <TableCell>{report.customerName}</TableCell>
+                      <TableCell>{report.supervisorName}</TableCell>
+                      <TableCell>{report.projectName}</TableCell>
+                      <TableCell>{report.date}</TableCell>
+                      <TableCell>{report.writtenBy}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          onClick={() => goToReportDetails(report.reportId)}
+                        >
+                          Go to Report
+                        </Button>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))
+                ) : (
+                  <StyledTableRow>
+                    <TableCell colSpan={7} align="center">
+                      No reports found for the selected criteria.
                     </TableCell>
                   </StyledTableRow>
-                ))
-              ) : (
-                <StyledTableRow>
-                  <TableCell colSpan={7} align="center">
-                    No reports found for the selected criteria.
-                  </TableCell>
-                </StyledTableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
     </Dashboard>
   );

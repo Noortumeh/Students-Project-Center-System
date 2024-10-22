@@ -33,16 +33,16 @@ const reportDetails = {
     challenges: [
       {
         problem: 'Coordinating development work between team members working remotely.',
-        solution: 'Used project management system to assign tasks and integrate regular video meetings.'
+        solution: 'Used project management system to assign tasks and integrate regular video meetings.',
       },
       {
         problem: 'Ensuring data security and privacy for student projects.',
-        solution: 'Implemented data encryption and role-based access control.'
+        solution: 'Implemented data encryption and role-based access control.',
       },
       {
         problem: 'Managing different user experiences for students, supervisors, and administrators.',
-        solution: 'Created customizable dashboards tailored to each user role.'
-      }
+        solution: 'Created customizable dashboards tailored to each user role.',
+      },
     ],
   },
   '18-0123-456': {
@@ -64,94 +64,94 @@ const reportDetails = {
     challenges: [
       {
         problem: 'Difficulty in sourcing high-quality datasets.',
-        solution: 'Collaborated with external sources to access premium datasets.'
+        solution: 'Collaborated with external sources to access premium datasets.',
       },
       {
         problem: 'High computational costs for model training.',
-        solution: 'Used cloud services to optimize costs and resources.'
-      }
+        solution: 'Used cloud services to optimize costs and resources.',
+      },
     ],
   },
   '19-0456-789': {
     title: 'Big Data Analytics',
     supervisor: 'Dr. Robert Brown',
     customer: 'JOHNSON, LUCY M.',
-    team: ['Michael White', 'Sarah Lee', 'Tom Scott'],
-    startDate: 'January 15, 2028',
+    team: ['Chris Green (Team Leader)', 'Sara White', 'David Black', 'Anna Blue'],
+    startDate: 'June 1, 2027',
     endDate: 'October 20, 2028',
     budget: '$20,000',
     progress: '90%',
-    deadline: 'December 2028',
+    deadline: 'November 2028',
     objectives: [
-      'Analyze large datasets to extract meaningful insights.',
-      'Develop machine learning models for data analysis.',
-      'Implement scalable data processing pipelines.'
+      'Data Collection: Gather large datasets for analysis.',
+      'Data Processing: Clean and prepare data for analysis.',
+      'Model Development: Develop predictive models using machine learning.',
+      'Reporting: Generate reports based on findings.',
     ],
     challenges: [
       {
-        problem: 'High data volume.',
-        solution: 'Use distributed computing to handle large datasets efficiently.'
+        problem: 'Data inconsistency across sources.',
+        solution: 'Implemented data validation and cleaning processes.',
       },
       {
-        problem: 'Data quality and consistency.',
-        solution: 'Implemented data cleaning and normalization processes.'
-      }
+        problem: 'Scalability issues with data processing.',
+        solution: 'Adopted distributed computing techniques.',
+      },
     ],
   },
   '20-5678-123': {
     title: 'Cloud Computing Research',
     supervisor: 'Dr. Michael White',
     customer: 'DOE, JANE A.',
-    team: ['Tom Harris', 'Emily Johnson', 'Robert Lee'],
-    startDate: 'March 1, 2029',
+    team: ['Mark Taylor (Team Leader)', 'Ella Red', 'Charlie Blue'],
+    startDate: 'September 15, 2028',
     endDate: 'May 3, 2029',
     budget: '$12,000',
-    progress: '85%',
+    progress: '70%',
     deadline: 'June 2029',
     objectives: [
-      'Research cloud computing models and architectures.',
-      'Optimize cloud infrastructure for speed and cost efficiency.',
-      'Develop best practices for cloud security.'
+      'Cloud Infrastructure: Research various cloud services and infrastructures.',
+      'Cost Analysis: Evaluate costs associated with cloud services.',
+      'Security Analysis: Investigate security measures in cloud computing.',
     ],
     challenges: [
       {
-        problem: 'Slow cloud performance during peak hours.',
-        solution: 'Optimize resources dynamically to handle increased load.'
+        problem: 'Understanding diverse cloud service models.',
+        solution: 'Conducted workshops and training sessions.',
       },
       {
-        problem: 'Ensuring data security in the cloud.',
-        solution: 'Implemented robust encryption and access control measures.'
-      }
+        problem: 'Cost management in cloud utilization.',
+        solution: 'Developed a cost tracking tool.',
+      },
     ],
   },
   '21-0987-654': {
     title: 'IoT for Smart Homes',
     supervisor: 'Dr. Sarah Lee',
     customer: 'MILLER, JACK D.',
-    team: ['Chris Martin', 'Laura Bell', 'Mike Brown'],
-    startDate: 'February 17, 2030',
-    endDate: 'April 30, 2030',
-    budget: '$25,000',
-    progress: '60%',
-    deadline: 'May 2030',
+    team: ['Liam Smith (Team Leader)', 'Sophia Brown', 'Emma Green'],
+    startDate: 'January 10, 2029',
+    endDate: 'February 17, 2030',
+    budget: '$18,000',
+    progress: '85%',
+    deadline: 'March 2030',
     objectives: [
-      'Develop IoT solutions for smart homes.',
-      'Ensure data security in IoT devices.',
-      'Integrate IoT devices for seamless home automation.'
+      'Device Integration: Research on how to integrate various IoT devices.',
+      'User Experience: Improve the user interface for easier access.',
+      'Security: Ensure security measures for IoT devices.',
     ],
     challenges: [
       {
-        problem: 'Security vulnerabilities in IoT devices.',
-        solution: 'Implement end-to-end encryption and secure communication protocols.'
+        problem: 'User privacy concerns with IoT devices.',
+        solution: 'Implemented end-to-end encryption for data transmission.',
       },
       {
-        problem: 'Interoperability between different IoT devices.',
-        solution: 'Develop a unified framework for IoT device communication.'
-      }
+        problem: 'Interoperability between different devices.',
+        solution: 'Developed a standardized protocol for communication.',
+      },
     ],
   },
 };
-
 
 function ProjectInfo({ report }) {
   return (
@@ -203,7 +203,9 @@ function ProjectInfo({ report }) {
 function ProjectTeam({ team }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Project Team</Typography>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>
+        Project Team
+      </Typography>
       <Grid container spacing={2}>
         {team.map((member, index) => (
           <Grid item xs={12} sm={6} key={index}>
@@ -221,7 +223,9 @@ function ProjectTeam({ team }) {
 function ProjectObjectives({ objectives }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Objectives</Typography>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>
+        Objectives
+      </Typography>
       <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
         <ul>
           {objectives.map((objective, index) => (
@@ -236,7 +240,9 @@ function ProjectObjectives({ objectives }) {
 function ChallengesAndSolutions({ challenges }) {
   return (
     <Box mt={4}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Challenges and Solutions</Typography>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>
+        Challenges and Solutions
+      </Typography>
       <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
         <ul>
           {challenges.map((challenge, index) => (
@@ -300,12 +306,16 @@ export default function ReportDetails() {
               <ChallengesAndSolutions challenges={report.challenges} />
 
               <Box mt={4}>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>Conclusion and Recommendations</Typography>
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#e63946' }}>
+                  Conclusion and Recommendations
+                </Typography>
                 <Card sx={{ p: 2, boxShadow: 3, backgroundColor: '#f1faee' }}>
                   <Typography>
                     The system successfully provided a robust platform for managing student projects, improving communication and tracking progress.
                   </Typography>
-                  <Typography mt={2}>Moving forward, we recommend the following improvements:</Typography>
+                  <Typography mt={2}>
+                    Moving forward, we recommend the following improvements:
+                  </Typography>
                   <ul>
                     <li><strong>Mobile Application:</strong> Develop a mobile app for easier accessibility.</li>
                     <li><strong>Integration with LMS:</strong> Integrate with systems like Moodle for enhanced experience.</li>

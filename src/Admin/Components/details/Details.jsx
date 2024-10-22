@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { CircularProgress, Typography, Paper, Container } from '@mui/material';
+import { CircularProgress, Typography, Paper, Container, Box } from '@mui/material';
 import { toast } from 'react-toastify';
 
 const Details = () => {
@@ -26,7 +26,13 @@ const Details = () => {
   }, [id]);
 
   if (loading) {
-    return <CircularProgress />;
+    return (
+      <Container maxWidth="sm" sx={{ mt: 5 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
   }
 
   if (!user) {

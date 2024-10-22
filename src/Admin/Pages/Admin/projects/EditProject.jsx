@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material';
+import { Box, Button, TextField, Typography, Container, Paper, CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditProject() {
   const navigate = useNavigate();
   const { id } = useParams(); // الحصول على معرف المشروع من عنوان URL
+  const [loading, setLoading] = useState(false); // حالة التحميل
 
   const formik = useFormik({
     initialValues: {
@@ -31,6 +32,8 @@ export default function EditProject() {
       });
 
       if (result.isConfirmed) {
+        setLoading(true); // بدء التحميل
+
         try {
           // تحديث بيانات المشروع
           const updatedProject = {
@@ -55,6 +58,8 @@ export default function EditProject() {
           });
         } catch (error) {
           toast.error(error.response?.data?.message || 'An unknown error occurred.');
+        } finally {
+          setLoading(false); // إنهاء التحميل
         }
       }
     },
@@ -64,6 +69,7 @@ export default function EditProject() {
   useEffect(() => {
     const getProjectData = async () => {
       try {
+        setLoading(true); // بدء التحميل
         const response = await axios.get(`https://api.example.com/projects/${id}`);
         const project = response.data;
 
@@ -77,6 +83,8 @@ export default function EditProject() {
         });
       } catch (error) {
         toast.error('Failed to fetch project data.');
+      } finally {
+        setLoading(false); // إنهاء التحميل
       }
     };
 
@@ -89,64 +97,71 @@ export default function EditProject() {
         <Typography variant="h5" align="center" gutterBottom>
           Edit Project Data
         </Typography>
-        <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              id="projectName"
-              label="Project Name"
-              variant="outlined"
-              value={formik.values.projectName}
-              onChange={formik.handleChange}
-              fullWidth
-              required // جعل الحقل مطلوب
-            />
-            <TextField
-              id="supervisor"
-              label="Supervisor"
-              variant="outlined"
-              value={formik.values.supervisor}
-              onChange={formik.handleChange}
-              fullWidth
-              required // جعل الحقل مطلوب
-            />
-            <TextField
-              id="customer"
-              label="Customer"
-              variant="outlined"
-              value={formik.values.customer}
-              onChange={formik.handleChange}
-              fullWidth
-              required // جعل الحقل مطلوب
-            />
-            <TextField
-              id="team"
-              label="Team"
-              variant="outlined"
-              value={formik.values.team}
-              onChange={formik.handleChange}
-              fullWidth
-              required // جعل الحقل مطلوب
-            />
-            <TextField
-              id="workGroup"
-              label="Work Group"
-              variant="outlined"
-              value={formik.values.workGroup}
-              onChange={formik.handleChange}
-              fullWidth
-              required // جعل الحقل مطلوب
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ py: 1.5 }}
-            >
-              Update Project
-            </Button>
+        {loading ? ( // عرض دائرة التحميل إذا كانت في حالة تحميل
+          <Box display="flex" justifyContent="center" alignItems="center" height="100px">
+            <CircularProgress />
           </Box>
-        </form>
+        ) : (
+          <form onSubmit={formik.handleSubmit}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <TextField
+                id="projectName"
+                label="Project Name"
+                variant="outlined"
+                value={formik.values.projectName}
+                onChange={formik.handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                id="supervisor"
+                label="Supervisor"
+                variant="outlined"
+                value={formik.values.supervisor}
+                onChange={formik.handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                id="customer"
+                label="Customer"
+                variant="outlined"
+                value={formik.values.customer}
+                onChange={formik.handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                id="team"
+                label="Team"
+                variant="outlined"
+                value={formik.values.team}
+                onChange={formik.handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                id="workGroup"
+                label="Work Group"
+                variant="outlined"
+                value={formik.values.workGroup}
+                onChange={formik.handleChange}
+                fullWidth
+                required
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ py: 1.5 }}
+                disabled={loading} // تعطيل الزر أثناء التحميل
+              >
+                Update Project
+              </Button>
+            </Box>
+          </form>
+        )}
       </Paper>
     </Container>
   );

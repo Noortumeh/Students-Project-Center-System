@@ -1,17 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 import UserManagement from '../../../Components/user/User.jsx';
+import { CircularProgress, Box } from '@mui/material';
 
 export default function IndexSupervisor() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // محاكاة تحميل البيانات
+    const fetchData = async () => {
+      try {
+        // يمكنك استدعاء البيانات من الـ API هنا إذا لزم الأمر
+        await fetch('https://api.escuelajs.co/api/v1/users'); // استدعاء البيانات
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Dashboard>
       <UserManagement 
         title="Supervisor" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="admin"  // تعديل الدور هنا إلى "supervisor"
+        role="supervisor"  // تعديل الدور هنا إلى "supervisor"
         createPath="/users/create-supervisor"  
         editPath="/users/edit"                  
       />
     </Dashboard>
-  );
+  );  
 }

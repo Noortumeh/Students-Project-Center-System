@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Container, Grid, Typography, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Avatar } from '@mui/material';
+import { Container, Grid, Typography, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Avatar, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -61,19 +61,20 @@ function Dashboard() {
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getUsers = async () => {
+    setLoading(true); // بدء التحميل
     try {
       const { data } = await axios.get("https://api.escuelajs.co/api/v1/users");
       setUsers(data);
       setLoading(false); 
     } catch (error) {
       console.error("Failed to fetch users", error);
-      setError("Failed to fetch users.");
+      setError("فشل في جلب المستخدمين.");
       setLoading(false); 
-      toast.error("Failed to fetch users.");
+      toast.error("فشل في جلب المستخدمين.");
     }
   };
 
@@ -113,7 +114,13 @@ const UsersList = () => {
   }, []);
 
   if (loading) {
-    return <div>جار التحميل...</div>; 
+    return (
+      <Container>
+        <Grid container justifyContent="center" sx={{ mt: 4 }}>
+          <CircularProgress />
+        </Grid>
+      </Container>
+    ); // عرض دائرة التحميل
   }
 
   if (error) {

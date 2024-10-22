@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Grid } from '@mui/material';
+import { Button, Box, Typography, Grid, CircularProgress } from '@mui/material';
 
 function SelectCustomer() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
-  const handleSelect = (customer) => {
+  const handleSelect = async (customer) => {
+    setLoading(true);
+    
+    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     navigate('/workgroup/CreateWorkGroup', {
       state: { ...location.state, selectedCustomer: customer },
     });
+
+    setLoading(false);
   };
 
   return (
@@ -27,8 +35,9 @@ function SelectCustomer() {
             color="primary"
             onClick={() => handleSelect('Customer 1')}
             sx={{ padding: '10px', fontSize: '1.1rem' }}
+            disabled={loading} // تعطيل الزر أثناء التحميل
           >
-            Customer 1
+            {loading ? <CircularProgress size={24} /> : 'Customer 1'}
           </Button>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -38,8 +47,9 @@ function SelectCustomer() {
             color="secondary"
             onClick={() => handleSelect('Customer 2')}
             sx={{ padding: '10px', fontSize: '1.1rem' }}
+            disabled={loading} // تعطيل الزر أثناء التحميل
           >
-            Customer 2
+            {loading ? <CircularProgress size={24} /> : 'Customer 2'}
           </Button>
         </Grid>
       </Grid>

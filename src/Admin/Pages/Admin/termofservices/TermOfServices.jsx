@@ -11,7 +11,8 @@ import {
   Box,
   Typography,
   Snackbar,
-  Divider
+  Divider,
+  CircularProgress, // استيراد اللودر
 } from '@mui/material';
 import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
 
@@ -66,6 +67,12 @@ const styles = {
     margin: '20px 0',
     backgroundColor: '#1E88E5',
   },
+  loader: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+  },
 };
 
 export default function TermOfServices() {
@@ -85,6 +92,7 @@ If you do not agree to these Terms, please do not use the System.
   const [isCreating, setIsCreating] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [loading, setLoading] = useState(false); // حالة التحميل
 
   useEffect(() => {
     localStorage.setItem('termsText', termsText);
@@ -113,6 +121,8 @@ If you do not agree to these Terms, please do not use the System.
       return;
     }
 
+    setLoading(true); // بدء التحميل
+
     try {
       if (isCreating) {
         setTermsText((prevText) => prevText + '\n\n' + modalText);
@@ -129,6 +139,8 @@ If you do not agree to these Terms, please do not use the System.
     } catch (error) {
       setSnackbarMessage('Failed to save changes.');
       setOpenSnackbar(true);
+    } finally {
+      setLoading(false); // إنهاء التحميل
     }
   };
 
@@ -157,9 +169,15 @@ If you do not agree to these Terms, please do not use the System.
               Last updated: {lastUpdated}
             </Typography>
             <Divider sx={styles.divider} />
-            <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-              {termsText}
-            </Typography>
+            {loading ? ( // عرض اللودر أثناء التحميل
+              <Box sx={styles.loader}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
+                {termsText}
+              </Typography>
+            )}
             <Box display="flex" justifyContent="center" mt={4}>
               <Button variant="contained" sx={styles.button} onClick={handleEdit}>
                 Edit

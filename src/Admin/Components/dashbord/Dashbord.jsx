@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
   AppBar,
@@ -17,6 +17,7 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  CircularProgress,
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -44,7 +45,6 @@ function Dashboard({ children }) {
   const [isUsersOpen, setIsUsersOpen] = useState(false);
   const [isPostsOpen, setIsPostsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [fetchedData, setFetchedData] = useState(null);
   const openMenu = Boolean(anchorEl);
   const location = useLocation();
 
@@ -77,31 +77,6 @@ function Dashboard({ children }) {
 
   const toggleUsersMenu = () => setIsUsersOpen((prev) => !prev);
   const togglePostsMenu = () => setIsPostsOpen((prev) => !prev);
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch("https://localhost:7206/api/Project?PageSize=6&PageNumber=1", {
-  //       headers: {
-  //         'Accept': 'application/json',
-  //       }
-  //     });
-
-  //     const contentType = response.headers.get("content-type");
-  //     if (!contentType || !contentType.includes("application/json")) {
-  //       throw new Error("Received response is not JSON");
-  //     }
-
-  //     const data = await response.json();
-  //     setFetchedData(data); // حفظ البيانات المستردة في الحالة
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     // يمكن عرض رسالة خطأ للمستخدم هنا إذا رغبت
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []); // تشغيل fetchData مرة واحدة عند تحميل المكون
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -245,7 +220,9 @@ function Dashboard({ children }) {
 
       <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
         <Toolbar />
-        {children}
+        <Suspense fallback={<CircularProgress />}>
+          {children}
+        </Suspense>
       </Box>
     </Box>
   );
