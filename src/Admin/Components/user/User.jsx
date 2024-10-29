@@ -154,6 +154,7 @@ export default function UserManagement({ title, fetchUrl, role }) {
                     <TableCell>
                       <TableSortLabel
                         active={orderBy === 'name'}
+                        // @ts-ignore
                         direction={orderBy === 'name' ? order : 'asc'}
                         onClick={() => handleRequestSort('name')}
                       >

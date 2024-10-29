@@ -114,7 +114,7 @@ function Dashboard({ children }) {
       >
         <Toolbar />
         <List>
-          <ListItem button component={Link} to="/" selected={activeLink === 'home'}>
+          <ListItem button component={Link} to="/admin" selected={activeLink === 'home'}>
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
