@@ -35,7 +35,7 @@ export default function IndexSupervisor() {
       <UserManagement 
         title="Supervisor" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="supervisor"  // تعديل الدور هنا إلى "supervisor"
+        role="admin"  // تعديل الدور هنا إلى "supervisor"
         createPath="/users/create-supervisor"  
         editPath="/users/edit"                  
       />

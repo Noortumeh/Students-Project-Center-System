@@ -120,7 +120,19 @@ function Dashboard({ children }) {
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
+          <ListItem button component={Link} to="/workgroup/WorkGroup" selected={activeLink === 'workgroup'}>
+            <ListItemIcon>
+              <WorkIcon />
+            </ListItemIcon>
+            <ListItemText primary="WorkGroup" />
+          </ListItem>
 
+          <ListItem button component={Link} to="/projects/Projects" selected={activeLink === 'projects'}>
+            <ListItemIcon>
+              <BusinessCenterIcon />
+            </ListItemIcon>
+            <ListItemText primary="Projects" />
+          </ListItem>
           <ListItem button onClick={toggleUsersMenu}>
             <ListItemIcon>
               <PeopleIcon />
@@ -151,25 +163,13 @@ function Dashboard({ children }) {
             </List>
           </Collapse>
 
-          <ListItem button component={Link} to="/workgroup/WorkGroup" selected={activeLink === 'workgroup'}>
-            <ListItemIcon>
-              <WorkIcon />
-            </ListItemIcon>
-            <ListItemText primary="WorkGroup" />
-          </ListItem>
+          
 
-          <ListItem button component={Link} to="/projects/Projects" selected={activeLink === 'projects'}>
-            <ListItemIcon>
-              <BusinessCenterIcon />
-            </ListItemIcon>
-            <ListItemText primary="Projects" />
-          </ListItem>
-
-          <ListItem button component={Link} to="/ourcustomer/OurCustomer" selected={activeLink === 'ourcustomer'}>
+          <ListItem button component={Link} to="/ourpartner/OurPartner" selected={activeLink === 'ourpartner'}>
             <ListItemIcon>
               <GroupIcon />
             </ListItemIcon>
-            <ListItemText primary="Our Customer" />
+            <ListItemText primary="Our Partner" />
           </ListItem>
 
           <ListItem button onClick={togglePostsMenu}>

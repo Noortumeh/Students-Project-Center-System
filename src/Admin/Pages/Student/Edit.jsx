@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup'; // للتحقق من الإدخالات
+import * as Yup from 'yup';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { Container, Spinner } from 'react-bootstrap';
-import Dashboard from '../../Components/dashbord/Dashbord.jsx'; // استدعاء الداشبورد
+import { Container, Spinner, TextField, Button, Grid, Paper, Typography } from '@mui/material';
+import Dashboard from '../../Components/dashbord/Dashbord.jsx';
 
 function EditUser() {
   const navigate = useNavigate();
-  const { id } = useParams(); // الحصول على ID المستخدم من الرابط
-  const [loading, setLoading] = useState(false); // حالة التحميل لجلب البيانات
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
 
-  // تكوين الحقول والتحقق من صحة الإدخالات باستخدام Yup
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      middleName: '',
-      lastName: '',
+      name: '',
+      workgroup: '',
+      role: '',
+      status: '',
       email: '',
-      password: '', 
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required('First Name is required'),
-      lastName: Yup.string().required('Last Name is required'),
+      name: Yup.string().required('Name is required'),
+      workgroup: Yup.string().required('Workgroup is required'),
+      role: Yup.string().required('Role is required'),
+      status: Yup.string().required('Status is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
-      password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
     }),
     onSubmit: async (values) => {
       const result = await Swal.fire({
@@ -41,14 +41,8 @@ function EditUser() {
 
       if (result.isConfirmed) {
         try {
-          setLoading(true); // تفعيل حالة التحميل أثناء التحديث
-          await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, {
-            firstName: values.firstName,
-            middleName: values.middleName,
-            lastName: values.lastName,
-            email: values.email,
-            password: values.password 
-          });
+          setLoading(true);
+          await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, values);
           
           Swal.fire({
             title: 'Updated!',
@@ -57,12 +51,12 @@ function EditUser() {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'OK'
           }).then(() => {
-            navigate('/user/index');  // توجيه المستخدم إلى صفحة عرض المستخدمين بعد التحديث
+            navigate('/user/index');
           });
         } catch (error) {
-          toast.error("An unknown error occurred.");  
+          toast.error("An unknown error occurred.");
         } finally {
-          setLoading(false); // إيقاف حالة التحميل بعد التحديث
+          setLoading(false);
         }
       }
     },
@@ -71,19 +65,19 @@ function EditUser() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        setLoading(true); // تفعيل حالة التحميل عند جلب البيانات
+        setLoading(true);
         const { data } = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
         formik.setValues({
-          firstName: data.firstName || '',
-          middleName: data.middleName || '',
-          lastName: data.lastName || '',
+          name: data.name || '',
+          workgroup: data.workgroup || '',
+          role: data.role || '',
+          status: data.status || '',
           email: data.email || '',
-          password: '',  // لن يتم عرض كلمة المرور القديمة لأسباب أمنية
         });
       } catch (error) {
         toast.error("Failed to fetch user data.");
       } finally {
-        setLoading(false); // إيقاف حالة التحميل بعد جلب البيانات
+        setLoading(false);
       }
     };
 
@@ -91,101 +85,95 @@ function EditUser() {
   }, [id]);
 
   return (
-    <Dashboard> {/* استدعاء الداشبورد حول المحتوى الرئيسي */}
-      <Container className="mt-5">
-        {loading ? (
-          <div className="text-center">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        ) : (
-          <form onSubmit={formik.handleSubmit} className="form-group">
-            <div className="mb-3">
-              <label htmlFor="firstName" className="form-label">First Name</label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                className={`form-control ${formik.touched.firstName && formik.errors.firstName ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.firstName}
-              />
-              {formik.touched.firstName && formik.errors.firstName ? (
-                <div className="invalid-feedback">{formik.errors.firstName}</div>
-              ) : null}
+    <Dashboard>
+      <Container maxWidth="sm" sx={{ mt: 5 }}>
+        <Paper elevation={3} sx={{ p: 4 }}>
+          <Typography variant="h4" gutterBottom align="center">
+            Edit User
+          </Typography>
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
             </div>
+          ) : (
+            <form onSubmit={formik.handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="name"
+                    name="name"
+                    label="Name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
+                  />
+                </Grid>
 
-            <div className="mb-3">
-              <label htmlFor="middleName" className="form-label">Middle Name</label>
-              <input
-                id="middleName"
-                name="middleName"
-                type="text"
-                className={`form-control ${formik.touched.middleName && formik.errors.middleName ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.middleName}
-              />
-              {formik.touched.middleName && formik.errors.middleName ? (
-                <div className="invalid-feedback">{formik.errors.middleName}</div>
-              ) : null}
-            </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="workgroup"
+                    name="workgroup"
+                    label="Workgroup"
+                    value={formik.values.workgroup}
+                    onChange={formik.handleChange}
+                    error={formik.touched.workgroup && Boolean(formik.errors.workgroup)}
+                    helperText={formik.touched.workgroup && formik.errors.workgroup}
+                  />
+                </Grid>
 
-            <div className="mb-3">
-              <label htmlFor="lastName" className="form-label">Last Name</label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                className={`form-control ${formik.touched.lastName && formik.errors.lastName ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.lastName}
-              />
-              {formik.touched.lastName && formik.errors.lastName ? (
-                <div className="invalid-feedback">{formik.errors.lastName}</div>
-              ) : null}
-            </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="role"
+                    name="role"
+                    label="Role"
+                    value={formik.values.role}
+                    onChange={formik.handleChange}
+                    error={formik.touched.role && Boolean(formik.errors.role)}
+                    helperText={formik.touched.role && formik.errors.role}
+                  />
+                </Grid>
 
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.email}
-              />
-              {formik.touched.email && formik.errors.email ? (
-                <div className="invalid-feedback">{formik.errors.email}</div>
-              ) : null}
-            </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="status"
+                    name="status"
+                    label="Status"
+                    value={formik.values.status}
+                    onChange={formik.handleChange}
+                    error={formik.touched.status && Boolean(formik.errors.status)}
+                    helperText={formik.touched.status && formik.errors.status}
+                  />
+                </Grid>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label> 
-              <input
-                id="password"
-                name="password"
-                type="password" 
-                className={`form-control ${formik.touched.password && formik.errors.password ? 'is-invalid' : ''}`}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-              />
-              {formik.touched.password && formik.errors.password ? (
-                <div className="invalid-feedback">{formik.errors.password}</div>
-              ) : null}
-            </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    id="email"
+                    name="email"
+                    label="Email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                  />
+                </Grid>
 
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Updating...' : 'Update User'}
-            </button>
-          </form>
-        )}
+                <Grid item xs={12}>
+                  <Button color="primary" variant="contained" fullWidth type="submit" disabled={loading}>
+                    {loading ? 'Updating...' : 'Update User'}
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          )}
+        </Paper>
       </Container>
     </Dashboard>
   );

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
 import {
   Button,
   Table,
@@ -20,7 +19,7 @@ import {
   TablePagination,
   IconButton,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -41,7 +40,6 @@ export default function UserManagement({ title, fetchUrl, role }) {
     setLoading(true);
     try {
       const { data } = await axios.get(fetchUrl);
-      console.log(data); // لمعاينة البيانات المرسلة من الـ API
       const filteredUsers = role ? data.filter(user => user.role === role) : data;
       setUsers(filteredUsers);
     } catch (error) {
@@ -51,30 +49,6 @@ export default function UserManagement({ title, fetchUrl, role }) {
     }
   };
 
-  const deleteUser = async (id) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to undo this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(`${fetchUrl}/${id}`);
-        setUsers(users.filter((user) => user.id !== id));
-        toast.success(`${title} deleted successfully`);
-        Swal.fire('Deleted!', `${title.toLowerCase()} deleted successfully.`, 'success');
-      } catch (error) {
-        toast.error(`فشل في حذف ${title.toLowerCase()}. ${error.message}`);
-      }
-    }
-  };
-
-  // Filter users by full name
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.name ?? ''}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
@@ -134,7 +108,7 @@ export default function UserManagement({ title, fetchUrl, role }) {
               variant="contained"
               color="primary"
               component={Link}
-              to="/createuser/CreateUser" // رابط إضافة مستخدم جديد
+              to="/createuser/CreateUser"
             >
               Add {title}
             </Button>
@@ -160,38 +134,34 @@ export default function UserManagement({ title, fetchUrl, role }) {
                         Name
                       </TableSortLabel>
                     </TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell>workgroup</TableCell>
+                    <TableCell>role</TableCell>
+                    <TableCell>status</TableCell>
+                    <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {displayedUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={3} align="center">
+                      <TableCell colSpan={5} align="center">
                         لا توجد بيانات لعرضها
                       </TableCell>
                     </TableRow>
                   ) : (
                     displayedUsers.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell>{user.name || ''}</TableCell> {/* عرض اسم المستخدم */}
-                        <TableCell>{user.email || ''}</TableCell>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                            <IconButton
-                              component={Link}
-                              to={`/Action/edit/${user.id}`} // رابط تعديل المستخدم
-                              sx={{ backgroundColor: '#2196f3', color: '#fff' }}
-                            >
-                              <Edit />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => deleteUser(user.id)}
-                              sx={{ backgroundColor: '#f44336', color: '#fff' }}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Box>
+                        <TableCell>{user.name || ''}</TableCell>
+                        <TableCell>{user.workgroup || ''}</TableCell>
+                        <TableCell>{user.role || ''}</TableCell>
+                        <TableCell>{user.status || ''}</TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            component={Link}
+                            to={`/Action/edit/${user.id}`}
+                            sx={{ backgroundColor: '#2196f3', color: '#fff' }}
+                          >
+                            <Edit />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     ))
