@@ -1,0 +1,26 @@
+import { Box } from "@mui/material";
+import DescriptionCard from "../components/Card";
+export default function WorkgroupsHome() {
+    return (
+        <Box sx={{ mt: 5 }}>
+            <h1 style={{ textAlign: "center" }}>Workgroups Home</h1>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+                <DescriptionCard
+                    title={'Workgroup Name1'}
+                    description={" Team: student 1, Customer:Customer 1, Supervisor: Supervisor 1"}
+                    action={'Enter'}
+                />
+                <DescriptionCard
+                    title={'Workgroup Name2'}
+                    description={" Team: student 1, Customer:Customer 1, Supervisor: Supervisor 1"}
+                    action={'Enter'}
+                />
+                <DescriptionCard
+                    title={'Workgroup Name3'}
+                    description={" Team: student 1, Customer:Customer 1, Supervisor: Supervisor 1"}
+                    action={'Enter'}
+                />
+            </Box>
+        </Box>
+    );
+}

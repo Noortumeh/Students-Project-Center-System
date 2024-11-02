@@ -35,8 +35,12 @@ export default function IndexStudent() {
       <UserManagement 
         title="Student" 
         fetchUrl="https://api.escuelajs.co/api/v1/users" 
+<<<<<<< HEAD
         createPath="/users/create-student"   
         editPath="/users/edit"                
+=======
+        role="student"  // تعديل الدور هنا إلى "student"               
+>>>>>>> main
       />
     </Dashboard>
   );
