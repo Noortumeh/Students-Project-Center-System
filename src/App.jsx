@@ -1,5 +1,4 @@
-
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'; 
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'; // We will use Outlet to display child routes
 import Home from './Admin/Pages/Admin/home/Home.jsx';
 import CreateUser from './Admin/Components/createuser/CreateUser.jsx';
 import UserDetails from './Admin/Components/details/Details.jsx';
@@ -28,13 +27,24 @@ import AnnouncementsDetails from './Admin/Pages/Admin/posts/AnnouncementsDetails
 import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 
+//User Pages
+import RootLayout from "./Users/pages/Root.jsx";
+import SignUpPage from "./Users/pages/SignUp.jsx";
+import LoginPage from "./Users/pages/Login.jsx";
+import HomePage from "./Users/pages/Home.jsx";
+import WorkGroupsPage from "./Users/pages/WorkGroups.jsx";
+import WorkgroupsHome from "./Users/pages/WorkgroupsHome.jsx";
+import WorkgroupsProjects from "./Users/pages/WorkgroupsProjects.jsx";
+import WorkgroupsTasks from "./Users/pages/WorkgroupsTasks.jsx"; 
+// Loaders to fetch data before rendering components
 import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/admin',
     element: <Home />,
   },
+  
   {
     path: '/createuser/CreateUser',
     element: <CreateUser />,
@@ -124,7 +134,7 @@ const router = createBrowserRouter([
     loader: ({ params }) => fetchWorkGroupDetails(params.id),  // Load workgroup details
   },
   {
-    path: '/ourpartner/OurPartner',
+    path: '/ourcustomer/OurCustomer',
     element: <OurCustomer />,
   },
   {
@@ -149,6 +159,21 @@ const router = createBrowserRouter([
     path: '*',
     element: <PageNotFound />,
   },
+  // User Pathes
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      {index: true, element:<HomePage />},
+      { path: 'signup', element: <SignUpPage /> },
+      { path: 'login', element: <LoginPage /> },
+      {path: 'workgroups', element: <WorkGroupsPage /> ,children:[
+        {index: true, element: <WorkgroupsHome />},
+        {path: 'projects', element: <WorkgroupsProjects />},
+        {path: 'tasks', element: <WorkgroupsTasks />},
+      ]}
+    ]
+  }
 ]);
 function App(){
   return <RouterProvider router={router} />;
