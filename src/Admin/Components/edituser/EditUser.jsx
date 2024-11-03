@@ -1,112 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import {
+  TextField,
+  Button,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+} from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Typography, CircularProgress, Box } from '@mui/material';
-import { toast } from 'react-toastify';
+import axios from 'axios';
 
-const EditUserPage = () => {
+const UserEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: '', email: '', type: '' });
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({
+    name: '',
+    workgroup: '',
+    status: '',
+    role: '',
+  });
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchUser = async () => {
       try {
-        const response = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
+        const response = await axios.get(`/api/users/${id}`); // استبدل بالـ API المناسب
         setUser(response.data);
       } catch (error) {
-        console.error('Error fetching user details:', error);
-        toast.error('فشل في جلب تفاصيل المستخدم.');
-      } finally {
-        setLoading(false);
+        console.error('Error fetching user:', error);
       }
     };
 
-    fetchUserDetails();
+    fetchUser();
   }, [id]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (loading) {
-      return; // تأكد من عدم السماح بالتعديل أثناء التحميل
-    }
-
-    const confirmUpdate = window.confirm('هل أنت متأكد أنك تريد تحديث المستخدم؟');
-    if (!confirmUpdate) return;
-
+  const handleSave = async () => {
     try {
-      await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, user);
-      toast.success('تم تحديث المستخدم بنجاح');
-
-      // توجيه المستخدم بناءً على نوعه مع الروابط الصحيحة
-      if (user.type === 'student') {
-        navigate('/users/student'); // توجيه إلى صفحة الطلاب
-      } else if (user.type === 'customer') {
-        navigate('/users/customer'); // توجيه إلى صفحة العملاء
-      } else if (user.type === 'supervisor') {
-        navigate('/users/supervisor'); // توجيه إلى صفحة المشرفين
-      } else {
-        navigate('/Action/UsersList'); // توجيه إلى قائمة المستخدمين
-      }
-
+      await axios.put(`/api/users/${id}`, user); // استبدل بالـ API المناسب
+      navigate('/user-management');
     } catch (error) {
       console.error('Error updating user:', error);
-      toast.error('فشل في تحديث المستخدم.');
     }
   };
 
-  if (loading) {
-    return (
-      <Container maxWidth="sm" sx={{ mt: 5 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <CircularProgress />
-        </Box>
-      </Container>
-    );
-  }
-
   return (
-    <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Typography variant="h4">تعديل المستخدم</Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="الاسم"
-          name="name"
-          value={user.name}
+    <form>
+      <TextField
+        label=" Name"
+        name="Name"
+        value={user.Name}
+        onChange={handleChange}
+        fullWidth
+        margin="normal"
+      />
+      
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Work Group</InputLabel>
+        <Select
+          name="workgroup"
+          value={user.workgroup}
           onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="البريد الإلكتروني"
-          name="email"
-          value={user.email}
+        >
+          <MenuItem value="Group A">Group A</MenuItem>
+          <MenuItem value="Group B">Group B</MenuItem>
+          <MenuItem value="Group C">Group C</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Status</InputLabel>
+        <Select
+          name="status"
+          value={user.status}
           onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        {/* حقل نوع المستخدم للعرض فقط */}
-        <TextField
-          label="نوع المستخدم"
-          name="type"
-          value={user.type}
-          fullWidth
-          margin="normal"
-          disabled
-        />
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
-          تحديث المستخدم
-        </Button>
-      </form>
-    </Container>
+        >
+          <MenuItem value="Active">Active</MenuItem>
+          <MenuItem value="Inactive">Inactive</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Role</InputLabel>
+        <Select
+          name="role"
+          value={user.role}
+          onChange={handleChange}
+        >
+          <MenuItem value="Admin">Admin</MenuItem>
+          <MenuItem value="User">User</MenuItem>
+          <MenuItem value="Manager">Manager</MenuItem>
+        </Select>
+      </FormControl>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        Save
+      </Button>
+    </form>
   );
 };
 
-export default EditUserPage;
+export default UserEdit;

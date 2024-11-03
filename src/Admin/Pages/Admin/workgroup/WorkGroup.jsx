@@ -24,7 +24,7 @@ export default function WorkGroups() {
   const [entriesToShow, setEntriesToShow] = useState(20);
   const [searchTerm, setSearchTerm] = useState('');
   const [workgroups, setWorkgroups] = useState([]);
-  const [loading, setLoading] = useState(true); // Start loading state as true
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // البيانات الافتراضية
@@ -34,7 +34,6 @@ export default function WorkGroups() {
       workgroupName: 'Development Team',
       supervisorName: 'Alice Smith',
       customerName: 'XYZ Corp',
-      team: 'Frontend',
       projectName: 'Website Redesign'
     },
     {
@@ -42,7 +41,6 @@ export default function WorkGroups() {
       workgroupName: 'Marketing Team',
       supervisorName: 'Bob Johnson',
       customerName: 'ABC Inc',
-      team: 'SEO',
       projectName: 'Social Media Campaign'
     },
     {
@@ -50,27 +48,24 @@ export default function WorkGroups() {
       workgroupName: 'Design Team',
       supervisorName: 'Charlie Brown',
       customerName: '123 LLC',
-      team: 'Graphic Design',
       projectName: 'Branding Project'
     },
-    // يمكنك إضافة المزيد من البيانات الافتراضية هنا
+    // المزيد من البيانات الافتراضية
   ];
 
-  // Fetch workgroups from API on component mount
   useEffect(() => {
     const fetchWorkgroups = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
         const response = await axios.get('http://localhost:3000/api/v1/workgroups');
-        setWorkgroups(response.data.length ? response.data : defaultWorkgroups); // Use API data or default data
+        setWorkgroups(response.data.length ? response.data : defaultWorkgroups);
       } catch (error) {
         Swal.fire('Error!', 'Failed to fetch workgroups.', 'error');
-        setWorkgroups(defaultWorkgroups); // Use default data on error
+        setWorkgroups(defaultWorkgroups);
       } finally {
-        setLoading(false); // End loading
+        setLoading(false);
       }
     };
-
     fetchWorkgroups();
   }, []);
 
@@ -78,31 +73,7 @@ export default function WorkGroups() {
     navigate(`/workgroup/workgroupdetails/${id}`);
   };
 
-  const handleDeleteClick = async (id) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    });
-
-    if (result.isConfirmed) {
-      setLoading(true); // Start loading when deleting
-      try {
-        await axios.delete(`http://localhost:3000/api/v1/workgroups/${id}`);
-        setWorkgroups(workgroups.filter(workgroup => workgroup.id !== id));
-        Swal.fire('Deleted!', 'The workgroup has been deleted.', 'success');
-      } catch (error) {
-        Swal.fire('Error!', 'An error occurred while deleting the workgroup.', 'error');
-      } finally {
-        setLoading(false); // End loading after deleting
-      }
-    }
-  };
-
+  
   const filteredWorkgroups = workgroups.filter((workgroup) =>
     workgroup.workgroupName.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -171,7 +142,6 @@ export default function WorkGroups() {
                     <TableCell>Workgroup Name</TableCell>
                     <TableCell>Supervisor Name</TableCell>
                     <TableCell>Customer Name</TableCell>
-                    <TableCell>Team</TableCell>
                     <TableCell>Project Name</TableCell>
                     <TableCell>Details</TableCell>
                     <TableCell>Action</TableCell>
@@ -184,7 +154,6 @@ export default function WorkGroups() {
                       <TableCell>{workgroup.workgroupName}</TableCell>
                       <TableCell>{workgroup.supervisorName}</TableCell>
                       <TableCell>{workgroup.customerName}</TableCell>
-                      <TableCell>{workgroup.team}</TableCell>
                       <TableCell>{workgroup.projectName}</TableCell>
                       <TableCell>
                         <Button

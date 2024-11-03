@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Paper, Typography, Avatar, LinearProgress, CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
 
-const TeamMember = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
+const TeamMember = styled(Paper)({
+  padding: '16px', // استخدم قيمة ثابتة بدلاً من theme.spacing
   textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
+  color: '#666', // استخدم لون ثابت بدلاً من theme.palette.text.secondary
+});
 
 function WorkGroupDetails() {
   const [loading, setLoading] = useState(true); // حالة التحميل

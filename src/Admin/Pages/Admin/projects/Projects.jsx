@@ -7,9 +7,9 @@ import {
   TableHead, TableRow, TableCell, TableBody, CircularProgress
 } from '@mui/material';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
-import { Edit, Delete } from '@mui/icons-material'; // Material-UI Icons
-import Swal from 'sweetalert2';
+import { Edit } from '@mui/icons-material'; // Material-UI Icons
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function Projects() {
   // State variables
@@ -17,176 +17,44 @@ export default function Projects() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [favorite, setFavorite] = useState({});
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      projectName: 'Innovative Agriculture Project',
-      supervisor: 'Dr. Emma Brown',
-      customer: 'Mr. David Green',
-      team: 'Team Alpha',
-      workGroup: 'Group A',
-    },
-    {
-      id: 2,
-      projectName: 'Smart Irrigation System',
-      supervisor: 'Dr. Alice Morgan',
-      customer: 'GreenTech',
-      team: 'Team Beta',
-      workGroup: 'Group B',
-    },
-    {
-      id: 3,
-      projectName: 'Urban Farming Initiative',
-      supervisor: 'Dr. William Johnson',
-      customer: 'UrbanFarms Ltd',
-      team: 'Team Gamma',
-      workGroup: 'Group C',
-    },
-    {
-      id: 4,
-      projectName: 'Vertical Farming Solutions',
-      supervisor: 'Dr. Sarah Thompson',
-      customer: 'VerticalAgri',
-      team: 'Team Delta',
-      workGroup: 'Group D',
-    },
-    {
-      id: 5,
-      projectName: 'Precision Agriculture Tools',
-      supervisor: 'Dr. Michael Smith',
-      customer: 'AgriTech',
-      team: 'Team Epsilon',
-      workGroup: 'Group E',
-    },
-    {
-      id: 6,
-      projectName: 'Sustainable Soil Management',
-      supervisor: 'Dr. Linda Davis',
-      customer: 'EcoSoil Ltd',
-      team: 'Team Zeta',
-      workGroup: 'Group F',
-    },
-    {
-      id: 7,
-      projectName: 'Hydroponic Farming System',
-      supervisor: 'Dr. John Lee',
-      customer: 'HydroAgro',
-      team: 'Team Eta',
-      workGroup: 'Group G',
-    },
-    {
-      id: 8,
-      projectName: 'Organic Farming Initiative',
-      supervisor: 'Dr. Grace Nelson',
-      customer: 'GreenOrganics',
-      team: 'Team Theta',
-      workGroup: 'Group H',
-    },
-    {
-      id: 9,
-      projectName: 'Aquaponics Farming',
-      supervisor: 'Dr. Lucas Wilson',
-      customer: 'AquaFarm Solutions',
-      team: 'Team Iota',
-      workGroup: 'Group I',
-    },
-    {
-      id: 10,
-      projectName: 'Digital Farming Platform',
-      supervisor: 'Mr. Henry King',
-      customer: 'AgriConnect',
-      team: 'Team Kappa',
-      workGroup: 'Group J',
-    }
-  ]);
-
-  // Make the fetch call
-fetch("https://localhost:7206/api/Projects/GetAll?PageSize=6&PageNumber=1")
-.then(response => {
-  // Check if the response is OK (status 200-299)
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  // Parse the JSON response
-  return response.json();
-})
-.then(data => {
-  // Log the fetched data
-  console.log("Fetched Data:", data);
-
-  // You can access specific parts of the response like this:
-  const { statusCode, isSuccess, message, result } = data;
-  
-  // Check the status of the response
-  if (isSuccess) {
-    console.log("Data fetched successfully:", result);
-  } else {
-    console.log("Error in fetching data:", message);
-  }
-})
-.catch(error => {
-  // Log any error that occurs during the fetch process
-  console.error("Error:", error);
-});
+  const [projects, setProjects] = useState([]);
 
   // Fetch data from API
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch("https://localhost:7206/api/Projects/GetAll?PageSize=6&PageNumber=1");
-  //       const data = await response.json();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("https://localhost:7206/api/projects?PageSize=6&PageNumber=1");
+        console.log(response)
+        if (response != null) {
+          setProjects(response.data.result);
+        } else {
+          toast.error('Failed to fetch projects. Data is not in expected format.');
+        }
 
-  //       if (Array.isArray(data)) {
-  //         setProjects(data);
-  //       } else {
-  //         toast.error('Failed to fetch projects. Data is not in expected format.');
-  //       }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        toast.error('Failed to fetch projects. Please try again.');
+        setLoading(false);
+      }
+    };
 
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching projects:", error);
-  //       toast.error('Failed to fetch projects. Please try again.');
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   // Toggle favorite status
   const toggleFavorite = (id) => {
     setFavorite((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Delete project
-  const deleteProject = async (id) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        setProjects(projects.filter((project) => project.id !== id));
-        toast.success('Project deleted successfully');
-        Swal.fire('Deleted!', 'The project has been deleted.', 'success');
-      } catch (error) {
-        toast.error('Failed to delete the project. Please try again.');
-      }
-    }
-  };
-
   // Filtered and displayed projects
-  const filteredProjects = projects.filter((project) =>
-    project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  const displayedProjects = filteredProjects.slice(0, entriesToShow);
+  // const filteredProjects = projects.filter((project) =>
+  //   project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  // const displayedProjects = filtereadProjects.slice(0, entriesToShow);
+
+  const displayedProjects = projects;
 
   return (
     <Dashboard>
@@ -252,7 +120,6 @@ fetch("https://localhost:7206/api/Projects/GetAll?PageSize=6&PageNumber=1")
                   <TableCell>Project Name</TableCell>
                   <TableCell>Supervisor</TableCell>
                   <TableCell>Customer</TableCell>
-                  <TableCell>Team</TableCell>
                   <TableCell>Workgroup</TableCell>
                   <TableCell align="center">Details</TableCell>
                   <TableCell align="center">Actions</TableCell>
@@ -263,11 +130,10 @@ fetch("https://localhost:7206/api/Projects/GetAll?PageSize=6&PageNumber=1")
                 {displayedProjects.map((project) => (
                   <TableRow key={project.id}>
                     <TableCell>{project.id}</TableCell>
-                    <TableCell>{project.projectName}</TableCell>
-                    <TableCell>{project.supervisor}</TableCell>
-                    <TableCell>{project.customer}</TableCell>
-                    <TableCell>{project.team}</TableCell>
-                    <TableCell>{project.workGroup}</TableCell>
+                    <TableCell>{project.name}</TableCell>
+                    <TableCell>{project.supervisorName}</TableCell>
+                    <TableCell>{project.customerName}</TableCell>
+                    <TableCell>{project.workgroupName}</TableCell>
                     <TableCell align="center">
                       <Button
                         component={Link}
@@ -287,12 +153,6 @@ fetch("https://localhost:7206/api/Projects/GetAll?PageSize=6&PageNumber=1")
                           sx={{ backgroundColor: '#2196f3', color: '#fff' }}
                         >
                           <Edit />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => deleteProject(project.id)}
-                          sx={{ backgroundColor: '#f44336', color: '#fff' }}
-                        >
-                          <Delete />
                         </IconButton>
                       </Box>
                     </TableCell>
