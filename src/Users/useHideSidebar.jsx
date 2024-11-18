@@ -2,19 +2,15 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export const useHideSidebar = () => {
-  const location = useLocation();
-  const [hide, setHide] = useState(true);
+    const location = useLocation();
+    const [hide, setHide] = useState(false); // Default to false to show sidebar
 
-  useEffect(() => {
-    // Define the paths where you want to hide the sidebar
-    const hideSidebarPaths = ['/workgroups/1']; // Add paths where the sidebar should be hidden
+    useEffect(() => {
+        // Check if the current path matches the workgroup ID pattern
+        const isWorkgroupPage = /^\/workgroups\/\d+/.test(location.pathname);
 
-    if (hideSidebarPaths.includes(location.pathname)) {
-      setHide(true);
-    } else {
-      setHide(false);
-    }
-  }, [location]);
+        setHide(isWorkgroupPage); // Set hide based on the match
+    }, [location]);
 
-  return [hide, setHide];
+    return [hide, setHide];
 };

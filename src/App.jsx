@@ -39,6 +39,7 @@ import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
 // WorkGroup by ID
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
+import TasksPage from './Users/pages/workgroupIndex/workgroup/Tasks.jsx';
 // Loaders to fetch data before rendering components
 import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
 
@@ -174,6 +175,7 @@ const router = createBrowserRouter([
         {index: true, element: <WorkgroupsHome />},
         {path: ':workgroupId', element:<WorkgroupRoot />  ,children:[
           {index: true, element: <WorkgroupHome />},
+          {path:'tasks', element: <TasksPage />}
         ]},
         {path: 'projects', element: <WorkgroupsProjects />},
         {path: 'tasks', element: <WorkgroupsTasks />},

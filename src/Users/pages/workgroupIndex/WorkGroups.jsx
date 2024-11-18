@@ -16,7 +16,6 @@ export default function WorkGroupsPage() {
     const checkIsOpen = () => {
         setOpen(!open);
     };
-
     return (
         <Box>
             {!hide && (
