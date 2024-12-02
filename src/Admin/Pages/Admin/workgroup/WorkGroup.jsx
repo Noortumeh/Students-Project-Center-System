@@ -10,7 +10,7 @@ import {
   TableHead,
   TableRow,
   CircularProgress,
-  Grid,
+  Grid2 as Grid,
   Paper,
   Box,
   IconButton

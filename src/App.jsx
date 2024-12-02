@@ -39,7 +39,7 @@ import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
 // WorkGroup by ID
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
-import TasksPage from './Users/pages/workgroupIndex/workgroup/Tasks.jsx';
+import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 // Loaders to fetch data before rendering components
 import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
 
