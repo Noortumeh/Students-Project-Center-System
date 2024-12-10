@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import App from './App';
-import Dashboard from './Admin/Components/dashbord/Dashbord.jsx';
+import Dashboard from './Admin/Components/generalcomponent/dashbord/Dashbord.jsx';
 import PageNotFound from './PageNotFound.jsx';
 
 

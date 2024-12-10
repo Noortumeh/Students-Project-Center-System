@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react';
-import {
-  Button,
-  Container,
-  Typography,
-  Paper,
-  FormControl,
-  TextField,
-} from '@mui/material';
-import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { Container, Paper, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function CreateProject({ onAddProject }) {
+// استيراد المكونات
+import ProjectForm from '../../../Components/createproject/ProjectForm.jsx'; // لا حاجة لاستيراد SelectItem هنا
+import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
+
+const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
   const [supervisors, setSupervisors] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedSupervisor, setSelectedSupervisor] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -61,18 +56,20 @@ export default function CreateProject({ onAddProject }) {
 
     const newProject = {
       name: projectName,
-      supervisorId: selectedSupervisor.value,
-      customerId: selectedCustomer.value,
+      supervisorId: selectedSupervisor[0]?.value, // Take the first supervisor from the list
+      customerId: selectedCustomer[0]?.value, // Take the first customer from the list
     };
 
     try {
       await axios.post('https://localhost:7206/api/projects', newProject);
-      // await onAddProject(newProject);
-      toast.success('Project and Workgroup created successfully!');
+      toast.success('Project created successfully!');
+      setProjectName('');
+      setSelectedSupervisor([]);
+      setSelectedCustomer([]);
       navigate('/projects/Projects');
     } catch (error) {
-      console.error('Error creating project or workgroup:', error);
-      toast.error('Failed to create project or workgroup');
+      console.error('Error creating project:', error);
+      toast.error('Failed to create project');
     } finally {
       setLoading(false);
     }
@@ -85,50 +82,24 @@ export default function CreateProject({ onAddProject }) {
           Create New Project
         </Typography>
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="Project Name"
-            variant="outlined"
-            fullWidth
-            required
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            sx={{ mb: 3 }}
+          {/* استخدم المكونات المستوردة هنا */}
+          <ProjectForm
+            projectName={projectName}
+            setProjectName={setProjectName}
+            supervisors={supervisors}
+            selectedSupervisor={selectedSupervisor}
+            setSelectedSupervisor={setSelectedSupervisor}
+            customers={customers}
+            selectedCustomer={selectedCustomer}
+            setSelectedCustomer={setSelectedCustomer}
           />
 
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Select
-              options={supervisors}
-              value={selectedSupervisor}
-              onChange={setSelectedSupervisor}
-              placeholder="Select Supervisor"
-              isSearchable
-              styles={{ control: (base) => ({ ...base, height: '56px' }) }}
-            />
-          </FormControl>
-
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Select
-              options={customers}
-              value={selectedCustomer}
-              onChange={setSelectedCustomer}
-              placeholder="Select Customer"
-              isSearchable
-              styles={{ control: (base) => ({ ...base, height: '56px' }) }}
-            />
-          </FormControl>
-
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            sx={{ py: 1.5, fontWeight: 'bold', fontSize: '1rem', mb: 2 }}
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Project'}
-          </Button>
+          {/* زر التحميل */}
+          <LoadingButton loading={loading} label="Create Project" />
         </form>
       </Paper>
     </Container>
   );
-}
+};
+
+export default CreateProject;

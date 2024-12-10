@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, CircularProgress, Box } from '@mui/material';
+import PropTypes from 'prop-types'; 
 
 const Announcements = ({ projectId }) => {
   const [project, setProject] = useState(null);
@@ -42,14 +43,12 @@ const Announcements = ({ projectId }) => {
       </Typography>
     );
   }
-
-  // تحقق من وجود المشروع
   if (!project) {
-    return null; // إذا لم يكن المشروع موجودًا، عد فارغًا
+    return null; 
   }
 
   return (
-    <Card sx={{ marginBottom: 2 }}> {/* أضف مسافة بين البطاقات */}
+    <Card sx={{ marginBottom: 2 }}> 
       <CardContent>
         <Typography variant="h5" component="h2">
           {project.title}
@@ -63,6 +62,10 @@ const Announcements = ({ projectId }) => {
       </CardContent>
     </Card>
   );
+};
+
+Announcements.propTypes = {
+  projectId: PropTypes.string.isRequired, 
 };
 
 export default Announcements;

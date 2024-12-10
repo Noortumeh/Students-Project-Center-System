@@ -3,7 +3,6 @@ import Sidebar from "../components/sidebar";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { useState } from "react";
 import ButtonLink from '../components/ButtonLink';
-// Icons:
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import TaskIcon from '@mui/icons-material/Task';

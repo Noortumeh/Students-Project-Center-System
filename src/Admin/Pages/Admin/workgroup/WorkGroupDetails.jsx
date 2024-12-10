@@ -1,127 +1,110 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Paper, Typography, Avatar, LinearProgress, CircularProgress } from '@mui/material';
-import { styled } from '@mui/system';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Button, Paper, Typography, Grid, CircularProgress } from '@mui/material';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import TeamMemberCard from '../../../Components/generalcomponent/UserCard.jsx'; // تأكد من وجود هذا الكومبوننت
+import ProgressBar from '../../../Components/workgroupdetails/ProgressBar.jsx'; // تأكد من وجود هذا الكومبوننت
 
-const TeamMember = styled(Paper)({
-  padding: '16px', // استخدم قيمة ثابتة بدلاً من theme.spacing
-  textAlign: 'center',
-  color: '#666', // استخدم لون ثابت بدلاً من theme.palette.text.secondary
-});
-
-function WorkGroupDetails() {
-  const [loading, setLoading] = useState(true); // حالة التحميل
+const WorkgroupDetails = () => {
+  const { id } = useParams(); // للحصول على ID مجموعة العمل من المسار
+  const navigate = useNavigate();
+  
+  const [workgroup, setWorkgroup] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // محاكاة تحميل البيانات
-    const fetchData = async () => {
+    const fetchWorkgroupDetails = async () => {
       setLoading(true);
-      // محاكاة فترة التحميل
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 ثانية
-      setLoading(false);
+      try {
+        const response = await axios.get(`http://localhost:3000/api/v1/workgroups/${id}`);
+        setWorkgroup(response.data);
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to fetch workgroup details.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchData();
-  }, []);
+    fetchWorkgroupDetails();
+  }, [id]);
+
+  const handleBackClick = () => {
+    navigate('/workgroup');
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!workgroup) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography variant="h6">No workgroup found.</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Container>
-      {loading ? ( // عرض اللودر إذا كانت البيانات في حالة تحميل
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          {/* العنصر العلوي الذي يحتوي على شريط التقدم */}
-          <Box display="flex" justifyContent="center" alignItems="center" marginTop={4}>
-            <Box position="relative" display="inline-flex">
-              <Typography variant="h6">30%</Typography>
-              <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-                <LinearProgress variant="determinate" value={30} />
-              </Box>
-            </Box>
-          </Box>
+    <Box sx={{ padding: 4 }}>
+      <Button variant="contained" color="primary" onClick={handleBackClick} sx={{ mb: 3 }}>
+        Back to Workgroups
+      </Button>
 
-          {/* قسم الفريق */}
-          <Box textAlign="center" mt={4} mb={4}>
-            <Typography variant="h4">Team</Typography>
-            <Grid container spacing={3} justifyContent="center" mt={2}>
-              <Grid item xs={12} sm={4} md={3}>
-                <TeamMember elevation={3}>
-                  <Avatar alt="John Doe" src="/path/to/avatar1.jpg" sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                  <Typography variant="h6">John Doe</Typography>
-                  <Typography variant="body2">Title</Typography>
-                </TeamMember>
-              </Grid>
-              <Grid item xs={12} sm={4} md={3}>
-                <TeamMember elevation={3}>
-                  <Avatar alt="John Doe" src="/path/to/avatar2.jpg" sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                  <Typography variant="h6">John Doe</Typography>
-                  <Typography variant="body2">Title</Typography>
-                </TeamMember>
-              </Grid>
-              <Grid item xs={12} sm={4} md={3}>
-                <TeamMember elevation={3}>
-                  <Avatar alt="Jane Doe" src="/path/to/avatar3.jpg" sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                  <Typography variant="h6">Jane Doe</Typography>
-                  <Typography variant="body2">Title</Typography>
-                </TeamMember>
-              </Grid>
-            </Grid>
-          </Box>
+      <Paper sx={{ padding: 3, mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Workgroup Details
+        </Typography>
+        <Typography variant="h6">Workgroup Name: {workgroup.workgroupName}</Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          <strong>Supervisor:</strong> {workgroup.supervisorName}
+        </Typography>
+        <Typography variant="body1">
+          <strong>Customer:</strong> {workgroup.customerName}
+        </Typography>
+        <Typography variant="body1">
+          <strong>Project:</strong> {workgroup.projectName}
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 2 }}>
+          <strong>Description:</strong> {workgroup.description}
+        </Typography>
+      </Paper>
 
-          {/* قسم المشرف */}
-          <Box mb={4}>
-            <Typography variant="h4" textAlign="center" mb={2}>
-              Supervisor
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
-                <Paper elevation={3} sx={{ padding: 3 }}>
-                  <Typography variant="h5">Dr. John Doe</Typography>
-                  <Typography variant="body1">
-                    Dr. John Doe is an accomplished project manager with a strong background in healthcare and education.
-                  </Typography>
-                  <Typography variant="body2">john.doe@email.com</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TeamMember elevation={3}>
-                  <Avatar alt="John Doe" src="/path/to/avatar4.jpg" sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                  <Typography variant="h6">John Doe</Typography>
-                  <Typography variant="body2">Title</Typography>
-                </TeamMember>
-              </Grid>
-            </Grid>
-          </Box>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ padding: 3 }}>
+            <Typography variant="h5">Supervisor Information</Typography>
+            <TeamMemberCard
+              name={workgroup.supervisorName}
+              title="Supervisor"
+              avatar={workgroup.supervisorAvatar}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ padding: 3 }}>
+            <Typography variant="h5">Customer Information</Typography>
+            <TeamMemberCard
+              name={workgroup.customerName}
+              title="Customer"
+              avatar={workgroup.customerAvatar}
+            />
+          </Paper>
+        </Grid>
+      </Grid>
 
-          {/* قسم العميل */}
-          <Box mb={4}>
-            <Typography variant="h4" textAlign="center" mb={2}>
-              Customer
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
-                <Paper elevation={3} sx={{ padding: 3 }}>
-                  <Typography variant="h5">Mr. John Doe</Typography>
-                  <Typography variant="body1">
-                    Mr. John Doe is a seasoned customer service professional with over a decade of experience.
-                  </Typography>
-                  <Typography variant="body2">john.doe@email.com</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TeamMember elevation={3}>
-                  <Avatar alt="John Doe" src="/path/to/avatar5.jpg" sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                  <Typography variant="h6">John Doe</Typography>
-                  <Typography variant="body2">Title</Typography>
-                </TeamMember>
-              </Grid>
-            </Grid>
-          </Box>
-        </>
-      )}
-    </Container>
+      <Paper sx={{ padding: 3 }}>
+        <Typography variant="h5" gutterBottom>
+          Progress
+        </Typography>
+        <ProgressBar value={workgroup.progress} />
+      </Paper>
+    </Box>
   );
-}
+};
 
-export default WorkGroupDetails;
+export default WorkgroupDetails;

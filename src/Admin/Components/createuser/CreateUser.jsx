@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import {
   Box,
   TextField,
@@ -8,11 +8,11 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
-import { useLoaderData } from 'react-router-dom'; // استخدام useLoaderData لجلب البيانات من الـ loader
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import 'react-toastify/dist/ReactToastify.css';
+import PropTypes from 'prop-types'; 
 
 const styles = {
   formContainer: {
@@ -35,7 +35,6 @@ const styles = {
 };
 
 export default function CreateUser({ title = 'User', redirectPath }) {
-  const loadedUserData = useLoaderData();  // جلب البيانات من الـ loader
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -73,6 +72,7 @@ export default function CreateUser({ title = 'User', redirectPath }) {
           },
         });
         
+        console.log(response.data); 
         toast.success(`${title} created successfully 👌`);
 
         if (redirectPath) {
@@ -97,7 +97,7 @@ export default function CreateUser({ title = 'User', redirectPath }) {
           <Typography variant="h4" gutterBottom align="center">
             Create {title}
           </Typography>
-          {/* استخدام البيانات المحملة في النموذج */}
+         
           <TextField
             label="Name"
             name="name"
@@ -150,3 +150,7 @@ export default function CreateUser({ title = 'User', redirectPath }) {
     </Container>
   );
 }
+CreateUser.propTypes = {
+  title: PropTypes.string,   
+  redirectPath: PropTypes.string,
+};

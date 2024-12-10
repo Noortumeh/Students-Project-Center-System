@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Container, Spinner, TextField, Button, Grid, Paper, Typography } from '@mui/material';
-import Dashboard from '../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../Components/generalcomponent/dashbord/Dashbord.jsx';
 
 function EditUser() {
   const navigate = useNavigate();

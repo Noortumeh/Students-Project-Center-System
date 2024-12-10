@@ -14,7 +14,7 @@ import {
   Divider,
   CircularProgress, // استيراد اللودر
 } from '@mui/material';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 
 const styles = {
   title: {

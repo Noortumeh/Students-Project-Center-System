@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'; // We will use Outlet to display child routes
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Admin/Pages/Admin/home/Home.jsx';
 import CreateUser from './Admin/Components/createuser/CreateUser.jsx';
 import UserDetails from './Admin/Components/details/Details.jsx';
@@ -15,10 +15,9 @@ import Publishing from './Admin/Pages/Admin/posts/Publishing-projects.jsx';
 import TermOfServices from './Admin/Pages/Admin/termofservices/TermOfServices.jsx';
 import Reports from './Admin/Pages/Admin/report/Reports.jsx';
 import WorkGroup from './Admin/Pages/Admin/workgroup/WorkGroup.jsx';
-import CreateWorkGroup from './Admin/Pages/Admin/workgroup/CreateWorkGroup.jsx';
 import EditWorkGroup from './Admin/Pages/Admin/workgroup/EditWorkGroup.jsx';
 import WorkGroupDetails from './Admin/Pages/Admin/workgroup/WorkGroupDetails.jsx';
-import OurCustomer from './Admin/Pages/Admin/ourcustomer/OurCustomer.jsx';
+import OurCustomer from './Admin/Pages/Admin/ourpartner/OurPartner.jsx';
 import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
@@ -27,24 +26,30 @@ import AnnouncementsDetails from './Admin/Pages/Admin/posts/AnnouncementsDetails
 import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 
-//User Pages
-import RootLayout from "./Users/pages/Root.jsx";
-import SignUpPage from "./Users/pages/SignUp.jsx";
-import LoginPage from "./Users/pages/Login.jsx";
-import HomePage from "./Users/pages/Home.jsx";
-import WorkGroupsPage from "./Users/pages/WorkGroups.jsx";
-import WorkgroupsHome from "./Users/pages/WorkgroupsHome.jsx";
-import WorkgroupsProjects from "./Users/pages/WorkgroupsProjects.jsx";
-import WorkgroupsTasks from "./Users/pages/WorkgroupsTasks.jsx"; 
-// Loaders to fetch data before rendering components
-import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
+// User Pages
+import RootLayout from './Users/pages/Root.jsx';
+import SignUpPage from './Users/pages/SignUp.jsx';
+import LoginPage from './Users/pages/Login.jsx';
+import HomePage from './Users/pages/Home.jsx';
+import WorkGroupsPage from './Users/pages/WorkGroups.jsx';
+import WorkgroupsHome from './Users/pages/WorkgroupsHome.jsx';
+import WorkgroupsProjects from './Users/pages/WorkgroupsProjects.jsx';
+import WorkgroupsTasks from './Users/pages/WorkgroupsTasks.jsx';
 
+// Loaders
+import {
+  fetchUserDetails,
+  fetchProjectDetails,
+  fetchReportDetails,
+  fetchWorkGroupDetails,
+} from './Admin/Components/loader.js';
+
+// Routes Configuration
 const router = createBrowserRouter([
   {
     path: '/admin',
     element: <Home />,
   },
-  
   {
     path: '/createuser/CreateUser',
     element: <CreateUser />,
@@ -52,27 +57,27 @@ const router = createBrowserRouter([
   {
     path: '/details/Details/:id',
     element: <UserDetails />,
-    loader: ({ params }) => fetchUserDetails(params.id),  // Load user details
+    loader: ({ params }) => fetchUserDetails(params.id),
   },
   {
     path: '/Action/edit/:id',
     element: <EditUserPage />,
-    loader: ({ params }) => fetchUserDetails(params.id),  // Load user details for editing
+    loader: ({ params }) => fetchUserDetails(params.id),
   },
   {
     path: '/users/CreateStudents/:id',
     element: <CreateStudents />,
-    loader: ({ params }) => fetchUserDetails(params.id),  // Load student details
+    loader: ({ params }) => fetchUserDetails(params.id),
   },
   {
     path: '/users/CreateSupervisior/:id',
     element: <CreateSupervisior />,
-    loader: ({ params }) => fetchUserDetails(params.id),  // Load supervisor details
+    loader: ({ params }) => fetchUserDetails(params.id),
   },
   {
     path: '/users/CreateCustomer/:id',
     element: <CreateCustomer />,
-    loader: ({ params }) => fetchUserDetails(params.id),  // Load customer details
+    loader: ({ params }) => fetchUserDetails(params.id),
   },
   {
     path: '/users/student',
@@ -113,25 +118,21 @@ const router = createBrowserRouter([
   {
     path: '/report/ReportDetails/:reportId',
     element: <ReportDetails />,
-    loader: ({ params }) => fetchReportDetails(params.reportId),  // Load report details
+    loader: ({ params }) => fetchReportDetails(params.reportId),
   },
   {
     path: '/workgroup/WorkGroup',
     element: <WorkGroup />,
   },
   {
-    path: '/workgroup/CreateWorkGroup',
-    element: <CreateWorkGroup />,
-  },
-  {
     path: '/workgroup/edit/:id',
     element: <EditWorkGroup />,
-    loader: ({ params }) => fetchWorkGroupDetails(params.id),  // Load workgroup details
+    loader: ({ params }) => fetchWorkGroupDetails(params.id),
   },
   {
     path: '/workgroup/workgroupdetails/:id',
     element: <WorkGroupDetails />,
-    loader: ({ params }) => fetchWorkGroupDetails(params.id),  // Load workgroup details
+    loader: ({ params }) => fetchWorkGroupDetails(params.id),
   },
   {
     path: '/ourcustomer/OurCustomer',
@@ -144,7 +145,7 @@ const router = createBrowserRouter([
   {
     path: '/projects/ProjectDetails/:id',
     element: <ProjectDetails />,
-    loader: ({ params }) => fetchProjectDetails(params.id),  // Load project details
+    loader: ({ params }) => fetchProjectDetails(params.id),
   },
   {
     path: '/projects/CreateProject/',
@@ -153,29 +154,33 @@ const router = createBrowserRouter([
   {
     path: '/projects/EditProject/:id',
     element: <EditProject />,
-    loader: ({ params }) => fetchProjectDetails(params.id),  // Load project details for editing
+    loader: ({ params }) => fetchProjectDetails(params.id),
   },
   {
     path: '*',
     element: <PageNotFound />,
   },
-  // User Pathes
   {
     path: '/',
     element: <RootLayout />,
     children: [
-      {index: true, element:<HomePage />},
+      { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
-      {path: 'workgroups', element: <WorkGroupsPage /> ,children:[
-        {index: true, element: <WorkgroupsHome />},
-        {path: 'projects', element: <WorkgroupsProjects />},
-        {path: 'tasks', element: <WorkgroupsTasks />},
-      ]}
-    ]
-  }
+      {
+        path: 'workgroups',
+        element: <WorkGroupsPage />,
+        children: [
+          { index: true, element: <WorkgroupsHome /> },
+          { path: 'projects', element: <WorkgroupsProjects /> },
+          { path: 'tasks', element: <WorkgroupsTasks /> },
+        ],
+      },
+    ],
+  },
 ]);
-function App(){
+
+function App() {
   return <RouterProvider router={router} />;
 }
 

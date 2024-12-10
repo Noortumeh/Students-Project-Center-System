@@ -1,194 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  Button,
-  TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
-  Grid,
-  Paper,
-  Box,
-  IconButton
-} from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import Swal from 'sweetalert2';
-import axios from 'axios';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import React, { useState, useCallback } from 'react';
+import { Grid, Paper, Typography } from '@mui/material';
 
-export default function WorkGroups() {
-  const [entriesToShow, setEntriesToShow] = useState(20);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [workgroups, setWorkgroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+import Filters from '../../../Components/generalcomponent/Filters.jsx'; 
+import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx'; 
 
-  // البيانات الافتراضية
-  const defaultWorkgroups = [
-    {
-      id: 1,
-      workgroupName: 'Development Team',
-      supervisorName: 'Alice Smith',
-      customerName: 'XYZ Corp',
-      projectName: 'Website Redesign'
-    },
-    {
-      id: 2,
-      workgroupName: 'Marketing Team',
-      supervisorName: 'Bob Johnson',
-      customerName: 'ABC Inc',
-      projectName: 'Social Media Campaign'
-    },
-    {
-      id: 3,
-      workgroupName: 'Design Team',
-      supervisorName: 'Charlie Brown',
-      customerName: '123 LLC',
-      projectName: 'Branding Project'
-    },
-    // المزيد من البيانات الافتراضية
-  ];
+const WorkgroupPage = () => {
+  
+  const [entriesToShow, setEntriesToShow] = useState(10);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [workgroups, setWorkgroups] = useState([
+    
+    { id: 1, workgroupName: 'Group A', supervisorName: 'John Doe', customerName: 'Company X', projectName: 'Project 1' },
+    { id: 2, workgroupName: 'Group B', supervisorName: 'Jane Doe', customerName: 'Company Y', projectName: 'Project 2' },
+    { id: 3, workgroupName: 'Group C', supervisorName: 'Mark Smith', customerName: 'Company Z', projectName: 'Project 3' },
+  ]);
 
-  useEffect(() => {
-    const fetchWorkgroups = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get('http://localhost:3000/api/v1/workgroups');
-        setWorkgroups(response.data.length ? response.data : defaultWorkgroups);
-      } catch (error) {
-        Swal.fire('Error!', 'Failed to fetch workgroups.', 'error');
-        setWorkgroups(defaultWorkgroups);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWorkgroups();
+  const handleDetailsClick = useCallback((workgroupId) => {
+    console.log(`Details requested for workgroup: ${workgroupId}`);
   }, []);
 
-  const handleDetailsClick = (id) => {
-    navigate(`/workgroup/workgroupdetails/${id}`);
-  };
-
-  
-  const filteredWorkgroups = workgroups.filter((workgroup) =>
-    workgroup.workgroupName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const displayedWorkgroups = filteredWorkgroups.slice(0, entriesToShow);
+  const handleDelete = useCallback((workgroupId) => {
+    setWorkgroups((prevWorkgroups) => prevWorkgroups.filter((workgroup) => workgroup.id !== workgroupId)); // Remove workgroup from state
+    console.log(`Deleted workgroup: ${workgroupId}`);
+  }, []);
 
   return (
-    <Dashboard>
-      <Box sx={{ mt: 5 }}>
-        <Paper elevation={3} sx={{ p: 3 }}>
-          <Grid container justifyContent="space-between" alignItems="center" mb={3}>
-            <Grid item>
-              <h1>Workgroups</h1>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="success"
-                component={Link}
-                to="/workgroup/CreateWorkGroup"
-                sx={{ fontWeight: 'bold', borderRadius: '8px' }}
-              >
-                Create Workgroup
-              </Button>
-            </Grid>
-          </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Paper sx={{ padding: 3 }}>
+          <Typography variant="h4" gutterBottom>
+            Workgroup Management
+          </Typography>
 
-          <Grid container justifyContent="space-between" alignItems="center" mb={3}>
-            <Grid item>
-              <TextField
-                label="Show Entries"
-                select
-                SelectProps={{ native: true }}
-                value={entriesToShow}
-                onChange={(e) => setEntriesToShow(e.target.value)}
-                sx={{ width: 120 }}
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={30}>30</option>
-              </TextField>
-            </Grid>
-            <Grid item>
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ width: 250 }}
-              />
-            </Grid>
-          </Grid>
+          <Filters
+            entriesToShow={entriesToShow}
+            setEntriesToShow={setEntriesToShow}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
 
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
-              <CircularProgress />
-            </Box>
-          ) : displayedWorkgroups.length === 0 ? (
-            <Box sx={{ textAlign: 'center', mt: 5 }}>No workgroups found.</Box>
-          ) : (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Workgroup ID</TableCell>
-                    <TableCell>Workgroup Name</TableCell>
-                    <TableCell>Supervisor Name</TableCell>
-                    <TableCell>Customer Name</TableCell>
-                    <TableCell>Project Name</TableCell>
-                    <TableCell>Details</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {displayedWorkgroups.map((workgroup, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{workgroup.id}</TableCell>
-                      <TableCell>{workgroup.workgroupName}</TableCell>
-                      <TableCell>{workgroup.supervisorName}</TableCell>
-                      <TableCell>{workgroup.customerName}</TableCell>
-                      <TableCell>{workgroup.projectName}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() => handleDetailsClick(workgroup.id)}
-                        >
-                          Details
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                          <IconButton
-                            component={Link}
-                            to={`/workgroup/edit/${workgroup.id}`}
-                            sx={{ backgroundColor: '#2196f3', color: '#fff' }}
-                          >
-                            <Edit />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleDeleteClick(workgroup.id)}
-                            sx={{ backgroundColor: '#f44336', color: '#fff' }}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+          <GeneralTable
+            data={workgroups} 
+            onDetailsClick={handleDetailsClick} 
+            onDelete={handleDelete} 
+            columns={[
+              { id: 'workgroupName', label: 'Workgroup Name' },
+              { id: 'supervisorName', label: 'Supervisor Name' },
+              { id: 'customerName', label: 'Customer Name' },
+              { id: 'projectName', label: 'Project Name' },
+            ]} 
+          />
         </Paper>
-      </Box>
-    </Dashboard>
+      </Grid>
+    </Grid>
   );
-}
+};
+
+export default WorkgroupPage;

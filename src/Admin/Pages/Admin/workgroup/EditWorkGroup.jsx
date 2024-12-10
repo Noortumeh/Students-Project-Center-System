@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import {
   Box,
   Button,
