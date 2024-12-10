@@ -1,6 +1,6 @@
 import { Box, List } from "@mui/material";
-import Sidebar from "../components/sidebar";
-import DescriptionCard from "../components/Card";
+import Sidebar from "../../components/sidebar";
+import DescriptionCard from "../../components/Card";
 
 export default function WorkgroupsProjects() {
     return (

@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { Container, Button } from '@mui/material';
 import axios from 'axios';
 import ProjectList from '../../../Components/projectdeatils/ProjectList.jsx';
 import AddProject from '../../../Components/projectdeatils/AddProjects.jsx';
+=======
+import React from 'react';
+import { Container, Box, Typography, Grid2 as Grid, Card, CardContent, Avatar } from '@mui/material';
+import { FaUsers, FaChalkboardTeacher, FaUserTie, FaCog, FaLaptopCode } from 'react-icons/fa';
+import { motion } from 'framer-motion'; // مكتبة لتأثيرات الحركة
+import { useParams } from 'react-router-dom';
+>>>>>>> 8c9ec38fe4689bedc1ed20c40422ca11b1a93f4b
 
 const ProjectDetails = () => {
   const [projects, setProjects] = useState([]);
