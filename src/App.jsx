@@ -40,22 +40,13 @@ import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
 import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 // Loaders to fetch data before rendering components
-import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
+import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
 //(React Query)
 const queryClient = new QueryClient();
-
-// Loaders
-import {
-  fetchUserDetails,
-  fetchProjectDetails,
-  fetchReportDetails,
-  fetchWorkGroupDetails,
-} from './Admin/Components/loader.js';
-
 // Routes Configuration
 const router = createBrowserRouter([
   {
