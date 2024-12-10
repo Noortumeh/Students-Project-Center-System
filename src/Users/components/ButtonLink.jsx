@@ -1,7 +1,8 @@
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
-import { Link, NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
-export default function ButtomLink({ name, link, icon, open}) {
+export default function ButtomLink({ name, link, icon, open, style={} }) {
+    
     return (
         <ListItem disablePadding sx={{ display: 'block' }}>
             <NavLink
@@ -13,11 +14,7 @@ export default function ButtomLink({ name, link, icon, open}) {
                 end
             >
                 <ListItemButton
-                    sx={{
-                        minHeight: 48,
-                        justifyContent: open ? 'initial' : 'center',
-                        px: 2.5,
-                    }}
+                    sx={{ minHeight: style.hight, justifyContent: open ? 'initial' : 'center', px: 3.5, }}
                 >
                     <ListItemIcon
                         sx={{
