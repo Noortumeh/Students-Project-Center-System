@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Grid, Card, CardContent, Avatar } from '@mui/material';
+import { Container, Box, Typography, Grid2 as Grid, Card, CardContent, Avatar } from '@mui/material';
 import { FaUsers, FaChalkboardTeacher, FaUserTie, FaCog, FaLaptopCode } from 'react-icons/fa';
 import { motion } from 'framer-motion'; // مكتبة لتأثيرات الحركة
 import { useParams } from 'react-router-dom';

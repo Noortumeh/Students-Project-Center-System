@@ -29,26 +29,32 @@ import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 
 //User Pages
 import RootLayout from "./Users/pages/Root.jsx";
-import SignUpPage from "./Users/pages/SignUp.jsx";
-import LoginPage from "./Users/pages/Login.jsx";
+import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
+import LoginPage from "./Users/pages/Authantication/Login.jsx";
 import HomePage from "./Users/pages/Home.jsx";
 import WorkGroupsPage from "./Users/pages/workgroupIndex/WorkGroups.jsx";
 import WorkgroupsHome from "./Users/pages/workgroupIndex/WorkgroupsHome.jsx";
 import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.jsx";
-import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx"; 
+import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
 // WorkGroup by ID
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
-import TasksPage from './Users/pages/workgroupIndex/workgroup/Tasks.jsx';
+import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 // Loaders to fetch data before rendering components
 import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/loader/Loader.js';
+// Tanstack Query 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import { Authentication } from './Users/pages/Authantication.jsx';
+//(React Query)
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     path: '/admin',
     element: <Home />,
   },
-  
+
   {
     path: '/createuser/CreateUser',
     element: <CreateUser />,
@@ -168,23 +174,33 @@ const router = createBrowserRouter([
     path: '/',
     element: <RootLayout />,
     children: [
-      {index: true, element:<HomePage />},
+      { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
-      {path: 'workgroups', element: <WorkGroupsPage /> ,children:[
-        {index: true, element: <WorkgroupsHome />},
-        {path: ':workgroupId', element:<WorkgroupRoot />  ,children:[
-          {index: true, element: <WorkgroupHome />},
-          {path:'tasks', element: <TasksPage />}
-        ]},
-        {path: 'projects', element: <WorkgroupsProjects />},
-        {path: 'tasks', element: <WorkgroupsTasks />},
+      { element: <Authentication />, children: [
+        {
+          path: 'workgroups', element: <WorkGroupsPage />, children: [
+            { index: true, element: <WorkgroupsHome /> },
+            { path: ':workgroupId', element: <WorkgroupRoot />, children: [
+                { index: true, element: <WorkgroupHome /> },
+                { path: 'tasks', element: <TasksPage /> }
+              ]
+            },
+            { path: 'projects', element: <WorkgroupsProjects /> },
+            { path: 'tasks', element: <WorkgroupsTasks /> },
+          ]
+        }
       ]}
     ]
   }
 ]);
-function App(){
-  return <RouterProvider router={router} />;
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ToastContainer />
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }
 //test 
 
