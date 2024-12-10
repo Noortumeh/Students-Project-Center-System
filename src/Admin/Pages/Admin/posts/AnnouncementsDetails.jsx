@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { Card, Button, Modal, Pagination, Spinner } from 'react-bootstrap';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 
 const AnnouncementsDetails = [
   {
@@ -57,14 +57,13 @@ export default function Announcements() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true); // حالة تحميل البيانات
+  const [loading, setLoading] = useState(true); 
   const projectsPerPage = 3;
 
   useEffect(() => {
     const loadData = async () => {
-      // محاكاة تحميل البيانات (يمكنك استبدالها بعملية جلب البيانات الحقيقية)
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // محاكاة تأخير 1 ثانية
+      await new Promise((resolve) => setTimeout(resolve, 1000)); 
       setLoading(false);
     };
     loadData();
@@ -82,7 +81,7 @@ export default function Announcements() {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedProject(null); // إلغاء تحديد المشروع عند إغلاق النافذة
+    setSelectedProject(null); 
   };
 
   const handlePageChange = (pageNumber) => {

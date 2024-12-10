@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Grid, Chip, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
+import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx';
+import SelectItem from '../../../Components/generalcomponent/SelectItem.jsx';
+import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 
 function SelectStudent() {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [loading, setLoading] = useState(false); // حالة اللودر
+  const [loading, setLoading] = useState(false);
 
   const handleSelect = (student) => {
     if (!selectedStudents.includes(student)) {
@@ -19,16 +22,15 @@ function SelectStudent() {
   };
 
   const handleSave = async () => {
-    setLoading(true); // بدء التحميل
+    setLoading(true);
 
-    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     navigate('/workgroup/CreateWorkGroup', {
       state: { ...location.state, selectedStudents }
     });
 
-    setLoading(false); // إنهاء التحميل
+    setLoading(false);
   };
 
   return (
@@ -40,60 +42,31 @@ function SelectStudent() {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={() => handleSelect('Student 1')}
-            sx={{ padding: '10px', fontSize: '1rem' }}
-          >
-            Student 1
-          </Button>
+          <ActionButtons 
+            onClick={() => handleSelect("Student 1")} 
+            label="Select Student 1"
+            type="user"
+          />
         </Grid>
         <Grid item xs={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={() => handleSelect('Student 2')}
-            sx={{ padding: '10px', fontSize: '1rem' }}
-          >
-            Student 2
-          </Button>
+          <ActionButtons 
+            onClick={() => handleSelect("Student 2")} 
+            label="Select Student 2"
+            type="user"
+          />
         </Grid>
 
-        {/* Selected Students Section */}
         <Grid item xs={12} sx={{ mt: 3 }}>
           <Typography variant="h6">Selected Students:</Typography>
-          {selectedStudents.length > 0 ? (
-            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {selectedStudents.map((student, index) => (
-                <Chip
-                  key={index}
-                  label={student}
-                  color="primary"
-                  onDelete={() => handleRemove(student)}
-                  sx={{ fontSize: '1rem', padding: '5px 10px' }}
-                />
-              ))}
-            </Box>
-          ) : (
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              No students selected yet.
-            </Typography>
-          )}
+          <SelectItem 
+            selectedItems={selectedStudents} 
+            onRemove={handleRemove} 
+            itemType="student"
+          />
         </Grid>
 
-        {/* Save Button */}
         <Grid item xs={12} sx={{ mt: 4 }}>
-          <Button
-            variant="contained"
-            color="success"
-            fullWidth
-            onClick={handleSave}
-            sx={{ padding: '10px', fontSize: '1.1rem' }}
-            disabled={loading} // تعطيل الزر أثناء التحميل
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Students'}
-          </Button>
+          <LoadingButton onClick={handleSave} loading={loading} />
         </Grid>
       </Grid>
     </Box>

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { TextField, Button, Box, Paper, Typography, Grid, CircularProgress } from '@mui/material';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 
 function Edit() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [loading, setLoading] = useState(true); // حالة التحميل
+  const [loading, setLoading] = useState(true); 
 
   const formik = useFormik({
     initialValues: {
@@ -34,7 +34,6 @@ function Edit() {
 
       if (result.isConfirmed) {
         try {
-          // إرسال القيم التي تم تعديلها إلى السيرفر
           await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, values);
 
           Swal.fire({
@@ -44,10 +43,10 @@ function Edit() {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'OK'
           }).then(() => {
-            navigate('/user/index');  // إعادة التوجيه بعد التحديث
+            navigate('/user/index');  
           });
         } catch (error) {
-          toast.error("An unknown error occurred.");  // عرض رسالة خطأ في حال الفشل
+          toast.error(`Error: ${error.message || 'An unknown error occurred.'}`);  
         }
       }
     },
@@ -55,10 +54,9 @@ function Edit() {
 
   useEffect(() => {
     const getUser = async () => {
-      setLoading(true); // بدء التحميل
+      setLoading(true);
       try {
         const { data } = await axios.get(`https://api.escuelajs.co/api/v1/users/${id}`);
-        // تعيين القيم التي تم جلبها للنموذج
         formik.setValues({
           firstName: data.firstName || '',
           middleName: data.middleName || '',
@@ -70,12 +68,12 @@ function Edit() {
       } catch (error) {
         toast.error("فشل في جلب بيانات المستخدم.");
       } finally {
-        setLoading(false); // انتهاء التحميل
+        setLoading(false); 
       }
     };
 
     getUser();
-  }, [id]);
+  }, [id, formik]);  
 
   return (
     <Dashboard>
@@ -83,7 +81,7 @@ function Edit() {
         <Typography variant="h4" gutterBottom>
           Edit User
         </Typography>
-        {loading ? ( // عرض دائرة التحميل إذا كانت البيانات لا تزال في مرحلة التحميل
+        {loading ? ( 
           <Grid container justifyContent="center" sx={{ mt: 3 }}>
             <CircularProgress />
           </Grid>

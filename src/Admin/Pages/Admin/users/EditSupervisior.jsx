@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import User from '../../../Components/user/User.jsx';
 import { CircularProgress, Box } from '@mui/material';
 

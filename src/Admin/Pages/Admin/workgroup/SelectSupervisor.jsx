@@ -1,23 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Button, Typography, Grid, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
+import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx'; 
+import SelectItem from '../../../Components/generalcomponent/SelectItem.jsx'; 
+import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx'; 
 
 function SelectSupervisor() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(false); // حالة اللودر
+  const [selectedSupervisors, setSelectedSupervisors] = useState([]); 
+  const [loading, setLoading] = useState(false); 
 
   const handleSelect = async (supervisor) => {
-    setLoading(true); // بدء التحميل
+    if (!selectedSupervisors.includes(supervisor)) {
+      setSelectedSupervisors((prev) => [...prev, supervisor]);
+    }
+  };
 
-    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
+  const handleRemove = (supervisor) => {
+    setSelectedSupervisors(selectedSupervisors.filter(s => s !== supervisor));
+  };
+
+  const handleSave = async () => {
+    setLoading(true); 
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     navigate('/workgroup/CreateWorkGroup', {
-      state: { ...location.state, selectedSupervisor: supervisor }
+      state: { ...location.state, selectedSupervisors }
     });
 
-    setLoading(false); // إنهاء التحميل
+    setLoading(false); 
   };
 
   return (
@@ -30,27 +43,39 @@ function SelectSupervisor() {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={() => handleSelect('Supervisor 1')}
-            sx={{ padding: '10px', fontSize: '1rem' }}
-            disabled={loading} // تعطيل الزر أثناء التحميل
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Supervisor 1'}
-          </Button>
+          <ActionButtons 
+            onClick={() => handleSelect("Supervisor 1")} 
+            label="Select Supervisor 1" 
+            type="user" 
+          />
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Button
+          <ActionButtons 
+            onClick={() => handleSelect("Supervisor 2")} 
+            label="Select Supervisor 2" 
+            type="user" 
+          />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mt: 3 }}>
+          <Typography variant="h6">Selected Supervisors:</Typography>
+          <SelectItem 
+            selectedItems={selectedSupervisors} 
+            onRemove={handleRemove} 
+            itemType="supervisor" 
+          />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mt: 4 }}>
+          <LoadingButton 
+            onClick={handleSave} 
+            loading={loading} 
             variant="contained"
-            fullWidth
-            onClick={() => handleSelect('Supervisor 2')}
-            sx={{ padding: '10px', fontSize: '1rem' }}
-            disabled={loading} // تعطيل الزر أثناء التحميل
+            color="primary"
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Supervisor 2'}
-          </Button>
+            Save and Continue
+          </LoadingButton>
         </Grid>
       </Grid>
     </Box>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -23,7 +23,7 @@ const UserEdit = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`/api/users/${id}`); // استبدل بالـ API المناسب
+        const response = await axios.get(`/api/users/${id}`); 
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -39,7 +39,7 @@ const UserEdit = () => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`/api/users/${id}`, user); // استبدل بالـ API المناسب
+      await axios.put(`/api/users/${id}`, user); 
       navigate('/user-management');
     } catch (error) {
       console.error('Error updating user:', error);
@@ -49,9 +49,9 @@ const UserEdit = () => {
   return (
     <form>
       <TextField
-        label=" Name"
-        name="Name"
-        value={user.Name}
+        label="Name"
+        name="name" 
+        value={user.name}  
         onChange={handleChange}
         fullWidth
         margin="normal"

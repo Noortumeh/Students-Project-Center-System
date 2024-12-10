@@ -1,35 +1,22 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Divider, Avatar, CircularProgress } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box, Grid, Divider, CircularProgress, Card, CardContent, Typography } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group } from '@mui/icons-material';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
-import { styled } from '@mui/system';
-import { Doughnut } from 'react-chartjs-2';
-import Chart from 'chart.js/auto';
-
-// تخصيص نمط المدخلات للبحث
-const SearchBox = styled(Box)( {
-  display: 'flex',
-  alignItems: 'center',
-  backgroundColor: '#fff',
-  padding: '5px 10px',
-  borderRadius: '20px',
-  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-  width: '300px',
-  marginBottom: '20px',
-});
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx';
+import ProjectTeam from '../../../Components/reportdetails/ProjectTeam.jsx';
+import { Chart } from 'chart.js';
 
 export default function ProjectCenterDashboard() {
-  // حالة البيانات
   const [data, setData] = useState({
     totalProjects: 0,
     completedProjects: 0,
     favoriteCustomers: 0,
     totalClients: 0,
   });
-  const [loading, setLoading] = useState(true); // حالة التحميل
-
+  const [loading, setLoading] = useState(true);
   const chartRef = useRef(null);
 
+  // Fetch data from API
   useEffect(() => {
     async function fetchData() {
       try {
@@ -40,128 +27,111 @@ export default function ProjectCenterDashboard() {
 
         const result = await response.json();
         setData({
-          totalProjects: result.totalProjects,
-          completedProjects: result.completedProjects,
-          favoriteCustomers: result.favoriteCustomers,
-          totalClients: result.totalClients,
+          totalProjects: result.totalProjects || 0,
+          completedProjects: result.completedProjects || 0,
+          favoriteCustomers: result.favoriteCustomers || 0,
+          totalClients: result.totalClients || 0,
         });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
-        setLoading(false); // إنهاء حالة التحميل بعد إتمام العملية
+        setLoading(false);
       }
     }
 
     fetchData();
   }, []);
 
-  // بيانات الرسم البياني بناءً على البيانات المستلمة
-  const completedVsActiveData = {
-    labels: ['Completed', 'Active'],
-    datasets: [
-      {
-        label: 'Projects',
-        data: [data.completedProjects, data.totalProjects - data.completedProjects],
-        backgroundColor: ['#4caf50', '#ff9800'],
-      },
-    ],
-  };
-
-  // التأكد من تدمير الرسم البياني عند التدمير
+  // Initialize and update the chart
   useEffect(() => {
-    if (chartRef.current) {
-      // التحقق من وجود الرسم البياني قبل تدميره
-      chartRef.current.destroy();
-      chartRef.current = null;
+    if (!chartRef.current) return;
+
+    // Destroy existing chart if it exists
+    const existingChart = Chart.getChart(chartRef.current);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    // Create a new chart if data is valid
+    if (data.totalProjects > 0) {
+      new Chart(chartRef.current, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'Active'],
+          datasets: [
+            {
+              label: 'Projects',
+              data: [data.completedProjects, data.totalProjects - data.completedProjects],
+              backgroundColor: ['#4caf50', '#ff9800'],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        },
+      });
     }
   }, [data]);
 
   return (
     <Dashboard>
       <Box sx={{ padding: 3, backgroundColor: '#f0f2f5' }}>
-        {/* بطاقات الملخص */}
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: '#4caf50', marginRight: 2 }}>
-                    <Business />
-                  </Avatar>
-                  <Typography variant="h6" color="textSecondary">Total Projects</Typography>
-                </Box>
-                <Typography variant="h3" color="primary" sx={{ mt: 2 }}>{data.totalProjects}</Typography>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              bgcolor="#4caf50"
+              icon={<Business />}
+              label="Total Projects"
+              value={data.totalProjects}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: '#4caf50', marginRight: 2 }}>
-                    <CheckCircle />
-                  </Avatar>
-                  <Typography variant="h6" color="textSecondary">Completed Projects</Typography>
-                </Box>
-                <Typography variant="h3" color="primary" sx={{ mt: 2 }}>{data.completedProjects}</Typography>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              bgcolor="#4caf50"
+              icon={<CheckCircle />}
+              label="Completed Projects"
+              value={data.completedProjects}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: '#ff9800', marginRight: 2 }}>
-                    <HourglassEmpty />
-                  </Avatar>
-                  <Typography variant="h6" color="textSecondary">Favorite Customer</Typography>
-                </Box>
-                <Typography variant="h3" color="primary" sx={{ mt: 2 }}>{data.favoriteCustomers}</Typography>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              bgcolor="#ff9800"
+              icon={<HourglassEmpty />}
+              label="Favorite Customer"
+              value={data.favoriteCustomers}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: '#2196f3', marginRight: 2 }}>
-                    <Group />
-                  </Avatar>
-                  <Typography variant="h6" color="textSecondary">Total Clients</Typography>
-                </Box>
-                <Typography variant="h3" color="primary" sx={{ mt: 2 }}>{data.totalClients}</Typography>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              bgcolor="#2196f3"
+              icon={<Group />}
+              label="Total Clients"
+              value={data.totalClients}
+            />
           </Grid>
         </Grid>
 
         <Divider sx={{ my: 4 }} />
 
-        {/* قسم الفرق والرسم البياني */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Active Teams</Typography>
-                <Typography>Team A, Team B, Team C</Typography>
-              </CardContent>
-            </Card>
+            <ProjectTeam />
           </Grid>
 
-          {/* الرسم البياني */}
           <Grid item xs={12} md={6}>
             <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>Projects Status</Typography>
-                {loading ? ( // عرض دائرة التحميل أثناء التحميل
+                {loading ? (
                   <Grid container justifyContent="center">
                     <CircularProgress />
                   </Grid>
                 ) : (
-                  <Doughnut data={completedVsActiveData} ref={chartRef} />
+                  <canvas ref={chartRef} />
                 )}
               </CardContent>
             </Card>

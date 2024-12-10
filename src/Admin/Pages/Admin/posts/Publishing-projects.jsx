@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Button, Typography, List, ListItem, ListItemText, Paper, IconButton, CircularProgress } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -7,7 +7,7 @@ const PublishingProjects = () => {
     { title: 'Project A', status: 'Published' },
     { title: 'Project B', status: 'Draft' },
   ]);
-  const [loading, setLoading] = useState(false); // حالة التحميل
+  const [loading, setLoading] = useState(false); 
 
   const deleteProject = (index) => {
     const newProjects = projects.filter((_, i) => i !== index);
@@ -15,14 +15,13 @@ const PublishingProjects = () => {
   };
 
   const addProject = () => {
-    setLoading(true); // بدء التحميل
+    setLoading(true); 
 
-    // محاكاة عملية إضافة المشروع
     setTimeout(() => {
       const newProject = { title: `Project ${String.fromCharCode(67 + projects.length)}`, status: 'Draft' };
       setProjects([...projects, newProject]);
-      setLoading(false); // إنهاء التحميل
-    }, 2000); // محاكاة تأخير 2 ثانية
+      setLoading(false); 
+    }, 2000); 
   };
 
   return (

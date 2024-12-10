@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Grid, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
+import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx';
+import SelectItem from '../../../Components/generalcomponent/SelectItem.jsx';
+import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 
 function SelectCustomer() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
 
-  const handleSelect = async (customer) => {
+  const handleSelect = (customer) => {
+    if (!selectedCustomers.includes(customer)) {
+      setSelectedCustomers((prev) => [...prev, customer]);
+    }
+  };
+
+  const handleRemove = (customer) => {
+    setSelectedCustomers((prev) => prev.filter((item) => item !== customer));
+  };
+
+  const handleSave = async () => {
     setLoading(true);
-    
-    // محاكاة تحميل البيانات (يمكن استبدالها بإجراء حقيقي إذا لزم الأمر)
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
     navigate('/workgroup/CreateWorkGroup', {
-      state: { ...location.state, selectedCustomer: customer },
+      state: { ...location.state, selectedCustomers },
     });
-
     setLoading(false);
   };
 
@@ -25,32 +35,32 @@ function SelectCustomer() {
       <Grid container spacing={3} maxWidth="sm">
         <Grid item xs={12}>
           <Typography variant="h4" gutterBottom align="center">
-            Select Customer
+            Select Customers
           </Typography>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            color="primary"
-            onClick={() => handleSelect('Customer 1')}
-            sx={{ padding: '10px', fontSize: '1.1rem' }}
-            disabled={loading} // تعطيل الزر أثناء التحميل
-          >
-            {loading ? <CircularProgress size={24} /> : 'Customer 1'}
-          </Button>
+        <Grid item xs={6}>
+          <ActionButtons 
+            onEdit={() => handleSelect('Customer 1')} 
+            onDelete={() => handleRemove('Customer 1')} 
+            type="customer" 
+          />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            color="secondary"
-            onClick={() => handleSelect('Customer 2')}
-            sx={{ padding: '10px', fontSize: '1.1rem' }}
-            disabled={loading} // تعطيل الزر أثناء التحميل
-          >
-            {loading ? <CircularProgress size={24} /> : 'Customer 2'}
-          </Button>
+        <Grid item xs={6}>
+          <ActionButtons 
+            onEdit={() => handleSelect('Customer 2')} 
+            onDelete={() => handleRemove('Customer 2')} 
+            type="customer" 
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <SelectItem 
+            selectedItems={selectedCustomers} 
+            onRemove={handleRemove} 
+            itemType="Customer" 
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <LoadingButton onClick={handleSave} loading={loading} />
         </Grid>
       </Grid>
     </Box>
