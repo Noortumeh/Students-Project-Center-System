@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-import React, { useState, useCallback } from 'react';
-import { Grid, Paper, Typography } from '@mui/material';
-=======
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import {
-  Button,
-  TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
   Grid2 as Grid,
   Paper,
-  Box,
-  IconButton
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import Swal from 'sweetalert2';
-import axios from 'axios';
-import Dashboard from '../../../Components/dashbord/Dashbord.jsx';
->>>>>>> 8c9ec38fe4689bedc1ed20c40422ca11b1a93f4b
+
 
 import Filters from '../../../Components/generalcomponent/Filters.jsx'; 
 import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx'; 
