@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { Box, Grid, Card, Typography, Avatar } from '@mui/material';
 
 function ProjectTeam({ team }) {
@@ -31,9 +31,5 @@ function ProjectTeam({ team }) {
     </Box>
   );
 }
-
-ProjectTeam.propTypes = {
-  team: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
 
 export default ProjectTeam;

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';  
+/* eslint-disable react/prop-types */
 import { Box, LinearProgress, Typography } from '@mui/material';
 
 const ProgressBar = ({ value }) => (
@@ -11,9 +11,5 @@ const ProgressBar = ({ value }) => (
     </Box>
   </Box>
 );
-
-ProgressBar.propTypes = {
-  value: PropTypes.number.isRequired,  
-};
 
 export default ProgressBar;

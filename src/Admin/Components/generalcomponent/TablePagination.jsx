@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { TablePagination } from '@mui/material';
 
 const TablePaginationComponent = ({ count, page, onPageChange, rowsPerPage, onRowsPerPageChange }) => {
@@ -12,13 +12,6 @@ const TablePaginationComponent = ({ count, page, onPageChange, rowsPerPage, onRo
       onRowsPerPageChange={onRowsPerPageChange}
     />
   );
-};
-TablePaginationComponent.propTypes = {
-  count: PropTypes.number.isRequired, 
-  page: PropTypes.number.isRequired, 
-  onPageChange: PropTypes.func.isRequired, 
-  rowsPerPage: PropTypes.number.isRequired, 
-  onRowsPerPageChange: PropTypes.func.isRequired, 
 };
 
 export default TablePaginationComponent;

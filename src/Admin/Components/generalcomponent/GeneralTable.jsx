@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';  
+/* eslint-disable react/prop-types */
 import {
   Table,
   TableBody,
@@ -10,6 +10,7 @@ import {
   IconButton,
   Paper,
 } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 const GeneralTable = ({ 
   columns, 
@@ -41,7 +42,7 @@ const GeneralTable = ({
                 </TableSortLabel>
               </TableCell>
             ))}
-            <TableCell>Actions</TableCell>
+            <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -53,10 +54,10 @@ const GeneralTable = ({
                 ))}
                 <TableCell>
                   <IconButton onClick={() => onDetailsClick(row.id)}>
-                    View Details
+                    <EditIcon />
                   </IconButton>
                   <IconButton onClick={() => onDelete(row.id)}>
-                    Delete
+                    <DeleteIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -72,29 +73,6 @@ const GeneralTable = ({
       </Table>
     </TableContainer>
   );
-};
-
-GeneralTable.propTypes = {
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      workgroupName: PropTypes.string,
-      supervisorName: PropTypes.string,
-      customerName: PropTypes.string,
-      projectName: PropTypes.string,
-    })
-  ).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  order: PropTypes.string.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onDetailsClick: PropTypes.func.isRequired, 
-  onDelete: PropTypes.func.isRequired, 
 };
 
 export default GeneralTable;

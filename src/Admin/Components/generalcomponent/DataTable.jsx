@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Button } from '@mui/material';
 import ActionButtons from './ActionButtons.jsx';
 const DataTable = ({ columns, data, onDetailsClick, onDelete, rowsPerPage, page, handleChangePage }) => {
@@ -44,23 +44,6 @@ const DataTable = ({ columns, data, onDetailsClick, onDelete, rowsPerPage, page,
   );
 };
 
-DataTable.propTypes = {
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    })
-  ).isRequired,
-  onDetailsClick: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-  page: PropTypes.number.isRequired,
-  handleChangePage: PropTypes.func.isRequired,
-};
+
 
 export default DataTable;

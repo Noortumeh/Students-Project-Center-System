@@ -48,7 +48,6 @@ function Dashboard({ children }) {
   const openMenu = Boolean(anchorEl);
   const location = useLocation();
 
-  // تحديد المسار النشط
   const activePath = useMemo(() => {
     const currentPath = location.pathname;
     if (currentPath.startsWith('/users/student')) return 'students';
@@ -62,7 +61,6 @@ function Dashboard({ children }) {
     return 'home';
   }, [location]);
 
-  // تحديث المسار النشط عند تغييره
   useEffect(() => {
     setActiveLink(activePath);
   }, [activePath]);
@@ -162,8 +160,6 @@ function Dashboard({ children }) {
               </ListItem>
             </List>
           </Collapse>
-
-          
 
           <ListItem button component={Link} to="/ourpartner/OurPartner" selected={activeLink === 'ourpartner'}>
             <ListItemIcon>

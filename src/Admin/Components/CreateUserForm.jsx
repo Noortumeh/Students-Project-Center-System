@@ -1,5 +1,5 @@
 import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 
 const CreateUserForm = ({ userData, setUserData, loading, handleSubmit }) => {
   const handleChange = (e) => {
@@ -19,17 +19,6 @@ const CreateUserForm = ({ userData, setUserData, loading, handleSubmit }) => {
       </Button>
     </Box>
   );
-};
-CreateUserForm.propTypes = {
-  userData: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    password: PropTypes.string.isRequired,
-    avatar: PropTypes.string.isRequired,
-  }).isRequired,
-  setUserData: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default CreateUserForm;

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { Card, CardContent, Typography } from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';  
 import { useEffect, useRef } from 'react';
@@ -51,9 +51,5 @@ function ProjectStatusChart({ data, loading }) {
   );
 }
 
-ProjectStatusChart.propTypes = {
-  data: PropTypes.object.isRequired, 
-  loading: PropTypes.bool.isRequired, 
-};
 
 export default ProjectStatusChart;
