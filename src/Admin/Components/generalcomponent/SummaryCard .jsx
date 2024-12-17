@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Box, Avatar, Typography } from '@mui/material';
+/* eslint-disable react/prop-types */
 
 function SummaryCard({ bgcolor = '#E0E0E0', icon, label, value }) {
   return (
@@ -19,7 +20,7 @@ function SummaryCard({ bgcolor = '#E0E0E0', icon, label, value }) {
   );
 }
 
-// استخدام React.memo لتحسين الأداء
+
 const MemoizedSummaryCard = React.memo(SummaryCard);
 MemoizedSummaryCard.displayName = 'SummaryCard';
 

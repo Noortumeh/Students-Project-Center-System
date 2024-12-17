@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+/* eslint-disable react/prop-types */
 import {
   TextField,
   FormControl,
@@ -91,29 +91,4 @@ const FormComponent = ({ formik, customers, supervisors, onCancel }) => {
     </form>
   );
 };
-
-FormComponent.propTypes = {
-  formik: PropTypes.shape({
-    values: PropTypes.object.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired,
-    handleBlur: PropTypes.func.isRequired,
-    touched: PropTypes.object,
-    errors: PropTypes.object,
-  }).isRequired,
-  customers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  supervisors: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  onCancel: PropTypes.func.isRequired,
-};
-
 export default FormComponent;

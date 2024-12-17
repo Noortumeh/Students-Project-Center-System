@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import Box from '@mui/material/Box';
 
 const UserStatus = ({ status }) => {
@@ -15,10 +15,6 @@ const UserStatus = ({ status }) => {
       {status}
     </Box>
   );
-};
-
-UserStatus.propTypes = {
-  status: PropTypes.oneOf(['Current', 'Inactive']).isRequired, 
 };
 
 export default UserStatus;

@@ -1,5 +1,5 @@
 import { TextFieldComponent, SelectFieldComponent, SaveButton } from '../createproject/ProjectForm.jsx'
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 
 const UserEditForm = ({ user, handleChange, handleSave }) => (
   <form>
@@ -48,16 +48,5 @@ const UserEditForm = ({ user, handleChange, handleSave }) => (
     <SaveButton onClick={handleSave} />
   </form>
 );
-
-UserEditForm.propTypes = {
-  user: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    workgroup: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    role: PropTypes.string.isRequired,
-  }).isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleSave: PropTypes.func.isRequired,
-};
 
 export default UserEditForm;

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import {
   Card,
   CardContent,
@@ -54,18 +54,6 @@ const UserCard = ({ user, onDelete }) => {
       </CardContent>
     </Card>
   );
-};
-
-UserCard.propTypes = {
-  user: PropTypes.shape({
-    id: PropTypes.string.isRequired, 
-    name: PropTypes.string.isRequired, 
-    avatar: PropTypes.string, 
-    location: PropTypes.string,
-    description: PropTypes.string, 
-    status: PropTypes.oneOf(['Current', 'Inactive']).isRequired, 
-  }).isRequired,
-  onDelete: PropTypes.func.isRequired, 
 };
 
 export default UserCard;

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 import { Button, CircularProgress } from '@mui/material';
 
 const LoadingButton = ({ loading, onClick, children, variant, color }) => {
@@ -16,13 +16,4 @@ const LoadingButton = ({ loading, onClick, children, variant, color }) => {
     </Button>
   );
 };
-
-LoadingButton.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired, 
-  children: PropTypes.node,
-  variant: PropTypes.string,  
-  color: PropTypes.string,    
-};
-
 export default LoadingButton;

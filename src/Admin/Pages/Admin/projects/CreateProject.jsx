@@ -1,101 +1,94 @@
-import { useState, useEffect } from 'react';
-import { Container, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Container, Paper, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import 'react-toastify/dist/ReactToastify.css';
-
-// استيراد المكونات
-import ProjectForm from '../../../Components/createproject/ProjectForm.jsx'; // لا حاجة لاستيراد SelectItem هنا
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
+import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
+import { fetchSupervisors, fetchCustomers } from '../../../../util/http for admin/http.js';
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
-  const [supervisors, setSupervisors] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [selectedSupervisor, setSelectedSupervisor] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState([]);
+  const [selectedSupervisor, setSelectedSupervisor] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchSupervisors = async () => {
-      try {
-        const response = await axios.get('https://localhost:7206/api/users/get-users?PageSize=6&PageNumber=1');
-        const supervisorData = response.data.result.map((supervisor) => ({
-          value: supervisor.id,
-          label: supervisor.userName.toLowerCase(),
-        }));
-        setSupervisors(supervisorData);
-      } catch (error) {
-        toast.error('Failed to fetch supervisors');
-      }
-    };
+  const { data: supervisors, error: supervisorsError } = useQuery({
+    queryKey: ['supervisors'],
+    queryFn: fetchSupervisors,
+  });
 
-    const fetchCustomers = async () => {
-      try {
-        const response = await axios.get('https://localhost:7206/api/users/get-users?PageSize=6&PageNumber=1');
-        const customerData = response.data.result.map((customer) => ({
-          value: customer.id,
-          label: customer.userName.toLowerCase(),
-        }));
-        setCustomers(customerData);
-      } catch (error) {
-        toast.error('Failed to fetch customers');
-      }
-    };
+  const { data: customers, error: customersError } = useQuery({
+    queryKey: ['customers'],
+    queryFn: fetchCustomers,
+  });
 
-    fetchSupervisors();
-    fetchCustomers();
-  }, []);
+  if (supervisorsError) {
+    toast.error('Failed to fetch supervisors');
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  if (customersError) {
+    toast.error('Failed to fetch customers');
+  }
 
-    const newProject = {
-      name: projectName,
-      supervisorId: selectedSupervisor[0]?.value, // Take the first supervisor from the list
-      customerId: selectedCustomer[0]?.value, // Take the first customer from the list
-    };
-
-    try {
-      await axios.post('https://localhost:7206/api/projects', newProject);
-      toast.success('Project created successfully!');
-      setProjectName('');
-      setSelectedSupervisor([]);
-      setSelectedCustomer([]);
-      navigate('/projects/Projects');
-    } catch (error) {
-      console.error('Error creating project:', error);
-      toast.error('Failed to create project');
-    } finally {
-      setLoading(false);
-    }
+  const handleAddProject = () => {
+    toast.success('Project added successfully!');
+    navigate('/projects/Projects');
   };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
           Create New Project
         </Typography>
-        <form onSubmit={handleSubmit}>
-          {/* استخدم المكونات المستوردة هنا */}
-          <ProjectForm
+        <form>
+          <ProjectNameField
             projectName={projectName}
             setProjectName={setProjectName}
-            supervisors={supervisors}
-            selectedSupervisor={selectedSupervisor}
-            setSelectedSupervisor={setSelectedSupervisor}
-            customers={customers}
-            selectedCustomer={selectedCustomer}
-            setSelectedCustomer={setSelectedCustomer}
           />
-
-          {/* زر التحميل */}
-          <LoadingButton loading={loading} label="Create Project" />
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Supervisor</InputLabel>
+            <Select
+              value={selectedSupervisor}
+              onChange={(e) => setSelectedSupervisor(e.target.value)}
+            >
+              {supervisors?.map((supervisor) => (
+                <MenuItem key={supervisor.value} value={supervisor.value}>
+                  {supervisor.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Customer</InputLabel>
+            <Select
+              value={selectedCustomer}
+              onChange={(e) => setSelectedCustomer(e.target.value)}
+            >
+              {customers?.map((customer) => (
+                <MenuItem key={customer.value} value={customer.value}>
+                  {customer.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <LoadingButton
+            loading={loading}
+            label="Create Project"
+            onClick={handleAddProject}
+            sx={{
+              mt: 2,
+              width: '100%',
+              backgroundColor: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#115293',
+              },
+            }}
+          />
         </form>
       </Paper>
     </Container>

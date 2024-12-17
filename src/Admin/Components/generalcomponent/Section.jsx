@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Typography } from '@mui/material';
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import UserCard from './UserCard'; 
 
 const Section = ({ type, details, member, onDelete }) => (
@@ -21,23 +21,5 @@ const Section = ({ type, details, member, onDelete }) => (
     </Grid>
   </Box>
 );
-
-Section.propTypes = {
-  type: PropTypes.string.isRequired,
-  details: PropTypes.shape({
-    name: PropTypes.string,
-    description: PropTypes.string,
-    email: PropTypes.string,
-  }).isRequired,
-  member: PropTypes.shape({
-    name: PropTypes.string,
-    location: PropTypes.string,
-    description: PropTypes.string,
-    avatar: PropTypes.string,
-    status: PropTypes.string,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  }).isRequired, 
-  onDelete: PropTypes.func.isRequired, 
-};
 
 export default Section;

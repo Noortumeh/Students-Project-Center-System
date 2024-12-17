@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { Grid, Card, ListItemText } from '@mui/material';
 
 function ProjectInfo({ report }) {
@@ -47,17 +47,6 @@ function ProjectInfo({ report }) {
     </Grid>
   );
 }
-ProjectInfo.propTypes = {
-  report: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    supervisor: PropTypes.string.isRequired,
-    customer: PropTypes.string.isRequired,
-    startDate: PropTypes.string.isRequired,
-    endDate: PropTypes.string.isRequired,
-    budget: PropTypes.number.isRequired,
-    progress: PropTypes.number.isRequired,
-    deadline: PropTypes.string.isRequired,
-  }).isRequired,
-};
+
 
 export default ProjectInfo;

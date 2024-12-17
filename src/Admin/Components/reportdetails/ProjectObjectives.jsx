@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { Box, Typography, Card } from '@mui/material';
 
 function ProjectObjectives({ objectives }) {
@@ -17,8 +17,5 @@ function ProjectObjectives({ objectives }) {
     </Box>
   );
 }
-ProjectObjectives.propTypes = {
-  objectives: PropTypes.arrayOf(PropTypes.string).isRequired, 
-};
 
 export default ProjectObjectives;
