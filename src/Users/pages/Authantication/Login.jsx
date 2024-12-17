@@ -11,20 +11,23 @@ import { FormContainer, RightSection, SignUpContainer } from "./AuthStyle";
 //
 import { useLogin } from "./CustomHook/useLogin.js";
 import { useUser } from "./CustomHook/useUser.js";
+import { useEffect } from "react";
  
 const LoginPage = () => {
+    const navigate = useNavigate();
     const {loginMutate , isPending, error, isError } = useLogin();
-    const {isFetching, user, isAuth} = useUser();
+    const {isAuth} = useUser();
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
         loginMutate(data);
     };
-    
-    if(!isFetching && isAuth){
-        return <Navigate replace to="/" />
-    }
+    useEffect(() => {
+        if (isAuth) {
+            navigate('/');
+        }
+    }, [isAuth, navigate]);
     
     return (
         <SignUpContainer>

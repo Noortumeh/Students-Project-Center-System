@@ -1,22 +1,16 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Navigate } from "react-router-dom";
 import { useUser } from "./Authantication/CustomHook/useUser";
-import { useEffect } from "react";
 
 export function Authentication() {
     const { isFetching, isAuth } = useUser();
-    const navigate = useNavigate();
-
-    useEffect( () => {
-        if (!isAuth) {
-            navigate('/', { replace: true });
-        }
-    }, [isAuth, navigate]);
-
+    
     if (isFetching) {
-        return (
-            "loading ..."
-        );
+        return "loading ...";
     }
-
-    return isAuth ? <Outlet /> : null;
+    
+    if (!isAuth) {
+        return <Navigate to="/" replace />;
+    }
+    
+    return <Outlet />;
 }
