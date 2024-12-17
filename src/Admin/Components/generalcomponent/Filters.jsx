@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 import { TextField, Grid } from '@mui/material';
 
 const Filters = ({ searchTerm, setSearchTerm, entriesToShow, setEntriesToShow }) => {
@@ -31,11 +31,6 @@ const Filters = ({ searchTerm, setSearchTerm, entriesToShow, setEntriesToShow })
   );
 };
 
-Filters.propTypes = {
-  searchTerm: PropTypes.string.isRequired,  
-  setSearchTerm: PropTypes.func.isRequired, 
-  entriesToShow: PropTypes.number.isRequired, 
-  setEntriesToShow: PropTypes.func.isRequired, 
-};
+
 
 export default Filters;

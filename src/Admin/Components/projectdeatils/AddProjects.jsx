@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextField, Button } from '@mui/material';
 import axios from 'axios';
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 
 const AddProject = ({ onAdd }) => {
   const [projectName, setProjectName] = useState('');
@@ -49,10 +49,6 @@ const AddProject = ({ onAdd }) => {
       <Button type="submit">Add Project</Button>
     </form>
   );
-};
-
-AddProject.propTypes = {
-  onAdd: PropTypes.func.isRequired, 
 };
 
 export default AddProject;

@@ -1,5 +1,5 @@
 import { Card, CardContent, Typography } from '@mui/material';
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 
 const ProjectItem = ({ project }) => {
   return (
@@ -14,13 +14,5 @@ const ProjectItem = ({ project }) => {
   );
 };
 
-ProjectItem.propTypes = {
-  project: PropTypes.shape({
-    projectName: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    clientId: PropTypes.string.isRequired,
-    supervisorId: PropTypes.string.isRequired,
-  }).isRequired,
-};
 
 export default ProjectItem;

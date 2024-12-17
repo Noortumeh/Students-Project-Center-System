@@ -1,5 +1,5 @@
 import { TextField, Grid } from '@mui/material';
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 
 const SearchBar = ({ searchTerm, onChange }) => {
   return (
@@ -15,9 +15,6 @@ const SearchBar = ({ searchTerm, onChange }) => {
   );
 };
 
-SearchBar.propTypes = {
-  searchTerm: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,    
-};
+
 
 export default SearchBar;

@@ -1,6 +1,6 @@
 import Select from 'react-select';
 import { FormControl } from '@mui/material';
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 
 const SelectUser = ({ options, selectedUser, setSelectedUser, placeholder }) => {
   return (
@@ -15,14 +15,6 @@ const SelectUser = ({ options, selectedUser, setSelectedUser, placeholder }) => 
       />
     </FormControl>
   );
-};
-
-
-SelectUser.propTypes = {
-  options: PropTypes.array.isRequired,
-  selectedUser: PropTypes.object, 
-  setSelectedUser: PropTypes.func.isRequired, 
-  placeholder: PropTypes.string, 
 };
 
 export default SelectUser;

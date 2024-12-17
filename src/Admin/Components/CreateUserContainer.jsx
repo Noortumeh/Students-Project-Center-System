@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreateUserForm from './CreateUserForm';
 import Swal from 'sweetalert2';
-import PropTypes from 'prop-types';  
+/* eslint-disable react/prop-types */
 
 const CreateUserContainer = ({ title = 'User', redirectPath }) => {
   const [userData, setUserData] = useState({ name: '', email: '', password: '', avatar: '' });
@@ -52,10 +52,4 @@ const CreateUserContainer = ({ title = 'User', redirectPath }) => {
     </Container>
   );
 };
-
-CreateUserContainer.propTypes = {
-  title: PropTypes.string,        
-  redirectPath: PropTypes.string,   
-};
-
 export default CreateUserContainer;

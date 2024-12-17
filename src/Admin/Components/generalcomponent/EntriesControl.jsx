@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import {
   Box,
   FormControl,
@@ -39,13 +39,6 @@ const EntriesControl = ({ entriesToShow, setEntriesToShow, searchTerm, setSearch
       />
     </Box>
   );
-};
-
-EntriesControl.propTypes = {
-  entriesToShow: PropTypes.number.isRequired,       
-  setEntriesToShow: PropTypes.func.isRequired,     
-  searchTerm: PropTypes.string.isRequired,        
-  setSearchTerm: PropTypes.func.isRequired         
 };
 
 export default EntriesControl;

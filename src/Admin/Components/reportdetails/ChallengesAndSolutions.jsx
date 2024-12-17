@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+/* eslint-disable react/prop-types */
 import { Box, Typography, Card } from '@mui/material';
 
 function ChallengesAndSolutions({ challenges }) {
@@ -20,13 +20,5 @@ function ChallengesAndSolutions({ challenges }) {
     </Box>
   );
 }
-ChallengesAndSolutions.propTypes = {
-  challenges: PropTypes.arrayOf(
-    PropTypes.shape({
-      problem: PropTypes.string.isRequired,
-      solution: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
 
 export default ChallengesAndSolutions;

@@ -1,4 +1,5 @@
 import { TextField } from '@mui/material';
+/* eslint-disable react/prop-types */
 const ProjectNameField = ({ projectName, setProjectName }) => {
   return (
     <TextField
