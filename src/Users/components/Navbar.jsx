@@ -14,13 +14,18 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { NavLink } from 'react-router-dom';
+import { useUser } from '../pages/Authantication/CustomHook/useUser';
+import Logout from '../pages/Authantication/Logout';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 const navItems = ['Home', 'Customers', 'Projects', 'Forms', 'About Us', 'Contact'];
 
 export default function Navbar() {
+    const { isFetching, user, isAuth } = useUser();
+    const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)'); // الخلفية الافتراضية
+    const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
     // Handle Scroll
     const handleScroll = () => {
         if (window.scrollY > 50) {
@@ -58,7 +63,6 @@ export default function Navbar() {
             </List>
         </Box>
     );
-
     return (
         <Box>
             <CssBaseline />
@@ -90,24 +94,28 @@ export default function Navbar() {
                             <Button variant="contained" size='small' color="primary" sx={{ marginRight: '3px' }}>Admin Dashboard</Button>
                         </NavLink>
                         {navItems.map((item) => (
-                            <Button href='/' key={item}>
-                                {item}
-                            </Button>
+                            <NavLink to={'/'} key={item}>
+                                <Button>
+                                    {item}
+                                </Button>
+                            </NavLink>
                         ))}
                     </Box>
-                    <Box>
-                        <NavLink to={"login"} style={{ textDecoration: 'none', color: 'white' }}>
-                            <Button variant="contained" color="primary" sx={{ marginRight: '3px' }}>
-                                Log In
-                            </Button>
-                        </NavLink>
+                    {isAuth ? <Logout /> :
+                        <Box>
+                            <NavLink to={"login"} style={{ textDecoration: 'none', color: 'white' }}>
+                                <Button variant="contained" color="primary" sx={{ marginRight: '3px' }}>
+                                    Log In
+                                </Button>
+                            </NavLink>
 
-                        <NavLink to={"signup"} style={{ textDecoration: 'none', color: 'white' }}>
-                            <Button variant="contained" color="primary">
-                                Sign Up
-                            </Button>
-                        </NavLink>
-                    </Box>
+                            <NavLink to={"signup"} style={{ textDecoration: 'none', color: 'white' }}>
+                                <Button variant="contained" color="primary">
+                                    Sign Up
+                                </Button>
+                            </NavLink>
+                        </Box>
+                    }
                 </Toolbar>
             </AppBar>
             <nav>

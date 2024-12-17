@@ -1,4 +1,8 @@
+import { QueryClient } from "@tanstack/react-query";
+//
 const API_URL = "http://spcs.somee.com/api";
+// Query Client
+export const queryClient = new QueryClient();
 
 export async function signUp(formData) {
   const response = await fetch(`${API_URL}/auth/register`, {
@@ -35,7 +39,10 @@ export async function login(formData) {
   const data = await response.json();
   localStorage.setItem("token", data.token);
 
-  localStorage.setItem("userInfo", JSON.stringify({ user: data.user, role: data.role}));
+  localStorage.setItem(
+    "userInfo",
+    JSON.stringify({ user: data.user, role: data.role })
+  );
 }
 // user API
 //* get token
@@ -44,12 +51,30 @@ export function getToken() {
 }
 //* get current user information
 export function getCurrentUser() {
-  let userInfo = localStorage.getItem('userInfo');
-  userInfo = JSON.parse(userInfo);
+  const userInfoStr = localStorage.getItem("userInfo");
   const token = localStorage.getItem("token");
-  return {userInfo, token};
+  
+  if (!userInfoStr || !token) {
+    return null;
+  }
+
+  try {
+    const userInfo = JSON.parse(userInfoStr);
+    return { userInfo, token };
+  } catch (error) {
+    return null;
+  }
 }
 
+export function logout() {
+  if (localStorage.getItem("token") && localStorage.getItem("userInfo")) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+  }else{
+    const error = new Error("An error occurred while logout");
+    throw error;
+  }
+}
 ///////
 export async function getWorkgroups() {
   const token = getToken();
@@ -69,4 +94,3 @@ export async function getWorkgroups() {
   console.log(data.result);
   return data;
 }
-
