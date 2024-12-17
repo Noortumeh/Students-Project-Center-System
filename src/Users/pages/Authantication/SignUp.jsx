@@ -6,16 +6,19 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Form, Link } from "react-router-dom";
+import { Form, Link, Navigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "../../../util/httpsForUser/https";
 //Style
 import { FormContainer, RightSection, SignUpContainer } from "./AuthStyle";
+import { useUser } from "./CustomHook/useUser";
 
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const { isFetching, isAuth } = useUser();
+
 
   const { mutate, isPending, error, isError, data } = useMutation({
     mutationFn: signUp,
@@ -31,6 +34,9 @@ const SignUpPage = () => {
     mutate(data);
   };
 
+  if (!isFetching && isAuth) {
+    return <Navigate replace to="/" />
+  }
   return (
     <SignUpContainer>
       {/* القسم الأيسر */}

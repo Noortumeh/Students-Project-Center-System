@@ -35,6 +35,7 @@ import WorkGroupsPage from "./Users/pages/workgroupIndex/WorkGroups.jsx";
 import WorkgroupsHome from "./Users/pages/workgroupIndex/WorkgroupsHome.jsx";
 import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.jsx";
 import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
+
 // WorkGroup by ID
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
@@ -42,11 +43,11 @@ import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 // Loaders to fetch data before rendering components
 import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
-//(React Query)
-const queryClient = new QueryClient();
+import { queryClient } from './util/httpsForUser/https.js';
+
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -170,6 +171,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
+      // { path: 'logout' ,element: <Logout />},
       { element: <Authentication />, children: [
         {
           path: 'workgroups', element: <WorkGroupsPage />, children: [
