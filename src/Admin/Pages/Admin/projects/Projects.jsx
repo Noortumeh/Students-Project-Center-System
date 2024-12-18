@@ -7,21 +7,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx';
-
-// const fetchProjects = async () => {
-//   const response = await fetch('/api/projects');
-//   if (!response.ok) {
-//     throw new Error(`HTTP error! status: ${response.status}`);
-//   }
-//   return response.json();
-// };
+import { fetchProjects } from '../../../../util/http for admin/http.js';
 
 const ProjectPage = () => {
-  // const { data: projects = [], error, isLoading } = useQuery({
-  //   queryKey: ['projects'],
-  //   queryFn: fetchProjects,
-  // });
-  const [projects, setProjects] = useState([]); // Use empty array as default
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects,
+  });
+
   const [favorite, setFavorite] = useState({});
 
   const toggleFavorite = (id) => {
@@ -43,7 +36,7 @@ const ProjectPage = () => {
     { id: 'id', label: 'Project ID' },
     { id: 'name', label: 'Project Name' },
     { id: 'supervisorName', label: 'Supervisor' },
-    { id: 'customerName', label: 'Customer' },
+    { id: 'customerName', label: 'Customer', render: (row) => row.customerName || 'Unknown' },
     { id: 'workgroupName', label: 'Workgroup' },
     { id: 'favorite', label: 'Favorite', render: (row) => (
         <button onClick={() => toggleFavorite(row.id)}>
@@ -61,13 +54,15 @@ const ProjectPage = () => {
     }
   ];
 
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
-  // if (error) {
-  //   return <Typography color="error">Error fetching projects: {error.message}</Typography>;
-  // }
+  if (error) {
+    return <Typography color="error">Error fetching projects: {error.message}</Typography>;
+  }
+
+  const projects = data?.result || []; // استخدام data.result
 
   return (
     <Dashboard>
@@ -84,7 +79,7 @@ const ProjectPage = () => {
 
         <GeneralTable
           columns={columns}
-          data={projects}
+          data={projects} // تمرير البيانات الصحيحة
           actions={[]} 
           onAction={toggleFavorite}
           orderBy="name" 
