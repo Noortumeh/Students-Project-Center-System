@@ -9,9 +9,6 @@ import CreateCustomer from './Admin/Pages/Admin/users/CreateCustomer.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
-import Announcements from './Admin/Pages/Admin/posts/Announcements.jsx';
-import Form from './Admin/Pages/Admin/posts/Form.jsx';
-import Publishing from './Admin/Pages/Admin/posts/Publishing-projects.jsx';
 import TermOfServices from './Admin/Pages/Admin/termofservices/TermOfServices.jsx';
 import Reports from './Admin/Pages/Admin/report/Reports.jsx';
 import WorkGroup from './Admin/Pages/Admin/workgroup/WorkGroup.jsx';
@@ -22,7 +19,6 @@ import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
-import AnnouncementsDetails from './Admin/Pages/Admin/posts/AnnouncementsDetails.jsx';
 import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 
@@ -95,22 +91,7 @@ const router = createBrowserRouter([
     path: '/users/supervisor',
     element: <IndexSupervisor />,
   },
-  {
-    path: '/posts/Announcements',
-    element: <Announcements />,
-  },
-  {
-    path: '/posts/AnnouncementsDetails',
-    element: <AnnouncementsDetails />,
-  },
-  {
-    path: '/posts/Form',
-    element: <Form />,
-  },
-  {
-    path: '/posts/Publishing-projects',
-    element: <Publishing />,
-  },
+
   {
     path: '/termofservices/TermOfServices',
     element: <TermOfServices />,
