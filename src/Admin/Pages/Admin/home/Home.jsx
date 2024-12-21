@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Grid, Divider, Typography } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group } from '@mui/icons-material';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
@@ -6,8 +6,34 @@ import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx';
 import ProjectTeam from '../../../Components/reportdetails/ProjectTeam.jsx';
 import ProjectList from '../../../Components/projectdeatils/ProjectList.jsx';
 import ProjectStatusChart from '../../../Components/home/ProjectStatusChart .jsx';
+import { fetchStatistics } from '../../../../util/http for admin/http.js';
+
 export default function Home() {
-  const [projects, setProjects] = useState([]);
+  const [stats, setStats] = useState({
+    usersCount: 0,
+    usersActiveCount: 0,
+    supervisorsCount: 0,
+    supervisorsActiveCount: 0,
+    co_supervisorsActiveCount: 0,
+    customersCount: 0,
+    studentsCount: 0,
+    projectsActiveCount: 0,
+    projectsCompletedCount: 0,
+    projectsPendingCount: 0,
+  });
+
+  useEffect(() => {
+    const loadStatistics = async () => {
+      try {
+        const data = await fetchStatistics();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error);
+      }
+    };
+
+    loadStatistics();
+  }, []);
 
   return (
     <Dashboard>
@@ -18,7 +44,7 @@ export default function Home() {
               bgcolor="#4caf50"
               icon={<Business />}
               label="Total Projects"
-              value={0}
+              value={stats.projectsActiveCount + stats.projectsCompletedCount + stats.projectsPendingCount}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -26,7 +52,7 @@ export default function Home() {
               bgcolor="#4caf50"
               icon={<CheckCircle />}
               label="Completed Projects"
-              value={0} 
+              value={stats.projectsCompletedCount}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -34,7 +60,7 @@ export default function Home() {
               bgcolor="#ff9800"
               icon={<HourglassEmpty />}
               label="Favorite Customer"
-              value={0} 
+              value={stats.customersCount}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -42,7 +68,7 @@ export default function Home() {
               bgcolor="#2196f3"
               icon={<Group />}
               label="Total Clients"
-              value={0} 
+              value={stats.usersCount}
             />
           </Grid>
         </Grid>
@@ -54,12 +80,12 @@ export default function Home() {
 
           <Grid item xs={12} md={6}>
             <ProjectStatusChart data={{
-              labels: ['Completed', 'Active'],
+              labels: ['Completed', 'Active', 'Pending'],
               datasets: [
                 {
                   label: 'Projects',
-                  data: [0, 0], // Placeholder values
-                  backgroundColor: ['#4caf50', '#ff9800'],
+                  data: [stats.projectsCompletedCount, stats.projectsActiveCount, stats.projectsPendingCount],
+                  backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
                 },
               ],
             }} />
@@ -67,8 +93,7 @@ export default function Home() {
         </Grid>
         <Divider sx={{ my: 4 }} />
         <Box>
-          <Typography variant="h4" gutterBottom>Project Management</Typography>
-          <ProjectList projects={projects} />
+          <ProjectList projects={[]} />
         </Box>
       </Box>
     </Dashboard>

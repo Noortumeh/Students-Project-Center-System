@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -12,9 +12,11 @@ import {
   Typography,
   Snackbar,
   Divider,
-  CircularProgress, // استيراد اللودر
+  CircularProgress,
 } from '@mui/material';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import { fetchTerms, postTerm, deleteTerm } from '../../../../util/http for admin/http.js';
 
 const styles = {
   title: {
@@ -41,11 +43,6 @@ const styles = {
     color: '#616161',
     fontFamily: "'Roboto', sans-serif",
   },
-  list: {
-    marginBottom: '20px',
-    paddingLeft: '20px',
-    color: '#616161',
-  },
   button: {
     backgroundColor: '#FF6F61',
     color: '#fff',
@@ -56,6 +53,18 @@ const styles = {
     '&:hover': {
       backgroundColor: '#E64A19',
     },
+  },
+  deleteButton: {
+    backgroundColor: '#E64A19',
+    color: '#fff',
+    fontWeight: '600',
+    padding: '10px 30px',
+    borderRadius: '30px',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      backgroundColor: '#D32F2F',
+    },
+    marginLeft: '10px',
   },
   card: {
     boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
@@ -76,71 +85,86 @@ const styles = {
 };
 
 export default function TermOfServices() {
-  const [termsText, setTermsText] = useState(() => {
-    return localStorage.getItem('termsText') || `Acceptance of Terms
-By accessing or using the Student Project Center System ("the System"), you agree to be bound by these Terms of Service ("Terms").
-If you do not agree to these Terms, please do not use the System.
-...`;
-  });
-
-  const [lastUpdated, setLastUpdated] = useState(() => {
-    return localStorage.getItem('lastUpdated') || 'May 2024';
-  });
-
   const [showModal, setShowModal] = useState(false);
-  const [modalText, setModalText] = useState(termsText);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalDescription, setModalDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false); 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [loading, setLoading] = useState(false); // حالة التحميل
 
-  useEffect(() => {
-    localStorage.setItem('termsText', termsText);
-  }, [termsText]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    localStorage.setItem('lastUpdated', lastUpdated);
-  }, [lastUpdated]);
+  const { data: termsData, error, isLoading } = useQuery({
+    queryKey: ['terms'],
+    queryFn: fetchTerms,
+  });
+
+  const createOrUpdateMutation = useMutation({
+    mutationFn: postTerm,
+    onSuccess: () => {
+      queryClient.invalidateQueries('terms');
+      setSnackbarMessage('Your changes have been saved.');
+      setOpenSnackbar(true);
+      setShowModal(false);
+    },
+    onError: (error) => {
+      setSnackbarMessage(error.message || 'Failed to save changes.');
+      setOpenSnackbar(true);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteTerm,
+    onSuccess: () => {
+      queryClient.invalidateQueries('terms');
+      setSnackbarMessage('Term deleted successfully.');
+      setOpenSnackbar(true);
+    },
+    onError: () => {
+      setSnackbarMessage('Failed to delete term.');
+      setOpenSnackbar(true);
+    },
+  });
 
   const handleEdit = () => {
     setIsCreating(false);
-    setModalText(termsText);
+    setModalTitle(termsData?.title || '');
+    setModalDescription(termsData?.description || '');
     setShowModal(true);
   };
 
   const handleCreate = () => {
+    if (termsData?.title) {
+      setSnackbarMessage('A term already exists. Please edit the existing term.');
+      setOpenSnackbar(true);
+      return;
+    }
     setIsCreating(true);
-    setModalText('');
+    setModalTitle('');
+    setModalDescription('');
     setShowModal(true);
   };
 
-  const handleSave = async () => {
-    if (!modalText.trim()) {
-      setSnackbarMessage('Terms of service text cannot be empty.');
+  const handleSave = () => {
+    if (!modalTitle.trim() || !modalDescription.trim()) {
+      setSnackbarMessage('Title and description cannot be empty.');
       setOpenSnackbar(true);
       return;
     }
 
-    setLoading(true); // بدء التحميل
+    const termData = {
+      title: modalTitle,
+      description: modalDescription,
+    };
 
-    try {
-      if (isCreating) {
-        setTermsText((prevText) => prevText + '\n\n' + modalText);
-      } else {
-        setTermsText(modalText);
-      }
+    console.log('Sending termData:', termData); // تحقق من البيانات هنا
 
-      const currentDate = new Date().toLocaleString();
-      setLastUpdated(currentDate);
+    createOrUpdateMutation.mutate(termData);
+  };
 
-      setShowModal(false);
-      setSnackbarMessage('Your changes have been saved.');
-      setOpenSnackbar(true);
-    } catch (error) {
-      setSnackbarMessage('Failed to save changes.');
-      setOpenSnackbar(true);
-    } finally {
-      setLoading(false); // إنهاء التحميل
+  const handleDelete = () => {
+    if (termsData?.id) {
+      deleteMutation.mutate(termsData.id);
     }
   };
 
@@ -166,37 +190,51 @@ If you do not agree to these Terms, please do not use the System.
               Terms of Service
             </Typography>
             <Typography variant="subtitle2" color="textSecondary" align="center">
-              Last updated: {lastUpdated}
+              Last updated: {termsData?.lastUpdated || 'N/A'}
             </Typography>
             <Divider sx={styles.divider} />
-            {loading ? ( // عرض اللودر أثناء التحميل
+            {isLoading ? (
               <Box sx={styles.loader}>
                 <CircularProgress />
               </Box>
+            ) : error ? (
+              <Typography color="error">Failed to load terms: {error.message}</Typography>
             ) : (
               <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-                {termsText}
+                {termsData?.description || 'No terms available.'}
               </Typography>
             )}
-            <Box display="flex" justifyContent="center" mt={4}>
-              <Button variant="contained" sx={styles.button} onClick={handleEdit}>
-                Edit
-              </Button>
-            </Box>
+            {termsData?.title && (
+              <Box display="flex" justifyContent="center" mt={4}>
+                <Button variant="contained" sx={styles.button} onClick={handleEdit}>
+                  Edit
+                </Button>
+                <Button variant="contained" sx={styles.deleteButton} onClick={handleDelete}>
+                  Delete
+                </Button>
+              </Box>
+            )}
           </CardContent>
         </Card>
 
-        {/* Dialog for adding or editing the terms */}
         <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="md" fullWidth>
           <DialogTitle>{isCreating ? 'Create Term of Services' : 'Edit Term of Services'}</DialogTitle>
           <DialogContent>
             <TextField
-              label="Terms of Services Text"
+              label="Title"
+              fullWidth
+              value={modalTitle}
+              onChange={(e) => setModalTitle(e.target.value)}
+              variant="outlined"
+              margin="normal"
+            />
+            <TextField
+              label="Description"
               multiline
               rows={10}
               fullWidth
-              value={modalText}
-              onChange={(e) => setModalText(e.target.value)}
+              value={modalDescription}
+              onChange={(e) => setModalDescription(e.target.value)}
               variant="outlined"
               margin="normal"
             />
@@ -211,7 +249,6 @@ If you do not agree to these Terms, please do not use the System.
           </DialogActions>
         </Dialog>
 
-        {/* Snackbar for notifications */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={4000}
@@ -221,4 +258,4 @@ If you do not agree to these Terms, please do not use the System.
       </Box>
     </Dashboard>
   );
-}
+}     

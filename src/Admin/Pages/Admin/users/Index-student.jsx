@@ -1,41 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { CircularProgress, Box, Button, IconButton } from '@mui/material';
+import { CircularProgress, Box, Button } from '@mui/material';
 import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import Filters from '../../../Components/generalcomponent/Filters.jsx';
+import { fetchSupervisors } from '../../../../util/http for admin/http.js'
 
 export default function IndexStudent() {
-  const [loading, setLoading] = useState(true);
-  const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesToShow, setEntriesToShow] = useState(20);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://api.escuelajs.co/api/v1/users');
-        const data = await response.json();
-        setStudents(data.map(user => ({
-          id: user.id,
-          firstName: user.name.split(' ')[0],
-          middleName: user.name.split(' ')[1] || '',
-          lastName: user.name.split(' ')[2] || '',
-          email: user.email,
-          workgroup: 'BSIT', 
-          phone: user.phone || 'N/A'
-        })));
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: supervisors = [], isLoading, error } = useQuery({
+    queryKey: ['supervisors'],
+    queryFn: fetchSupervisors
+  });
 
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
@@ -43,14 +23,13 @@ export default function IndexStudent() {
     );
   }
 
+  if (error) {
+    return <div>Error loading supervisors: {error.message}</div>;
+  }
+
   const columns = [
-    { id: 'id', label: 'Student ID' },
-    { id: 'firstName', label: 'First Name' },
-    { id: 'middleName', label: 'Middle Name' },
-    { id: 'lastName', label: 'Last Name' },
-    { id: 'email', label: 'Email' },
-    { id: 'workgroup', label: 'Workgroup' },
-    { id: 'phone', label: 'Phone' }
+    { id: 'value', label: 'Supervisor ID' },
+    { id: 'label', label: 'Name' }
   ];
 
   return (
@@ -68,15 +47,14 @@ export default function IndexStudent() {
       />
       <GeneralTable
         columns={columns}
-        data={students.filter(student => 
-          student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+        data={supervisors.filter(supervisor => 
+          supervisor.label.toLowerCase().includes(searchTerm.toLowerCase())
         ).slice(0, entriesToShow)}
-        orderBy="id"
+        orderBy="value"
         order="asc"
         onRequestSort={() => {}}
-        onDetailsClick={(id) => console.log(`View details for student with ID: ${id}`)}
-        onDelete={(id) => console.log(`Delete student with ID: ${id}`)}
+        onDetailsClick={(id) => console.log(`View details for supervisor with ID: ${id}`)}
+        onDelete={(id) => console.log(`Delete supervisor with ID: ${id}`)}
         sx={{
           '& .MuiTableCell-root': {
             padding: '8px',
