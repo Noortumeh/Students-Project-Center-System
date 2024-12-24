@@ -4,15 +4,15 @@ import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.js
 import { CircularProgress, Box, Button } from '@mui/material';
 import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx';
 import Filters from '../../../Components/generalcomponent/Filters.jsx';
-import { fetchSupervisors } from '../../../../util/http for admin/http.js'
+import { fetchStudents } from '../../../../util/http for admin/http.js'; // استيراد الدالة الجديدة
 
 export default function IndexStudent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesToShow, setEntriesToShow] = useState(20);
 
-  const { data: supervisors = [], isLoading, error } = useQuery({
-    queryKey: ['supervisors'],
-    queryFn: fetchSupervisors
+  const { data: students = [], isLoading, error } = useQuery({
+    queryKey: ['students'],
+    queryFn: () => fetchStudents() // استدعاء الدالة الجديدة
   });
 
   if (isLoading) {
@@ -24,12 +24,17 @@ export default function IndexStudent() {
   }
 
   if (error) {
-    return <div>Error loading supervisors: {error.message}</div>;
+    return <div>Error loading students: {error.message}</div>;
   }
 
   const columns = [
-    { id: 'value', label: 'Supervisor ID' },
-    { id: 'label', label: 'Name' }
+    { id: 'id', label: 'Student ID' },
+    { id: 'firstName', label: 'First Name' },
+    { id: 'middleName', label: 'Middle Name' },
+    { id: 'lastName', label: 'Last Name' },
+    { id: 'email', label: 'Email' },
+    { id: 'projectName', label: 'Project Name' },
+    { id: 'projectStatus', label: 'Project Status' }
   ];
 
   return (
@@ -47,14 +52,15 @@ export default function IndexStudent() {
       />
       <GeneralTable
         columns={columns}
-        data={supervisors.filter(supervisor => 
-          supervisor.label.toLowerCase().includes(searchTerm.toLowerCase())
+        data={students.filter(student => 
+          student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.lastName.toLowerCase().includes(searchTerm.toLowerCase())
         ).slice(0, entriesToShow)}
-        orderBy="value"
+        orderBy="id"
         order="asc"
         onRequestSort={() => {}}
-        onDetailsClick={(id) => console.log(`View details for supervisor with ID: ${id}`)}
-        onDelete={(id) => console.log(`Delete supervisor with ID: ${id}`)}
+        onDetailsClick={(id) => console.log(`View details for student with ID: ${id}`)}
+        onDelete={(id) => console.log(`Delete student with ID: ${id}`)}
         sx={{
           '& .MuiTableCell-root': {
             padding: '8px',

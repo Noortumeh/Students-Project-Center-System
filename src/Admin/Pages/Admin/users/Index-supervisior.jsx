@@ -1,28 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import UserManagement from '../../../Components/user/User.jsx';
 import { CircularProgress, Box } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSupervisors } from '../../../../util/http for admin/http.js'; // استيراد الدالة الجديدة
 
 export default function IndexSupervisor() {
-  const [loading, setLoading] = useState(true);
+  const { data: supervisors = [], isLoading, error } = useQuery({
+    queryKey: ['supervisors'],
+    queryFn: fetchSupervisors // استدعاء الدالة الجديدة
+  });
 
-  useEffect(() => {
-    // محاكاة تحميل البيانات
-    const fetchData = async () => {
-      try {
-        // يمكنك استدعاء البيانات من الـ API هنا إذا لزم الأمر
-        await fetch('https://api.escuelajs.co/api/v1/users'); // استدعاء البيانات
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
@@ -30,12 +19,16 @@ export default function IndexSupervisor() {
     );
   }
 
+  if (error) {
+    return <div>Error loading supervisors: {error.message}</div>;
+  }
+
   return (
     <Dashboard>
       <UserManagement 
         title="Supervisor" 
-        fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="admin"  // تعديل الدور هنا إلى "supervisor"
+        users={supervisors} // تمرير البيانات المسترجعة
+        role="supervisor"  // تعديل الدور هنا إلى "supervisor"
         createPath="/users/create-supervisor"  
         editPath="/users/edit"                  
       />

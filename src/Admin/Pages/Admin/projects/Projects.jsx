@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import {
   Container, Box, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Select, MenuItem
 } from '@mui/material';
-import { Star as StarIcon, StarBorder as StarBorderIcon, Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import {
+  Star as StarIcon,
+  StarBorder as StarBorderIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon
+} from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, Link } from 'react-router-dom';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { fetchProjects } from '../../../../util/http for admin/http.js';
+import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js'; 
 
 const ProjectPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const { data, error, isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
@@ -18,11 +24,16 @@ const ProjectPage = () => {
 
   const [favorite, setFavorite] = useState({});
 
-  const toggleFavorite = (id) => {
-    setFavorite((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+  const toggleFavorite = async (id) => {
+    try {
+      await setFavoriteProject(id);
+      setFavorite((prev) => ({
+        ...prev,
+        [id]: !prev[id]
+      }));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   const handleEdit = (id) => {
@@ -40,7 +51,6 @@ const ProjectPage = () => {
     "Customer Name",
     "Team",
     "Workgroup Name",
-    "Details",
     "Action",
   ];
 
@@ -63,7 +73,7 @@ const ProjectPage = () => {
             variant="contained"
             color="success"
             startIcon={<AddIcon />}
-            onClick={() => navigate('/projects/CreateProject')} // Corrected the string
+            onClick={() => navigate('/projects/CreateProject')}
           >
             Create Project
           </Button>
@@ -96,11 +106,11 @@ const ProjectPage = () => {
                   <TableCell>{project.teamName}</TableCell>
                   <TableCell>{project.workgroupName}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="success" size="small">
-                      Details
-                    </Button>
-                  </TableCell>
-                  <TableCell>
+                    <Link to={`/project-details/${project.id}`}>
+                      <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                        View Details
+                      </Button>
+                    </Link>
                     <IconButton onClick={() => toggleFavorite(project.id)}>
                       {favorite[project.id] ? <StarIcon /> : <StarBorderIcon />}
                     </IconButton>

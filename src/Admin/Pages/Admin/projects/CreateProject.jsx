@@ -7,7 +7,7 @@ import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
-import { fetchSupervisors, fetchCustomers, createProject } from '../../../../util/http for admin/http.js';
+import { fetchUsers, createProject } from '../../../../util/http for admin/http.js'; // تأكد من أن المسار صحيح
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -17,23 +17,18 @@ const CreateProject = () => {
 
   const navigate = useNavigate();
 
-  const { data: supervisors, error: supervisorsError } = useQuery({
-    queryKey: ['supervisors'],
-    queryFn: fetchSupervisors,
+  const { data: users, error: usersError } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers, 
   });
 
-  const { data: customers, error: customersError } = useQuery({
-    queryKey: ['customers'],
-    queryFn: fetchCustomers,
-  });
-
-  if (supervisorsError) {
-    toast.error('Failed to fetch supervisors');
+  if (usersError) {
+    toast.error('Failed to fetch users');
   }
 
-  if (customersError) {
-    toast.error('Failed to fetch customers');
-  }
+  // Filter users into supervisors and customers based on their role
+  const supervisors = users?.filter(user => user.isSupervisor) || [];
+  const customers = users?.filter(user => !user.isSupervisor) || [];
 
   const handleAddProject = async () => {
     if (!projectName || !selectedSupervisor || !selectedCustomer) {
@@ -70,7 +65,7 @@ const CreateProject = () => {
             setProjectName={setProjectName}
           />
           <Select
-            options={supervisors}
+            options={supervisors} 
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             onChange={setSelectedSupervisor}
@@ -79,7 +74,7 @@ const CreateProject = () => {
             styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <Select
-            options={customers}
+            options={customers} 
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             onChange={setSelectedCustomer}

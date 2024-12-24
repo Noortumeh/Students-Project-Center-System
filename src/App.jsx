@@ -1,11 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Admin/Pages/Admin/home/Home.jsx';
 import CreateUser from './Admin/Components/createuser/CreateUser.jsx';
-import UserDetails from './Admin/Components/details/Details.jsx';
-import EditUserPage from './Admin/Pages/Admin/Action/Edit.jsx';
-import CreateStudents from './Admin/Pages/Admin/users/CreateStudents.jsx';
-import CreateSupervisior from './Admin/Pages/Admin/users/CreateSupervisior.jsx';
-import CreateCustomer from './Admin/Pages/Admin/users/CreateCustomer.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
@@ -21,7 +16,7 @@ import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
-
+ import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
 //User Pages
 import RootLayout from "./Users/pages/Root.jsx";
 import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
@@ -37,7 +32,7 @@ import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
 import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 // Loaders to fetch data before rendering components
-import { fetchUserDetails, fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
+import {fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
@@ -54,31 +49,12 @@ const router = createBrowserRouter([
     path: '/createuser/CreateUser',
     element: <CreateUser />,
   },
+
   {
-    path: '/details/Details/:id',
-    element: <UserDetails />,
-    loader: ({ params }) => fetchUserDetails(params.id),
+    path: '/contact/Contact',
+    element: <ContactUsForm />,
   },
-  {
-    path: '/Action/edit/:id',
-    element: <EditUserPage />,
-    loader: ({ params }) => fetchUserDetails(params.id),
-  },
-  {
-    path: '/users/CreateStudents/:id',
-    element: <CreateStudents />,
-    loader: ({ params }) => fetchUserDetails(params.id),
-  },
-  {
-    path: '/users/CreateSupervisior/:id',
-    element: <CreateSupervisior />,
-    loader: ({ params }) => fetchUserDetails(params.id),
-  },
-  {
-    path: '/users/CreateCustomer/:id',
-    element: <CreateCustomer />,
-    loader: ({ params }) => fetchUserDetails(params.id),
-  },
+  
   {
     path: '/users/student',
     element: <IndexStudent />,
@@ -128,7 +104,7 @@ const router = createBrowserRouter([
     element: <Projects />,
   },
   {
-    path: '/projects/ProjectDetails/:id',
+    path: '/projects/:id',
     element: <ProjectDetails />,
     loader: ({ params }) => fetchProjectDetails(params.id),
   },

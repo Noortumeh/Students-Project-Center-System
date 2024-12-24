@@ -120,30 +120,11 @@ export default function TermOfServices() {
       setSnackbarMessage('Term deleted successfully.');
       setOpenSnackbar(true);
     },
-    onError: () => {
-      setSnackbarMessage('Failed to delete term.');
+    onError: (error) => {
+      setSnackbarMessage(error.message || 'Failed to delete term.');
       setOpenSnackbar(true);
     },
   });
-
-  const handleEdit = () => {
-    setIsCreating(false);
-    setModalTitle(termsData?.title || '');
-    setModalDescription(termsData?.description || '');
-    setShowModal(true);
-  };
-
-  const handleCreate = () => {
-    if (termsData?.title) {
-      setSnackbarMessage('A term already exists. Please edit the existing term.');
-      setOpenSnackbar(true);
-      return;
-    }
-    setIsCreating(true);
-    setModalTitle('');
-    setModalDescription('');
-    setShowModal(true);
-  };
 
   const handleSave = () => {
     if (!modalTitle.trim() || !modalDescription.trim()) {
@@ -157,20 +138,32 @@ export default function TermOfServices() {
       description: modalDescription,
     };
 
-    console.log('Sending termData:', termData); // تحقق من البيانات هنا
-
-    createOrUpdateMutation.mutate(termData);
+    if (isCreating) {
+      createOrUpdateMutation.mutate(termData);
+    } else {
+      const existingTermId = termsData?.result?.[0]?.id;
+      if (existingTermId) {
+        termData.id = existingTermId; 
+        createOrUpdateMutation.mutate(termData);
+      }
+    }
   };
 
   const handleDelete = () => {
-    if (termsData?.id) {
-      deleteMutation.mutate(termsData.id);
+    const existingTermId = termsData?.result?.[0]?.id; 
+    if (existingTermId) {
+      deleteMutation.mutate(existingTermId);
+    } else {
+      setSnackbarMessage('Term not found for deletion.');
+      setOpenSnackbar(true);
     }
   };
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
+
+  const hasTerms = termsData?.result?.length > 0;
 
   return (
     <Dashboard>
@@ -179,18 +172,20 @@ export default function TermOfServices() {
           <Typography variant="h4" sx={styles.title}>
             Terms Of Services
           </Typography>
-          <Button variant="contained" sx={styles.button} onClick={handleCreate}>
-            Create Term of Services
-          </Button>
+          {!hasTerms && (
+            <Button variant="contained" sx={styles.button} onClick={() => { setIsCreating(true); setShowModal(true); }}>
+              Create Term of Services
+            </Button>
+          )}
         </Box>
 
         <Card sx={styles.card}>
           <CardContent>
             <Typography variant="h5" sx={styles.sectionTitle}>
-              Terms of Service
+              {hasTerms ? termsData?.result[0]?.title : 'No title available.'}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary" align="center">
-              Last updated: {termsData?.lastUpdated || 'N/A'}
+              Last updated: {termsData?.result?.[0]?.lastUpdatedAt || 'N/A'}
             </Typography>
             <Divider sx={styles.divider} />
             {isLoading ? (
@@ -201,12 +196,12 @@ export default function TermOfServices() {
               <Typography color="error">Failed to load terms: {error.message}</Typography>
             ) : (
               <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-                {termsData?.description || 'No terms available.'}
+                {termsData?.result?.[0]?.description || 'No terms available.'}
               </Typography>
             )}
-            {termsData?.title && (
+            {hasTerms && (
               <Box display="flex" justifyContent="center" mt={4}>
-                <Button variant="contained" sx={styles.button} onClick={handleEdit}>
+                <Button variant="contained" sx={styles.button} onClick={() => { setIsCreating(false); setShowModal(true); }}>
                   Edit
                 </Button>
                 <Button variant="contained" sx={styles.deleteButton} onClick={handleDelete}>
@@ -258,4 +253,4 @@ export default function TermOfServices() {
       </Box>
     </Dashboard>
   );
-}     
+}
