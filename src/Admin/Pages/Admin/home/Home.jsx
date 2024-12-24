@@ -1,40 +1,39 @@
-import { useState, useEffect } from 'react';
-import { Box, Grid, Divider, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, Grid, Divider, CircularProgress, Typography } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group } from '@mui/icons-material';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx';
 import ProjectTeam from '../../../Components/reportdetails/ProjectTeam.jsx';
 import ProjectList from '../../../Components/projectdeatils/ProjectList.jsx';
 import ProjectStatusChart from '../../../Components/home/ProjectStatusChart .jsx';
-import { fetchStatistics } from '../../../../util/http for admin/http.js';
+import { useQuery } from '@tanstack/react-query';
+import { fetchStatistics } from '../../../../util/http for admin/http.js'; 
 
 export default function Home() {
-  const [stats, setStats] = useState({
-    usersCount: 0,
-    usersActiveCount: 0,
-    supervisorsCount: 0,
-    supervisorsActiveCount: 0,
-    co_supervisorsActiveCount: 0,
-    customersCount: 0,
-    studentsCount: 0,
-    projectsActiveCount: 0,
-    projectsCompletedCount: 0,
-    projectsPendingCount: 0,
+  const { data: statistics, error: statisticsError, isLoading: statisticsLoading } = useQuery({
+    queryKey: ['statistics'],
+    queryFn: fetchStatistics,
   });
 
-  useEffect(() => {
-    const loadStatistics = async () => {
-      try {
-        const data = await fetchStatistics();
-        setStats(data);
-      } catch (error) {
-        console.error('Failed to fetch statistics:', error);
-      }
-    };
+  if (statisticsLoading) {
+    return (
+      <Dashboard>
+        <Grid container justifyContent="center">
+          <CircularProgress />
+        </Grid>
+      </Dashboard>
+    );
+  }
 
-    loadStatistics();
-  }, []);
+  if (statisticsError) {
+    return (
+      <Dashboard>
+        <Typography color="error">Error fetching statistics: {statisticsError.message}</Typography>
+      </Dashboard>
+    );
+  }
 
+  const result = statistics || {}; 
   return (
     <Dashboard>
       <Box sx={{ padding: 3, backgroundColor: '#f0f2f5' }}>
@@ -44,7 +43,7 @@ export default function Home() {
               bgcolor="#4caf50"
               icon={<Business />}
               label="Total Projects"
-              value={stats.projectsActiveCount + stats.projectsCompletedCount + stats.projectsPendingCount}
+              value={result.projectsActiveCount || 0} 
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -52,7 +51,7 @@ export default function Home() {
               bgcolor="#4caf50"
               icon={<CheckCircle />}
               label="Completed Projects"
-              value={stats.projectsCompletedCount}
+              value={result.projectsCompletedCount || 0} 
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -60,7 +59,7 @@ export default function Home() {
               bgcolor="#ff9800"
               icon={<HourglassEmpty />}
               label="Favorite Customer"
-              value={stats.customersCount}
+              value={result.customersCount || 0} 
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -68,7 +67,7 @@ export default function Home() {
               bgcolor="#2196f3"
               icon={<Group />}
               label="Total Clients"
-              value={stats.usersCount}
+              value={result.usersCount || 0} 
             />
           </Grid>
         </Grid>
@@ -80,21 +79,22 @@ export default function Home() {
 
           <Grid item xs={12} md={6}>
             <ProjectStatusChart data={{
-              labels: ['Completed', 'Active', 'Pending'],
+              labels: ['Completed', 'Active'],
               datasets: [
                 {
                   label: 'Projects',
-                  data: [stats.projectsCompletedCount, stats.projectsActiveCount, stats.projectsPendingCount],
-                  backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                  data: [
+                    result.projectsCompletedCount || 0, 
+                    result.projectsActiveCount || 0
+                  ],
+                  backgroundColor: ['#4caf50', '#ff9800'],
                 },
               ],
-            }} />
+            }} loading={statisticsLoading} />
           </Grid>
         </Grid>
         <Divider sx={{ my: 4 }} />
-        <Box>
-          <ProjectList projects={[]} />
-        </Box>
+       
       </Box>
     </Dashboard>
   );

@@ -1,32 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import { CircularProgress, Box, Button } from '@mui/material';
 import UserManagement from '../../../Components/user/User.jsx';
-import { CircularProgress, Box } from '@mui/material';
+import { fetchCustomers } from '../../../../util/http for admin/http.js'; 
 
 export default function IndexCustomer() {
-  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [entriesToShow, setEntriesToShow] = useState(20);
 
-  useEffect(() => {
-    // محاكاة تحميل البيانات
-    const fetchData = async () => {
-      try {
-        // يمكنك استدعاء البيانات من الـ API هنا إذا لزم الأمر
-        // على سبيل المثال:
-        await fetch('https://api.escuelajs.co/api/v1/users'); // استدعاء البيانات
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: customers = [], isLoading, error } = useQuery({
+    queryKey: ['customers'],
+    queryFn: fetchCustomers, // استدعاء الدالة الجديدة
+  });
 
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <p>Error fetching customers: {error.message}</p>
       </Box>
     );
   }
@@ -35,8 +34,8 @@ export default function IndexCustomer() {
     <Dashboard>
       <UserManagement 
         title="Customer" 
-        fetchUrl="https://api.escuelajs.co/api/v1/users" 
-        role="customer"  // تعديل الدور هنا إلى "customer"
+        users={customers} 
+        role="customer"  
         createPath="/users/create-customer"   
         editPath="/Action/edit/:id"                
       />
