@@ -155,6 +155,4 @@ function App() {
     </QueryClientProvider>
   );
 }
-//test 
-
 export default App;

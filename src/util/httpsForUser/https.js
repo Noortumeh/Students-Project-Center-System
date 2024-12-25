@@ -2,7 +2,15 @@ import { QueryClient } from "@tanstack/react-query";
 //
 const API_URL = "http://spcs.somee.com/api";
 // Query Client
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false, // منع إعادة المحاولة التلقائية
+      refetchOnWindowFocus: false, // منع إعادة الجلب عند التركيز على النافذة
+      staleTime: 5 * 60 * 1000, // تعيين وقت التقادم (مثال: 5 دقائق)
+    },
+  },
+});
 
 export async function signUp(formData) {
   const response = await fetch(`${API_URL}/auth/register`, {
@@ -53,7 +61,7 @@ export function getToken() {
 export function getCurrentUser() {
   const userInfoStr = localStorage.getItem("userInfo");
   const token = localStorage.getItem("token");
-  
+
   if (!userInfoStr || !token) {
     return null;
   }
@@ -70,12 +78,12 @@ export function logout() {
   if (localStorage.getItem("token") && localStorage.getItem("userInfo")) {
     localStorage.removeItem("token");
     localStorage.removeItem("userInfo");
-  }else{
+  } else {
     const error = new Error("An error occurred while logout");
     throw error;
   }
 }
-///////
+//* Workgroup APIs
 export async function getWorkgroups() {
   const token = getToken();
   const response = await fetch(`${API_URL}/workgroups/get-all-for-user`, {
@@ -91,6 +99,23 @@ export async function getWorkgroups() {
     throw error;
   }
   const data = await response.json();
-  console.log(data.result);
   return data;
+}
+// Fetch data for each Workgroup:
+export async function fetchWorkgroupData(id) {
+  const token = getToken();
+  const response = await fetch(`${API_URL}/workgroups/${id}`, {
+    "Content-Type": "application/json",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data.result;
 }
