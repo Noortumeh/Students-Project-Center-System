@@ -9,12 +9,19 @@ import image from "../../assets/images/SignBg.jpg";
 
 export default function WorkgroupCard({ title, description, action, id}) {
     return (
-        <Card sx={{ maxWidth: 345, minWidth: 250, bgcolor: '#2F3349' }}>
+        <Card sx={{  width: 320,  // عرض ثابت للبطاقة
+            minHeight: 350, // ارتفاع ثابت للبطاقة
+            display: 'flex',
+            flexDirection: 'column',justifyContent: 'space-between',m: 2,
+            bgcolor: '#2F3349' }}>
             <CardActionArea>
                 <CardMedia
                     component="img"
                     height="140"
                     image={image}
+                    sx={{
+                        objectFit: 'cover'
+                    }}
                 />
                 <CardContent sx={{ color: 'white' }}>
                     <Typography gutterBottom variant="h5" component="div">
