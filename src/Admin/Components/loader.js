@@ -15,17 +15,34 @@ export async function fetchUserDetails(userId) {
 }
 
 // دالة لتحميل بيانات المشروع بناءً على الـ ID
-export async function fetchProjectDetails(projectId) {
+export const fetchProjectDetails = async (projectId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/projects/${projectId}`);
-    return response.data; // يعيد البيانات إلى اللودر
+    if (!projectId) {
+      throw new Error('Project ID is required');
+    }
+
+    console.log('Fetching project details for ID:', projectId); 
+    const response = await fetch(`http://spcs.somee.com/api/project-sections?projectId=${projectId}`); 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error fetching project details:', errorData);
+      throw new Error(`Error fetching project details: ${errorData.message || `HTTP error! status: ${response.status}`}`);
+    }
+    
+    const data = await response.json();
+    
+    // تحقق مما إذا كانت هناك أقسام
+    if (!data.result || data.result.length === 0) {
+      throw new Error('No sections found for the given project ID.');
+    }
+
+    return data;
   } catch (error) {
     console.error('Error fetching project details:', error);
-    throw new Error('Failed to fetch project details.');
+    throw new Error(`Failed to fetch project details: ${error.message}`);
   }
-}
-
-// دالة لتحميل تفاصيل التقارير بناءً على الـ ID
+};
 export async function fetchReportDetails(reportId) {
   try {
     const response = await axios.get(`${API_BASE_URL}/reports/${reportId}`);

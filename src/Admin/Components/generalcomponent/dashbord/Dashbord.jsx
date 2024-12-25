@@ -53,11 +53,13 @@ function Dashboard({ children }) {
     if (currentPath.startsWith('/users/student')) return 'students';
     if (currentPath.startsWith('/users/customer')) return 'customers';
     if (currentPath.startsWith('/users/supervisor')) return 'supervisors';
+    if (currentPath.startsWith('/users')) return 'users'; 
     if (currentPath.startsWith('/posts/Announcements')) return 'announcements';
     if (currentPath.startsWith('/posts/Publishing-projects')) return 'publishing';
     if (currentPath.startsWith('/posts/Form')) return 'form';
     if (currentPath.startsWith('/termofservices/TermOfServices')) return 'TermOfServices';
     if (currentPath.startsWith('/report/Reports')) return 'reports';
+    if (currentPath.startsWith('/roles')) return 'roles';
     return 'home';
   }, [location]);
 
@@ -124,7 +126,6 @@ function Dashboard({ children }) {
             </ListItemIcon>
             <ListItemText primary="WorkGroup" />
           </ListItem>
-
           <ListItem button component={Link} to="/projects/Projects" selected={activeLink === 'projects'}>
             <ListItemIcon>
               <BusinessCenterIcon />
@@ -158,9 +159,14 @@ function Dashboard({ children }) {
                 </ListItemIcon>
                 <ListItemText primary="Supervisors" />
               </ListItem>
+              <ListItem button sx={{ pl: 4 }} component={Link} to="/users" selected={activeLink === 'users'}>
+                <ListItemIcon>
+                  <GroupIcon />
+                </ListItemIcon>
+                <ListItemText primary="Users" />
+              </ListItem>
             </List>
           </Collapse>
-
           <ListItem button component={Link} to="/ourpartner/OurPartner" selected={activeLink === 'ourpartner'}>
             <ListItemIcon>
               <GroupIcon />
@@ -210,6 +216,20 @@ function Dashboard({ children }) {
               <BarChartIcon />
             </ListItemIcon>
             <ListItemText primary="Reports" />
+          </ListItem>
+
+          <ListItem button component={Link} to="/roles" selected={activeLink === 'roles'}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            <ListItemText primary="Roles" />
+          </ListItem>
+
+          <ListItem button component={Link} to="/contact" selected={activeLink === 'Contact'}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            <ListItemText primary="Contact" />
           </ListItem>
         </List>
       </Drawer>

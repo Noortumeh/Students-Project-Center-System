@@ -106,11 +106,11 @@ const ProjectPage = () => {
                   <TableCell>{project.teamName}</TableCell>
                   <TableCell>{project.workgroupName}</TableCell>
                   <TableCell>
-                    <Link to={`/project-details/${project.id}`}>
-                      <Button variant="contained" color="primary" sx={{ mr: 1 }}>
-                        View Details
-                      </Button>
-                    </Link>
+                  <Link to={`/projects/${project.id}`}>
+                  <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                    View Details
+                  </Button>
+                  </Link>
                     <IconButton onClick={() => toggleFavorite(project.id)}>
                       {favorite[project.id] ? <StarIcon /> : <StarBorderIcon />}
                     </IconButton>

@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Admin/Pages/Admin/home/Home.jsx';
-import CreateUser from './Admin/Components/createuser/CreateUser.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
@@ -16,7 +15,9 @@ import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
- import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
+import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
+ import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
+
 //User Pages
 import RootLayout from "./Users/pages/Root.jsx";
 import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
@@ -45,14 +46,10 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <Home />,
   },
+ 
   {
-    path: '/createuser/CreateUser',
-    element: <CreateUser />,
-  },
-
-  {
-    path: '/contact/Contact',
-    element: <ContactUsForm />,
+    path: "contact",
+    element: <ContactUsForm />, 
   },
   
   {
@@ -116,6 +113,10 @@ const router = createBrowserRouter([
     path: '/projects/EditProject/:id',
     element: <EditProject />,
     loader: ({ params }) => fetchProjectDetails(params.id),
+  },
+  {
+    path: '/roles',
+    element: <Roles />,
   },
   {
     path: '*',
