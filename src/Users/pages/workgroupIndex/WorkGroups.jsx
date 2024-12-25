@@ -1,4 +1,4 @@
-import { Box, List } from "@mui/material";
+import { Box, List, useMediaQuery } from "@mui/material";
 import Sidebar from "../../components/sidebar";
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -8,11 +8,14 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import TaskIcon from '@mui/icons-material/Task';
 import { useHideSidebar } from "../../useHideSidebar";
+import { useTheme } from "@mui/material/styles";
 
 export default function WorkGroupsPage() {
     const [open, setOpen] = useState(true);
-    const [hide, setHide] = useHideSidebar();
-
+    const [hide] = useHideSidebar();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    
     const checkIsOpen = () => {
         setOpen(!open);
     };
@@ -21,13 +24,13 @@ export default function WorkGroupsPage() {
             {!hide && (
                 <Sidebar open={open} checkIsOpen={checkIsOpen}>
                     <List>
-                        <ButtonLink name="Workgroups" link="" icon={<DashboardIcon />} open={open} />
-                        <ButtonLink name="Projects" link="projects" icon={<InventoryIcon />} open={open} />
-                        <ButtonLink name="Tasks" link="tasks" icon={<TaskIcon />} open={open} />
+                        <ButtonLink name="Workgroups" link="" icon={<DashboardIcon />} open={isMobile ? false : open} />
+                        <ButtonLink name="Projects" link="projects" icon={<InventoryIcon />} open={isMobile ? false : open} />
+                        <ButtonLink name="Tasks" link="tasks" icon={<TaskIcon />} open={isMobile ? false : open} />
                     </List>
                 </Sidebar>
             )}
-            <Box sx={{ pt: '50px', pl: `${open ? '250px' : '80px'}`, zIndex: 0, transition: '0.3s' }}>
+            <Box sx={{ pt: '50px', pl: `${!isMobile && open && !hide ? '160px' : '50px'}`, zIndex: 0, transition: '0.3s' }}>
                 <Outlet />
             </Box>
         </Box>
