@@ -1,46 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { CircularProgress, Box, Button, IconButton } from '@mui/material';
+import { CircularProgress, Box, Button } from '@mui/material';
 import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import Filters from '../../../Components/generalcomponent/Filters.jsx';
+import { fetchStudents } from '../../../../util/http for admin/http.js'; // استيراد الدالة الجديدة
 
 export default function IndexStudent() {
-  const [loading, setLoading] = useState(true);
-  const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesToShow, setEntriesToShow] = useState(20);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://api.escuelajs.co/api/v1/users');
-        const data = await response.json();
-        setStudents(data.map(user => ({
-          id: user.id,
-          firstName: user.name.split(' ')[0],
-          middleName: user.name.split(' ')[1] || '',
-          lastName: user.name.split(' ')[2] || '',
-          email: user.email,
-          workgroup: 'BSIT', 
-          phone: user.phone || 'N/A'
-        })));
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: students = [], isLoading, error } = useQuery({
+    queryKey: ['students'],
+    queryFn: () => fetchStudents() // استدعاء الدالة الجديدة
+  });
 
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
       </Box>
     );
+  }
+
+  if (error) {
+    return <div>Error loading students: {error.message}</div>;
   }
 
   const columns = [
@@ -49,8 +33,8 @@ export default function IndexStudent() {
     { id: 'middleName', label: 'Middle Name' },
     { id: 'lastName', label: 'Last Name' },
     { id: 'email', label: 'Email' },
-    { id: 'workgroup', label: 'Workgroup' },
-    { id: 'phone', label: 'Phone' }
+    { id: 'projectName', label: 'Project Name' },
+    { id: 'projectStatus', label: 'Project Status' }
   ];
 
   return (

@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
 import { TextField, Grid } from '@mui/material';
 
-const Filters = ({ searchTerm, setSearchTerm, entriesToShow, setEntriesToShow }) => {
+const Filters = ({ 
+  searchTerm, 
+  setSearchTerm, 
+  entriesToShow, 
+  setEntriesToShow, 
+  entryOptions 
+}) => {
   return (
     <Grid container justifyContent="space-between" alignItems="center" mb={3}>
       <Grid item>
@@ -13,9 +19,11 @@ const Filters = ({ searchTerm, setSearchTerm, entriesToShow, setEntriesToShow })
           onChange={(e) => setEntriesToShow(e.target.value)}
           sx={{ width: 120 }}
         >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={30}>30</option>
+          {entryOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
         </TextField>
       </Grid>
       <Grid item>
@@ -30,7 +38,5 @@ const Filters = ({ searchTerm, setSearchTerm, entriesToShow, setEntriesToShow })
     </Grid>
   );
 };
-
-
 
 export default Filters;

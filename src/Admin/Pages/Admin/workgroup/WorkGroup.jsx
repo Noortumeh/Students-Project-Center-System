@@ -1,31 +1,52 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
-  Grid2 as Grid,
+  Grid,
   Paper,
   Typography,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  IconButton, Select, MenuItem, Box
 } from '@mui/material';
-
-import Filters from '../../../Components/generalcomponent/Filters.jsx'; 
-import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx'; 
+import { Delete, Star, StarBorder, Edit } from '@mui/icons-material';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx';
+import { fetchWorkgroups } from '../../../../util/http for admin/http.js';
 
 const WorkgroupPage = () => { 
-  
   const [entriesToShow, setEntriesToShow] = useState(10);
   const [searchTerm, setSearchTerm] = useState(''); 
-  const [workgroups, setWorkgroups] = useState([
-    { id: 1, workgroupName: 'Group A', supervisorName: 'John Doe', customerName: 'Company X', projectName: 'Project 1' },
-    { id: 2, workgroupName: 'Group B', supervisorName: 'Jane Doe', customerName: 'Company Y', projectName: 'Project 2' },
-    { id: 3, workgroupName: 'Group C', supervisorName: 'Mark Smith', customerName: 'Company Z', projectName: 'Project 3' },
-  ]);
+  const [workgroups, setWorkgroups] = useState([]);
+  const [favorite, setFavorite] = useState({});
+  const entryOptions = [10, 20, 30, 50, 100];
+
+  useEffect(() => {
+    const loadWorkgroups = async () => {
+      try {
+        const data = await fetchWorkgroups();
+        if (data) {
+          setWorkgroups(data.result || data);
+        } else {
+          console.error('Invalid data format:', data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch workgroups:', error);
+      }
+    };
+
+    loadWorkgroups();
+  }, []);
+
+  const toggleFavorite = (id) => {
+    setFavorite((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   const handleDetailsClick = useCallback((workgroupId) => {
     console.log(`Details requested for workgroup: ${workgroupId}`);
   }, []);
 
   const handleDelete = useCallback((workgroupId) => {
-    setWorkgroups((prevWorkgroups) => prevWorkgroups.filter((workgroup) => workgroup.id !== workgroupId)); // Remove workgroup from state
+    setWorkgroups((prevWorkgroups) => prevWorkgroups.filter((workgroup) => workgroup.id !== workgroupId));
     console.log(`Deleted workgroup: ${workgroupId}`);
   }, []);
 
@@ -38,35 +59,52 @@ const WorkgroupPage = () => {
               Workgroup Management
             </Typography>
 
-            <Filters
-              entriesToShow={entriesToShow}
-              setEntriesToShow={setEntriesToShow}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+              <Select value={entriesToShow} onChange={(e) => setEntriesToShow(e.target.value)} sx={{ width: 100 }}>
+                {entryOptions.map((option) => (
+                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                ))}
+              </Select>
+            </Box>
 
-            <GeneralTable
-              data={workgroups} 
-              onDetailsClick={handleDetailsClick} 
-              onDelete={handleDelete} 
-              columns={[
-                { id: 'workgroupName', label: 'Workgroup Name' },
-                { id: 'supervisorName', label: 'Supervisor Name' },
-                { id: 'customerName', label: 'Customer Name' },
-                { id: 'projectName', label: 'Project Name' },
-                {
-                  id: 'actions',
-                  label: 'Actions',
-                  render: (row) => (
-                    <ActionButtons
-                      onEdit={() => console.log(`Edit ${row.workgroupName}`)}
-                      onDelete={() => handleDelete(row.id)}
-                      type="workgroup"
-                    />
-                  ),
-                },
-              ]} 
-            />
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Workgroup Name</TableCell>
+                    <TableCell>Supervisor Name</TableCell>
+                    <TableCell>Co-Supervisor Name</TableCell>
+                    <TableCell>Customer Name</TableCell>
+                    <TableCell>Company</TableCell>
+                    <TableCell>Team</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {workgroups.map((workgroup, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{workgroup.name}</TableCell>
+                      <TableCell>{workgroup.supervisorName}</TableCell>
+                      <TableCell>{workgroup.coSupervisorName}</TableCell>
+                      <TableCell>{workgroup.customerName}</TableCell>
+                      <TableCell>{workgroup.company}</TableCell>
+                      <TableCell>{workgroup.team.join(', ')}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => toggleFavorite(workgroup.id)}>
+                          {favorite[workgroup.id] ? <Star /> : <StarBorder />}
+                        </IconButton>
+                        <IconButton onClick={() => handleDetailsClick(workgroup.id)}>
+                          <Edit />
+                        </IconButton>
+                        <IconButton onClick={() => handleDelete(workgroup.id)}>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Paper>
         </Grid>
       </Grid>
