@@ -1,34 +1,39 @@
-import { Container, Box, Typography } from '@mui/material';
-import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx';
-import CreateProjectButton from '../../../Components/generalcomponent/CreateProjectButton.jsx';
-import EntriesControl from '../../../Components/generalcomponent/EntriesControl.jsx';
-import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
+import React, { useState } from 'react';
+import {
+  Container, Box, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Select, MenuItem
+} from '@mui/material';
+import {
+  Star as StarIcon,
+  StarBorder as StarBorderIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon
+} from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import ActionButtons from '../../../Components/generalcomponent/ActionButtons.jsx';
-
-// const fetchProjects = async () => {
-//   const response = await fetch('/api/projects');
-//   if (!response.ok) {
-//     throw new Error(`HTTP error! status: ${response.status}`);
-//   }
-//   return response.json();
-// };
+import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js'; 
 
 const ProjectPage = () => {
-  // const { data: projects = [], error, isLoading } = useQuery({
-  //   queryKey: ['projects'],
-  //   queryFn: fetchProjects,
-  // });
-  const [projects, setProjects] = useState([]); // Use empty array as default
+  const navigate = useNavigate();
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects,
+  });
+
   const [favorite, setFavorite] = useState({});
 
-  const toggleFavorite = (id) => {
-    setFavorite((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+  const toggleFavorite = async (id) => {
+    try {
+      await setFavoriteProject(id);
+      setFavorite((prev) => ({
+        ...prev,
+        [id]: !prev[id]
+      }));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   const handleEdit = (id) => {
@@ -40,57 +45,87 @@ const ProjectPage = () => {
   };
 
   const columns = [
-    { id: 'id', label: 'Project ID' },
-    { id: 'name', label: 'Project Name' },
-    { id: 'supervisorName', label: 'Supervisor' },
-    { id: 'customerName', label: 'Customer' },
-    { id: 'workgroupName', label: 'Workgroup' },
-    { id: 'favorite', label: 'Favorite', render: (row) => (
-        <button onClick={() => toggleFavorite(row.id)}>
-          {favorite[row.id] ? 'Unfavorite' : 'Favorite'}
-        </button>
-      )
-    },
-    { id: 'actions', label: 'Actions', render: (row) => (
-        <ActionButtons
-          onEdit={() => handleEdit(row.id)}
-          onDelete={() => handleDelete(row.id)}
-          type="project"
-        />
-      )
-    }
+    "Project ID",
+    "Project Name",
+    "Supervisor Name",
+    "Customer Name",
+    "Team",
+    "Workgroup Name",
+    "Action",
   ];
 
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
-  // if (error) {
-  //   return <Typography color="error">Error fetching projects: {error.message}</Typography>;
-  // }
+  if (error) {
+    return <Typography color="error">Error fetching projects: {error.message}</Typography>;
+  }
+
+  const projects = data?.result || [];
 
   return (
     <Dashboard>
       <Container>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4">Projects</Typography>
-          <CreateProjectButton />
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/projects/CreateProject')}
+          >
+            Create Project
+          </Button>
         </Box>
 
-        <EntriesControl 
-          totalEntries={projects.length} 
-          onChange={(direction) => console.log(direction)} 
-        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Select defaultValue={20} sx={{ width: 100 }}>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+            <MenuItem value={100}>100</MenuItem>
+          </Select>
+        </Box>
 
-        <GeneralTable
-          columns={columns}
-          data={projects}
-          actions={[]} 
-          onAction={toggleFavorite}
-          orderBy="name" 
-          order="asc" 
-          onRequestSort={() => {}} 
-        />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columns.map((column, index) => (
+                  <TableCell key={index}>{column}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {projects.map((project, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  <TableCell>{project.id}</TableCell>
+                  <TableCell>{project.name}</TableCell>
+                  <TableCell>{project.supervisorName}</TableCell>
+                  <TableCell>{project.customerName || 'Unknown'}</TableCell>
+                  <TableCell>{project.teamName}</TableCell>
+                  <TableCell>{project.workgroupName}</TableCell>
+                  <TableCell>
+                  <Link to={`/projects/${project.id}`}>
+                  <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                    View Details
+                  </Button>
+                  </Link>
+                    <IconButton onClick={() => toggleFavorite(project.id)}>
+                      {favorite[project.id] ? <StarIcon /> : <StarBorderIcon />}
+                    </IconButton>
+                    <IconButton onClick={() => handleEdit(project.id)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(project.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Container>
     </Dashboard>
   );

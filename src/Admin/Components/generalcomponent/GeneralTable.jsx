@@ -1,77 +1,78 @@
-/* eslint-disable react/prop-types */
+import React from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  IconButton,
-  Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  IconButton, Button, Select, MenuItem, Box
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Delete, Star, Settings } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 
-const GeneralTable = ({ 
-  columns, 
-  data, 
-  orderBy, 
-  order, 
-  onRequestSort, 
-  onDetailsClick, 
-  onDelete 
-}) => {
-  const handleSortRequest = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    onRequestSort(property, isAsc ? 'desc' : 'asc');
-  };
+const GeneralTable = () => {
+  const columns = [
+    "Project ID",
+    "Project Name",
+    "Supervisor Name",
+    "Customer Name",
+    "Team",
+    "Workgroup Name",
+    "Details",
+    "Action",
+  ];
+
+  const rows = Array(10).fill({}); 
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell key={column.id}>
-                <TableSortLabel
-                  active={orderBy === column.id}
-                  direction={orderBy === column.id ? order : 'asc'}
-                  onClick={() => handleSortRequest(column.id)}
-                >
-                  {column.label}
-                </TableSortLabel>
-              </TableCell>
-            ))}
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.length > 0 ? (
-            data.map((row, index) => (
-              <TableRow hover key={index}>
-                {columns.map((column) => (
-                  <TableCell key={column.id}>{row[column.id]}</TableCell>
-                ))}
-                <TableCell>
-                  <IconButton onClick={() => onDetailsClick(row.id)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => onDelete(row.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
+    <Box sx={{ padding: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Select defaultValue={20} sx={{ width: 100 }}>
+          <MenuItem value={20}>20</MenuItem>
+          <MenuItem value={50}>50</MenuItem>
+          <MenuItem value={100}>100</MenuItem>
+        </Select>
+        <Button variant="contained" color="success" startIcon={<AddIcon />}>
+          Create Project
+        </Button>
+      </Box>
+      <TableContainer>
+        <Table>
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={columns.length + 1} align="center">
-                No data available.
-              </TableCell>
+              {columns.map((column, index) => (
+                <TableCell key={index}>{column}</TableCell>
+              ))}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows.map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {columns.map((column, colIndex) => (
+                  <TableCell key={colIndex}>
+                    {column === "Details" ? (
+                      <Button variant="contained" color="success" size="small">
+                        Details
+                      </Button>
+                    ) : column === "Action" ? (
+                      <>
+                        <IconButton color="primary">
+                          <Star />
+                        </IconButton>
+                        <IconButton color="primary">
+                          <Settings />
+                        </IconButton>
+                        <IconButton color="error">
+                          <Delete />
+                        </IconButton>
+                      </>
+                    ) : (
+                      "" 
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
