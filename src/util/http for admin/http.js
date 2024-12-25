@@ -9,7 +9,7 @@ export const fetchUsers = async () => {
       id: user.id,
       label: user.fullName,
       value: user.id,
-      isSupervisor: user.role.includes('supervisor'), // تحديد إذا كان المستخدم مشرفًا
+      isSupervisor: user.role.includes('supervisor'),
     }));
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -199,6 +199,7 @@ export const postContactUs = async (contactData) => {
       const errorData = await response.json();
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
+
     const data = await response.json();
     console.log('Contact message sent:', data);
     return data;
@@ -207,22 +208,36 @@ export const postContactUs = async (contactData) => {
     throw error;
   }
 };
+
+
 export const fetchProjectDetails = async (projectId) => {
   try {
-    console.log('Fetching project details for ID:', projectId); 
-    const response = await fetch(`http://spcs.somee.com/api/project-sections?projectId=${projectId}`); 
+    if (!projectId) {
+      throw new Error('Project ID is required');
+    }
+
+    console.log('Fetching project details for ID:', projectId);
+    const response = await fetch(`http://spcs.somee.com/api/project-sections?projectId=${projectId}`);
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Error fetching project details: ${errorData.message || `HTTP error! status: ${response.status}`}`);
+      console.error('Error fetching project details:', errorData);
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
-    
+
     const data = await response.json();
+
+    if (!data || !data.result || data.result.length === 0) {
+      throw new Error('No sections found for the given project ID.');
+    }
+
     return data;
   } catch (error) {
     console.error('Error fetching project details:', error);
     throw new Error(`Failed to fetch project details: ${error.message}`);
   }
 };
+
 export const createProjectSection = async (projectId, sectionData) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-sections?projectId=${projectId}`, {
@@ -244,7 +259,7 @@ export const createProjectSection = async (projectId, sectionData) => {
     throw error;
   }
 };
-// util/http.js
+
 export const updateProjectSection = async (sectionId, sectionData) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-sections/${sectionId}`, {
@@ -266,7 +281,7 @@ export const updateProjectSection = async (sectionId, sectionData) => {
     throw error;
   }
 };
-// util/http.js
+
 export const deleteProjectSection = async (sectionId) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-sections/${sectionId}`, {
@@ -287,7 +302,7 @@ export const deleteProjectSection = async (sectionId) => {
     throw error;
   }
 };
-// util/http.js
+
 export const createProjectDetails = async (sectionId, detailsData) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-details?sectionId=${sectionId}`, {
@@ -310,7 +325,6 @@ export const createProjectDetails = async (sectionId, detailsData) => {
   }
 };
 
-// util/http.js
 export const updateProjectDetails = async (detailId, detailsData) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-details/${detailId}`, {
@@ -353,7 +367,6 @@ export const deleteProjectDetails = async (detailId) => {
     throw error;
   }
 };
-
 
 export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
   try {
@@ -413,4 +426,39 @@ export const fetchSupervisors = async () => {
     console.error('Error fetching supervisors:', error);
     throw error;
   }
+};
+
+// Admin/Components/http.js
+export const fetchRoles = async () => {
+  const response = await fetch('http://spcs.somee.com/api/roles');
+  if (!response.ok) throw new Error('Error fetching roles');
+  return response.json();
+};
+
+export const updateRole = async ({ id, newRoleName }) => {
+  const response = await fetch(`http://spcs.somee.com/api/roles/${id}?newRoleName=${newRoleName}`, {
+    method: 'PUT',
+  });
+  if (!response.ok) throw new Error('Error updating role');
+  return response.json();
+};
+
+export const createRole = async (roleName) => {
+  const response = await fetch('http://spcs.somee.com/api/roles', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ roleName }),
+  });
+  if (!response.ok) throw new Error('Error creating role');
+  return response.json();
+};
+
+export const deleteRole = async (id) => {
+  const response = await fetch(`http://spcs.somee.com/api/roles/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Error deleting role');
+  return response.json();
 };

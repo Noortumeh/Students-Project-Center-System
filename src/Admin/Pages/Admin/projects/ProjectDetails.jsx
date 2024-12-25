@@ -19,7 +19,11 @@ const ProjectDetails = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [newDetail, setNewDetail] = useState({ title: '', description: '' });
 
-  const { data, error, isLoading } = useQuery(['projectDetails', projectId], () => fetchProjectDetails(projectId));
+  const { data, error, isLoading } = useQuery(['projectDetails', projectId], () => fetchProjectDetails(projectId), {
+    onError: (error) => {
+      console.error('Error fetching project details:', error);
+    },
+  });
 
   const createSectionMutation = useMutation((sectionData) => createProjectSection(projectId, sectionData), {
     onSuccess: () => {
@@ -97,7 +101,7 @@ const ProjectDetails = () => {
 
   const handleAddProjectDetails = () => {
     createDetailsMutation.mutate(newDetail);
-    setNewDetail({ title: '', description: '' }); // Reset the form
+    setNewDetail({ title: '', description: '' }); 
   };
 
   const handleUpdateProjectDetails = (detailId, updatedDetails) => {
