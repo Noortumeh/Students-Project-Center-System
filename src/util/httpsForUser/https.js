@@ -104,7 +104,7 @@ export async function getWorkgroups() {
 // Fetch data for each Workgroup:
 export async function fetchWorkgroupData(id) {
   const token = getToken();
-  const response = await fetch(`${API_URL}/workgroups/${id}`, {
+  const response = await fetch(`${API_URL}/workgroups/${id}`,{
     "Content-Type": "application/json",
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -119,3 +119,43 @@ export async function fetchWorkgroupData(id) {
   const data = await response.json();
   return data.result;
 }
+// Fetch Tasks for workgroup
+export async function fetchTasksForworkgroup(id) {
+  const token = getToken();
+  const response = await fetch(`${API_URL}/tasks/all-workgroup-tasks/${id}`, {
+    "Content-Type": "application/json",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data.result;
+}
+// Add Task/ createTask
+export async function createTask(formData, workgroupId) {
+  const token = getToken();
+  try {
+      const response = await fetch(`${API_URL}/tasks/${workgroupId}`, {
+          method: 'POST',
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+          body: formData
+      });
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+
+  } catch (error) {
+      console.error('Error creating task:', error);
+      throw error;
+  }
+};

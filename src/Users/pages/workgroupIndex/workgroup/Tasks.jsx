@@ -1,28 +1,40 @@
-import { Box, Grid2 as Grid, Container } from "@mui/material";
+import { Box, Grid2 as Grid, Container, CircularProgress } from "@mui/material";
 import ProgressCircle from "../../../components/ProgressCircle";
 import CustomButton from "../../../components/CustomButton";
 import { useState } from "react";
 import TaskProgressCard from "../../../components/TaskProgressCard";
+import { useNavigate, useParams } from "react-router-dom";
+import { useWorkgroup } from "./WorkgroupCustomHook/useWorkgroup";
+import useTasks from "./WorkgroupCustomHook/useTasks";
 
 export default function TasksPage() {
+    const navigate = useNavigate();
+    const { workgroupId } = useParams();
+    const { data: WorkgroupData, isLoading, error } = useWorkgroup(workgroupId);
+    const { tasks, tasksLoading, tasksErr } = useTasks(workgroupId);
     const [activeFilter, setActiveFilter] = useState('all');
 
     const handleFilterClick = (filter) => {
         setActiveFilter(filter);
     };
-
-    // مصفوفة المهام - يمكن أن تأتي من props أو API
-    const tasks = [
-        { id: 1, title: 'Task1ssssssssssssss', status: 'done' },
-        { id: 2, title: 'Task2ssssssssssssss', status: 'done' },
-        { id: 3, title: 'Task3', status: 'done' },
-        { id: 4, title: 'Task4', status: 'done' },
-        // يمكنك إضافة المزيد من المهام هنا
-    ];
-
+    if (isLoading || tasksLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+    console.log(tasks)
     return (
         <Container maxWidth="lg"
         >
+            <CustomButton
+                onClick={() => { navigate('addtask') }}
+                sx={{ flex: 1 }}
+            >Add Task</CustomButton>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -35,7 +47,7 @@ export default function TasksPage() {
                     justifyContent: 'center'
                 }}>
                     <ProgressCircle
-                        percentage={5}
+                        percentage={WorkgroupData.progress}
                         style={{
                             pathColor: `#A259FF`,
                             textColor: '#A259FF',
@@ -73,13 +85,13 @@ export default function TasksPage() {
                 </Box>
 
                 {/* شبكة البطاقات */}
-                <Grid container spacing={3} columns={12}>
+                {tasks ? <Grid container spacing={3} columns={12}>
                     {tasks.map((task) => (
-                        <Grid item xs={12} sm={6} md={4} key={task.id}>
+                        <Grid xs={12} sm={6} md={4} key={task.id}>
                             <TaskProgressCard
                                 title={task.title}
                                 buttonName='Go to task ->'
-                                link={''}
+                                link={`${task.id}`}
                                 status={task.status}
                                 sx={{
                                     backgroundColor: '#CAD1F7',
@@ -92,10 +104,14 @@ export default function TasksPage() {
                                         boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                                     }
                                 }}
-                            />
+                            >
+                                {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`editTask/${task.id}`)}>edit</CustomButton>}
+                            </TaskProgressCard>
                         </Grid>
-                    ))}
-                </Grid>
+                    ))
+                    }
+                </Grid> : <h1>No Tasks</h1>}
+
             </Box>
         </Container>
     );

@@ -22,7 +22,6 @@ export default function WorkgroupHome() {
         { id: 'email', label: 'Email', minWidth: 170 },
         { id: 'role', label: 'Role', minWidth: 130 },
     ];
-    console.log(data)
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginRight: '30px', marginTop: '10px' }}>
             <Box sx={{ mb: 5 }}>
