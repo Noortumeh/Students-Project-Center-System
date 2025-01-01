@@ -32,7 +32,7 @@ export const fetchUsers = async () => {
 
 export const fetchProjects = async () => {
   try {
-    const token = localStorage.getItem('token'); // الحصول على التوكن
+    const token = localStorage.getItem('token'); 
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
@@ -238,26 +238,26 @@ export const postTerm = async (termData) => {
   }
 };
 
-export const putTerm = async (id, termData) => {
+export const putTerm = async (term) => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
 
-    if (!id) {
+    if (!term.id) {
       throw new Error('Term ID is missing.');
     }
 
-    console.log('Sending data:', JSON.stringify(termData, null, 2));
-    
-    const response = await fetch(`http://spcs.somee.com/api/terms/${id}`, {
+    console.log('Sending data:', JSON.stringify(term.termData));
+    console.log("id is a",term.id);
+    const response = await fetch(`http://spcs.somee.com/api/terms/${term.id}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(termData),
+      body: JSON.stringify(term.termData),
     });
 
     if (!response.ok) {
@@ -344,35 +344,51 @@ export const postContactUs = async (contactData) => {
   }
 };
 
-export const fetchProjectDetails = async (projectId) => {
+export const fetchProjectSections = async (projectId) => {
   try {
+    console.log('Project ID received:', projectId); // طباعة الـ projectId للتأكد من وصوله
+
     if (!projectId) {
       throw new Error('Project ID is required');
     }
 
-    console.log('Fetching project details for ID:', projectId);
-    const response = await fetch(`http://spcs.somee.com/api/projects/details/${projectId}`, {
-      headers: addAuthToken(),
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token is missing. Please login to get a token.');
+    }
+
+    const apiUrl = `http://spcs.somee.com/api/project-sections?projectId=${projectId}`;
+
+    console.log('Fetching project sections for project ID:', projectId);
+
+    const response = await fetch(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        accept: 'text/plain', 
+      },
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error fetching project details:', errorData);
+      console.error('Error fetching project sections:', errorData);
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
 
-    if (!data || !data.result || data.result.length === 0) {
-      throw new Error('No sections found for the given project ID.');
+    if (!data || !data.result) {
+      throw new Error(data.message || 'No sections found for the given project ID.');
     }
 
-    return data;
+    console.log('Fetched project sections:', data.result);
+
+    return data.result;
   } catch (error) {
-    console.error('Error fetching project details:', error);
-    throw new Error(`Failed to fetch project details: ${error.message}`);
+    console.error('Error fetching project sections:', error);
+    throw new Error(`Failed to fetch project sections: ${error.message}`);
   }
 };
+
 
 export const createProjectSection = async (projectId, sectionData) => {
   if (!projectId || !sectionData || !sectionData.name) {
