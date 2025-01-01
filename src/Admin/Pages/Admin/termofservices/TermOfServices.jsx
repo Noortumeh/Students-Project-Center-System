@@ -150,14 +150,18 @@ export default function TermOfServices() {
     };
 
     if (isCreating) {
-      createOrUpdateMutation.mutate(termData); // إنشاء
+      createOrUpdateMutation.mutate(termData);
     } else {
       const existingTermId = termsData?.result?.[0]?.id;
       if (existingTermId) {
-        console.log(termData+"123")
-        termData.id = existingTermId;
-        createOrUpdateMutation.mutate(termData); // تعديل
-        console.log(termData+"1545456")
+        console.log(JSON.stringify(termData) + "123");
+const term ={
+id:existingTermId,
+termData:termData,
+};
+
+        createOrUpdateMutation.mutate(term); 
+        console.log(JSON.stringify(termData) + "1545456");
 
       } else {
         setSnackbarMessage('Term not found for update.');
