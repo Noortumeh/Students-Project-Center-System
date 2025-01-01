@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Container, Button } from '@mui/material';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Container, Button, TextField } from '@mui/material';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { 
   fetchProjectDetails, 
@@ -15,18 +15,26 @@ import ProjectList from '../../../Components/projectdeatils/ProjectList.jsx';
 import AddProject from '../../../Components/projectdeatils/AddProjects.jsx';
 
 const ProjectDetails = () => {
-  const { projectId } = useParams();
+  const { projectId } = useParams(); 
+  const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = useState(false);
   const [newDetail, setNewDetail] = useState({ title: '', description: '' });
 
-  const { data, error, isLoading } = useQuery(['projectDetails', projectId], () => fetchProjectDetails(projectId), {
+  // استدعاء البيانات مع التأكد من أن الـ projectId موجود مسبقًا
+  const { data, error, isLoading } = useQuery({
+    queryKey: projectId ? ['projectDetails', projectId] : [],
+    queryFn: () => projectId && fetchProjectDetails(projectId),
+    enabled: Boolean(projectId),
     onError: (error) => {
-      console.error('Error fetching project details:', error);
+      console.error('Error fetching project details:', error.message);
     },
   });
 
-  const createSectionMutation = useMutation((sectionData) => createProjectSection(projectId, sectionData), {
+  // تعريف الميوتيشنز المطلوبة
+  const createSectionMutation = useMutation({
+    mutationFn: (sectionData) => createProjectSection(projectId, sectionData),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Section created successfully');
     },
     onError: (error) => {
@@ -34,8 +42,10 @@ const ProjectDetails = () => {
     },
   });
 
-  const updateSectionMutation = useMutation((sectionData) => updateProjectSection(sectionData.id, sectionData), {
+  const updateSectionMutation = useMutation({
+    mutationFn: (sectionData) => updateProjectSection(sectionData.id, sectionData),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Section updated successfully');
     },
     onError: (error) => {
@@ -43,8 +53,10 @@ const ProjectDetails = () => {
     },
   });
 
-  const deleteSectionMutation = useMutation((sectionId) => deleteProjectSection(sectionId), {
+  const deleteSectionMutation = useMutation({
+    mutationFn: (sectionId) => deleteProjectSection(sectionId),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Section deleted successfully');
     },
     onError: (error) => {
@@ -52,8 +64,10 @@ const ProjectDetails = () => {
     },
   });
 
-  const createDetailsMutation = useMutation((detailsData) => createProjectDetails(projectId, detailsData), {
+  const createDetailsMutation = useMutation({
+    mutationFn: (detailsData) => createProjectDetails(projectId, detailsData),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Project details created successfully');
     },
     onError: (error) => {
@@ -61,8 +75,10 @@ const ProjectDetails = () => {
     },
   });
 
-  const updateDetailsMutation = useMutation((detailsData) => updateProjectDetails(detailsData.id, detailsData), {
+  const updateDetailsMutation = useMutation({
+    mutationFn: (detailsData) => updateProjectDetails(detailsData.id, detailsData),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Project details updated successfully');
     },
     onError: (error) => {
@@ -70,8 +86,10 @@ const ProjectDetails = () => {
     },
   });
 
-  const deleteDetailsMutation = useMutation((detailId) => deleteProjectDetails(detailId), {
+  const deleteDetailsMutation = useMutation({
+    mutationFn: (detailId) => deleteProjectDetails(detailId),
     onSuccess: () => {
+      queryClient.invalidateQueries(['projectDetails', projectId]);
       console.log('Project details deleted successfully');
     },
     onError: (error) => {
@@ -79,13 +97,8 @@ const ProjectDetails = () => {
     },
   });
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
 
   const handleAddProjectSection = (newSection) => {
     createSectionMutation.mutate({ name: newSection.name });
@@ -100,8 +113,12 @@ const ProjectDetails = () => {
   };
 
   const handleAddProjectDetails = () => {
+    if (!newDetail.title || !newDetail.description) {
+      console.error('Both title and description are required');
+      return;
+    }
     createDetailsMutation.mutate(newDetail);
-    setNewDetail({ title: '', description: '' }); 
+    setNewDetail({ title: '', description: '' });
   };
 
   const handleUpdateProjectDetails = (detailId, updatedDetails) => {
@@ -112,8 +129,13 @@ const ProjectDetails = () => {
     deleteDetailsMutation.mutate(detailId);
   };
 
+  if (!projectId) return <div>Error: Project ID is missing from URL</div>;
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  if (!data || !data.result || data.result.length === 0) {
+    return <div>No project details available. Please verify the project ID.</div>;
+  }
 
   return (
     <Container maxWidth="lg">
@@ -132,17 +154,21 @@ const ProjectDetails = () => {
       />
 
       <h2>Add Project Details</h2>
-      <input
-        type="text"
-        placeholder="Detail Title"
+      <TextField
+        label="Detail Title"
+        variant="outlined"
+        fullWidth
         value={newDetail.title}
         onChange={(e) => setNewDetail({ ...newDetail, title: e.target.value })}
+        style={{ marginBottom: '10px' }}
       />
-      <input
-        type="text"
-        placeholder="Detail Description"
+      <TextField
+        label="Detail Description"
+        variant="outlined"
+        fullWidth
         value={newDetail.description}
         onChange={(e) => setNewDetail({ ...newDetail, description: e.target.value })}
+        style={{ marginBottom: '20px' }}
       />
       <Button variant="contained" color="secondary" onClick={handleAddProjectDetails}>
         Add Project Detail
@@ -150,7 +176,7 @@ const ProjectDetails = () => {
 
       <h2>Existing Project Details</h2>
       <ul>
-        {data.result.map(detail => (
+        {data.result.map((detail) => (
           <li key={detail.id}>
             <h3>{detail.title}</h3>
             <p>{detail.description}</p>

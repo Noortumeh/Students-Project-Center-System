@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
@@ -16,19 +16,19 @@ const CreateProject = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: users, error: usersError } = useQuery({
     queryKey: ['users'],
-    queryFn: fetchUsers, 
+    queryFn: fetchUsers,
   });
 
   if (usersError) {
     toast.error('Failed to fetch users');
   }
 
-  // Filter users into supervisors and customers based on their role
-  const supervisors = users?.filter(user => user.isSupervisor) || [];
-  const customers = users?.filter(user => !user.isSupervisor) || [];
+  const supervisors = users?.filter((user) => user.isSupervisor) || [];
+  const customers = users?.filter((user) => !user.isSupervisor) || [];
 
   const handleAddProject = async () => {
     if (!projectName || !selectedSupervisor || !selectedCustomer) {
@@ -43,7 +43,16 @@ const CreateProject = () => {
         supervisorId: selectedSupervisor.value,
         customerId: selectedCustomer.value,
       };
-      await createProject(projectData);
+      const newProject = await createProject(projectData);
+
+      // تحديث الكاش
+      queryClient.setQueryData(['projects'], (oldData) => {
+        return {
+          ...oldData,
+          result: [...oldData.result, newProject], // إضافة المشروع الجديد
+        };
+      });
+
       toast.success('Project added successfully!');
       navigate('/projects/Projects');
     } catch (error) {
@@ -60,12 +69,9 @@ const CreateProject = () => {
           Create New Project
         </Typography>
         <form>
-          <ProjectNameField
-            projectName={projectName}
-            setProjectName={setProjectName}
-          />
+          <ProjectNameField projectName={projectName} setProjectName={setProjectName} />
           <Select
-            options={supervisors} 
+            options={supervisors}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             onChange={setSelectedSupervisor}
@@ -74,7 +80,7 @@ const CreateProject = () => {
             styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <Select
-            options={customers} 
+            options={customers}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             onChange={setSelectedCustomer}
