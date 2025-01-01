@@ -27,15 +27,12 @@ import {
   ExpandLess,
   ExpandMore,
   Logout as LogoutIcon,
-  PostAdd as PostAddIcon,
   Rule as RuleIcon,
   BarChart as BarChartIcon,
   School as SchoolIcon,
   SupervisorAccount as SupervisorAccountIcon,
-  Announcement as AnnouncementIcon,
-  Publish as PublishIcon,
-  Assignment as AssignmentIcon,
   Group as GroupIcon,
+  Chat as ChatIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
@@ -43,26 +40,23 @@ const drawerWidth = 240;
 function Dashboard({ children }) {
   const [activeLink, setActiveLink] = useState('');
   const [isUsersOpen, setIsUsersOpen] = useState(false);
-  const [isPostsOpen, setIsPostsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
   const location = useLocation();
 
   const activePath = useMemo(() => {
-    const currentPath = location.pathname;
-    if (currentPath.startsWith('/users/student')) return 'students';
-    if (currentPath.startsWith('/users/customer')) return 'customers';
-    if (currentPath.startsWith('/users/supervisor')) return 'supervisors';
-    if (currentPath.startsWith('/users')) return 'users'; 
-    if (currentPath.startsWith('/posts/Announcements')) return 'announcements';
-    if (currentPath.startsWith('/posts/Publishing-projects')) return 'publishing';
-    if (currentPath.startsWith('/posts/Form')) return 'form';
-    if (currentPath.startsWith('/termofservices/TermOfServices')) return 'TermOfServices';
-    if (currentPath.startsWith('/report/Reports')) return 'reports';
-    if (currentPath.startsWith('/roles')) return 'roles';
+    const currentPath = location.pathname.toLowerCase();
+    if (currentPath.includes('/users/student')) return 'students';
+    if (currentPath.includes('/users/customer')) return 'customers';
+    if (currentPath.includes('/users/supervisor')) return 'supervisors';
+    if (currentPath.includes('/users/users')) return 'users';
+    if (currentPath.includes('/termofservices')) return 'termOfServices';
+    if (currentPath.includes('/report')) return 'reports';
+    if (currentPath.includes('/roles')) return 'roles';
+    if (currentPath.includes('/chat')) return 'chat';
     return 'home';
   }, [location]);
-
+  
   useEffect(() => {
     setActiveLink(activePath);
   }, [activePath]);
@@ -76,7 +70,6 @@ function Dashboard({ children }) {
   };
 
   const toggleUsersMenu = () => setIsUsersOpen((prev) => !prev);
-  const togglePostsMenu = () => setIsPostsOpen((prev) => !prev);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -119,19 +112,20 @@ function Dashboard({ children }) {
               <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Home" />
-          </ListItem>
-          <ListItem button component={Link} to="/workgroup/WorkGroup" selected={activeLink === 'workgroup'}>
-            <ListItemIcon>
-              <WorkIcon />
-            </ListItemIcon>
-            <ListItemText primary="WorkGroup" />
-          </ListItem>
-          <ListItem button component={Link} to="/projects/Projects" selected={activeLink === 'projects'}>
-            <ListItemIcon>
-              <BusinessCenterIcon />
-            </ListItemIcon>
-            <ListItemText primary="Projects" />
-          </ListItem>
+            </ListItem>
+            <ListItem button component={Link} to="/workgroup" selected={activeLink === 'workgroup'}>
+              <ListItemIcon>
+                <WorkIcon />
+              </ListItemIcon>
+              <ListItemText primary="WorkGroup" />
+            </ListItem>
+            <ListItem button component={Link} to="/projects" selected={activeLink === 'projects'}>
+              <ListItemIcon>
+                <BusinessCenterIcon />
+              </ListItemIcon>
+              <ListItemText primary="Projects" />
+            </ListItem>
+
           <ListItem button onClick={toggleUsersMenu}>
             <ListItemIcon>
               <PeopleIcon />
@@ -141,100 +135,63 @@ function Dashboard({ children }) {
           </ListItem>
           <Collapse in={isUsersOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/users/student" selected={activeLink === 'students'}>
+            <ListItem button component={Link} to="/users/student" selected={activeLink === 'students'}>
                 <ListItemIcon>
                   <SchoolIcon />
                 </ListItemIcon>
                 <ListItemText primary="Students" />
               </ListItem>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/users/customer" selected={activeLink === 'customers'}>
+              <ListItem button component={Link} to="/users/customer" selected={activeLink === 'customers'}>
                 <ListItemIcon>
                   <GroupIcon />
                 </ListItemIcon>
                 <ListItemText primary="Customers" />
               </ListItem>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/users/supervisor" selected={activeLink === 'supervisors'}>
+              <ListItem button component={Link} to="/users/supervisor" selected={activeLink === 'supervisors'}>
                 <ListItemIcon>
                   <SupervisorAccountIcon />
                 </ListItemIcon>
                 <ListItemText primary="Supervisors" />
               </ListItem>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/users" selected={activeLink === 'users'}>
+              <ListItem button component={Link} to="/users/users" selected={activeLink === 'users'}>
                 <ListItemIcon>
                   <GroupIcon />
                 </ListItemIcon>
-                <ListItemText primary="Users" />
+                <ListItemText primary="users" />
               </ListItem>
+
             </List>
           </Collapse>
-          <ListItem button component={Link} to="/ourpartner/OurPartner" selected={activeLink === 'ourpartner'}>
-            <ListItemIcon>
-              <GroupIcon />
-            </ListItemIcon>
-            <ListItemText primary="Our Partner" />
-          </ListItem>
+          <ListItem button component={Link} to="/termofservices" selected={activeLink === 'termOfServices'}>
+          <ListItemIcon>
+            <RuleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Term of Services" />
+        </ListItem>
 
-          <ListItem button onClick={togglePostsMenu}>
-            <ListItemIcon>
-              <PostAddIcon />
-            </ListItemIcon>
-            <ListItemText primary="Posts" />
-            {isPostsOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={isPostsOpen} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Announcements" selected={activeLink === 'announcements'}>
-                <ListItemIcon>
-                  <AnnouncementIcon />
-                </ListItemIcon>
-                <ListItemText primary="Announcements" />
-              </ListItem>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Publishing-projects" selected={activeLink === 'publishing'}>
-                <ListItemIcon>
-                  <PublishIcon />
-                </ListItemIcon>
-                <ListItemText primary="Publishing Projects" />
-              </ListItem>
-              <ListItem button sx={{ pl: 4 }} component={Link} to="/posts/Form" selected={activeLink === 'form'}>
-                <ListItemIcon>
-                  <AssignmentIcon />
-                </ListItemIcon>
-                <ListItemText primary="Form" />
-              </ListItem>
-            </List>
-          </Collapse>
-
-          <ListItem button component={Link} to="/termofservices/TermOfServices" selected={activeLink === 'termOfServices'}>
-            <ListItemIcon>
-              <RuleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Term of Services" />
-          </ListItem>
-
-          <ListItem button component={Link} to="/report/Reports" selected={activeLink === 'reports'}>
-            <ListItemIcon>
-              <BarChartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Reports" />
-          </ListItem>
+        <ListItem button component={Link} to="/report" selected={activeLink === 'reports'}>
+          <ListItemIcon>
+            <BarChartIcon />
+          </ListItemIcon>
+          <ListItemText primary="Reports" />
+        </ListItem>
 
           <ListItem button component={Link} to="/roles" selected={activeLink === 'roles'}>
             <ListItemIcon>
-              <AssignmentIcon />
+              <RuleIcon />
             </ListItemIcon>
             <ListItemText primary="Roles" />
           </ListItem>
-
-          <ListItem button component={Link} to="/contact" selected={activeLink === 'Contact'}>
+          <ListItem button component={Link} to="/chat" selected={activeLink === 'chat'}>
             <ListItemIcon>
-              <AssignmentIcon />
+              <ChatIcon />
             </ListItemIcon>
-            <ListItemText primary="Contact" />
+            <ListItemText primary="Chat" />
           </ListItem>
         </List>
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Suspense fallback={<CircularProgress />}>
           {children}

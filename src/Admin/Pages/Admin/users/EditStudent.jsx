@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import EditUser from '../../../Components/edituser/EditUser.jsx';
+import Edit from '../../../Components/generalcomponent/Edit.jsx';
 import { CircularProgress, Box } from '@mui/material';
 
 export default function EditStudent() {

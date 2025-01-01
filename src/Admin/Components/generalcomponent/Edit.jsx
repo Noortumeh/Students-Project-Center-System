@@ -1,3 +1,4 @@
+import { Container, TextField, Button, Grid, Paper, Typography, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -5,8 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { Container, Spinner, TextField, Button, Grid, Paper, Typography } from '@mui/material';
-import Dashboard from '../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import Dashboard from './dashbord/Dashbord.jsx';
 
 function EditUser() {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ function EditUser() {
         try {
           setLoading(true);
           await axios.put(`https://api.escuelajs.co/api/v1/users/${id}`, values);
-          
+
           Swal.fire({
             title: 'Updated!',
             text: 'The user has been updated.',
@@ -93,9 +93,7 @@ function EditUser() {
           </Typography>
           {loading ? (
             <div className="text-center">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+              <CircularProgress />
             </div>
           ) : (
             <form onSubmit={formik.handleSubmit}>

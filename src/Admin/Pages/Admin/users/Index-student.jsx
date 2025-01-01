@@ -1,18 +1,29 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { CircularProgress, Box, Button } from '@mui/material';
-import GeneralTable from '../../../Components/generalcomponent/GeneralTable.jsx';
+import {
+  CircularProgress,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+} from '@mui/material';
+import { Delete, Star, Settings, Edit } from '@mui/icons-material';
+import { fetchStudents } from '../../../../util/http for admin/http.js';
 import Filters from '../../../Components/generalcomponent/Filters.jsx';
-import { fetchStudents } from '../../../../util/http for admin/http.js'; // استيراد الدالة الجديدة
 
 export default function IndexStudent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesToShow, setEntriesToShow] = useState(20);
 
   const { data: students = [], isLoading, error } = useQuery({
-    queryKey: ['students'],
-    queryFn: () => fetchStudents() // استدعاء الدالة الجديدة
+    queryKey: ['students', entriesToShow],
+    queryFn: () => fetchStudents(entriesToShow, 1),
+    onError: (err) => console.error('Error fetching students:', err),
   });
 
   if (isLoading) {
@@ -29,47 +40,94 @@ export default function IndexStudent() {
 
   const columns = [
     { id: 'id', label: 'Student ID' },
-    { id: 'firstName', label: 'First Name' },
-    { id: 'middleName', label: 'Middle Name' },
-    { id: 'lastName', label: 'Last Name' },
-    { id: 'email', label: 'Email' },
+    { id: 'name', label: 'Student Name' },
     { id: 'projectName', label: 'Project Name' },
-    { id: 'projectStatus', label: 'Project Status' }
+    { id: 'email', label: 'Email' },
+    {
+      id: 'actions',
+      label: 'Action',
+      render: (row) => (
+        <Box display="flex" gap={1}>
+          <IconButton
+            color="primary"
+            onClick={() => console.log(`Editing student with ID: ${row.id}`)}
+          >
+            <Edit sx={{ color: '#4caf50' }} />
+          </IconButton>
+          <IconButton>
+            <Star sx={{ color: '#ffeb3b' }} />
+          </IconButton>
+          <IconButton>
+            <Settings sx={{ color: '#2196f3' }} />
+          </IconButton>
+          <IconButton>
+            <Delete sx={{ color: '#f44336' }} />
+          </IconButton>
+        </Box>
+      ),
+    },
   ];
+
+  const filteredStudents = Array.isArray(students)
+    ? students.filter((student) =>
+        student?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   return (
     <Dashboard>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Button variant="contained" color="primary" href="/users/create-student" sx={{ backgroundColor: '#4CAF50' }}>
-          + Create User
-        </Button>
-      </Box>
       <Filters
-        searchTerm={searchTerm}
+        searchTerm={searchTerm || ''}
         setSearchTerm={setSearchTerm}
-        entriesToShow={entriesToShow}
+        entriesToShow={entriesToShow || 20}
         setEntriesToShow={setEntriesToShow}
+        entryOptions={[20, 50, 100]}
       />
-      <GeneralTable
-        columns={columns}
-        data={students.filter(student => 
-          student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.lastName.toLowerCase().includes(searchTerm.toLowerCase())
-        ).slice(0, entriesToShow)}
-        orderBy="id"
-        order="asc"
-        onRequestSort={() => {}}
-        onDetailsClick={(id) => console.log(`View details for student with ID: ${id}`)}
-        onDelete={(id) => console.log(`Delete student with ID: ${id}`)}
-        sx={{
-          '& .MuiTableCell-root': {
-            padding: '8px',
-          },
-          '& .MuiIconButton-root': {
-            margin: '0 4px',
-          }
-        }}
-      />
+      <Box sx={{ padding: 3 }}>
+        <TableContainer>
+          <Table sx={{ border: '1px solid #ddd' }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    sx={{ fontWeight: 'bold', color: '#333', padding: '8px' }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredStudents.length > 0 ? (
+                filteredStudents.map((student, rowIndex) => (
+                  <TableRow
+                    key={rowIndex}
+                    sx={{
+                      '&:hover': { backgroundColor: '#f1f1f1' },
+                      transition: 'background-color 0.3s',
+                    }}
+                  >
+                    {columns.map((column) => (
+                      <TableCell key={column.id} sx={{ padding: '8px' }}>
+                        {column.id === 'actions'
+                          ? column.render(student)
+                          : student[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} align="center">
+                    No students found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </Dashboard>
   );
 }
