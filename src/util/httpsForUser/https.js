@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 //
 const API_URL = "http://spcs.somee.com/api";
+const token = getToken();
 // Query Client
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -104,7 +105,7 @@ export async function getWorkgroups() {
 // Fetch data for each Workgroup:
 export async function fetchWorkgroupData(id) {
   const token = getToken();
-  const response = await fetch(`${API_URL}/workgroups/${id}`,{
+  const response = await fetch(`${API_URL}/workgroups/${id}`, {
     "Content-Type": "application/json",
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -141,21 +142,101 @@ export async function fetchTasksForworkgroup(id) {
 export async function createTask(formData, workgroupId) {
   const token = getToken();
   try {
-      const response = await fetch(`${API_URL}/tasks/${workgroupId}`, {
-          method: 'POST',
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-          body: formData
-      });
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-
+    const response = await fetch(`${API_URL}/tasks/${workgroupId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
   } catch (error) {
-      console.error('Error creating task:', error);
-      throw error;
+    console.error("Error creating task:", error);
+    throw error;
   }
-};
+}
+// Get Task By ID
+export async function fetchTaskData(id) {
+  const token = getToken();
+  const response = await fetch(`${API_URL}/tasks/${id}`, {
+    "Content-Type": "application/json",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching TaskId data");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data.result;
+}
+// Update Task Data
+export async function updateTask({ formData, taskid }) {
+  const data2 = Object.fromEntries(formData);
+  console.log(data2);
+  const response = await fetch(`${API_URL}/tasks/${taskid}`, {
+    method: "PUT",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while updating the Task");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data.result;
+}
+// Submit task answer
+export async function submitAnswer({ formData, taskid }) {
+  const data2 = Object.fromEntries(formData);
+  console.log(data2);
+  try {
+    const response = await fetch(`${API_URL}/tasks/${taskid}/submit-answer`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating task:", error);
+    throw error;
+  }
+}
+// Delete Task
+export async function deleteTask(taskid) {
+  try {
+    const response = await fetch(`${API_URL}/tasks/${taskid}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete task");
+    }
+    const data = await response.json();
+    console.log(data)
+    return data;
+  } catch (error) {
+    console.error("Error throw deleting task:", error);
+    throw error;
+  }
+}

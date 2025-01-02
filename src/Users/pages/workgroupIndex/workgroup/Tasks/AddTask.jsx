@@ -1,8 +1,8 @@
 import { Container, Paper, Typography } from "@mui/material";
 import { useNavigate, useParams } from 'react-router-dom';
-import TaskForm from '../../../components/TaskForm';
+import TaskForm from '../../../../components/TaskForm';
 import { useMutation } from "@tanstack/react-query";
-import { createTask, queryClient } from "../../../../util/httpsForUser/https";
+import { createTask, queryClient } from "../../../../../util/httpsForUser/https";
 
 export default function AddTask() {
     const navigate = useNavigate();
@@ -14,11 +14,10 @@ export default function AddTask() {
             navigate('../tasks');
         }
     });
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
-        mutate(data);
+    const handleSubmit = (formData) => {
+        // const data = Object.fromEntries(formData);
+        // console.log(data)
+        mutate(formData);
     };
     if(isError){
         return <div>Error: {error.message}</div>;

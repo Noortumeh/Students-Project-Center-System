@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { Stack } from "react-bootstrap";
-import { AttachFileOutlined } from "@mui/icons-material";
+import { AttachFileOutlined, Delete, Download } from "@mui/icons-material";
 
 const DateLabelStyle = {
     "& .MuiInputLabel-root": {
@@ -10,41 +10,106 @@ const DateLabelStyle = {
         paddingX: 1
     }
 };
+export default function TaskForm({ onSubmit, onCancel, isPending, inputData }) {
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
-export default function TaskForm({ onSubmit, onCancel, isPending }) {
-    const [selectedFile, setSelectedFile] = useState(null);
+    // عند استقبال البيانات، تخزين الملفات كاملة كما هي
+    useEffect(() => {
+        if (inputData?.questionFiles) {
+            setSelectedFiles(inputData.questionFiles);
+        }
+    }, [inputData]);
 
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        const files = Array.from(event.target.files);
+        setSelectedFiles(prevFiles => [...prevFiles, ...files]);
+    };
+
+    const handleRemoveFile = (index) => {
+        setSelectedFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const handleDownload = (url) => {
+        window.open(url, '_blank');
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        formData.append('QuestionFile', selectedFiles);
+        // إرسال البيانات إلى الخادم
+        onSubmit(formData);
     };
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <TextField label="Title" name="Title" required />
-                <TextField label="Description" name="Description" multiline rows={3} />
-                <TextField label="Start Date" name="Start" type="datetime-local" sx={DateLabelStyle} required />
-                <TextField label="End Date" color="primary" name="End" type="datetime-local" sx={DateLabelStyle} required />
-                {/* File Upload */}
-                <Stack spacing={1}>
+                <TextField defaultValue={inputData?.title} label="Title" name="Title" required />
+                <TextField defaultValue={inputData?.description} label="Description" name="Description" multiline rows={3} />
+                <TextField defaultValue={inputData?.start} label="Start Date" name="Start" type="datetime-local" sx={DateLabelStyle} required />
+                <TextField defaultValue={inputData?.end} label="End Date" color="primary" name="End" type="datetime-local" sx={DateLabelStyle} required />
+
+                {/* File Upload Section */}
+                <Stack spacing={2}>
                     <Button
                         variant="outlined"
                         component="label"
                         startIcon={<AttachFileOutlined />}
                     >
-                        Upload File
+                        Upload Files
                         <input
                             type="file"
                             hidden
+                            multiple
                             onChange={handleFileChange}
-                            name="taskFile"
+                            name="QuestionFile"
                         />
                     </Button>
-                    {selectedFile && (
-                        <Typography variant="body2" color="text.secondary">
-                            Selected file: {selectedFile.name}
-                        </Typography>
+                    {/* عرض الملفات المحددة */}
+                    {selectedFiles.length > 0 && (
+                        <Box sx={{ mt: 2 }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Attached Files ({selectedFiles.length}):
+                            </Typography>
+                            <Stack spacing={1}>
+                                {selectedFiles.map((file, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            p: 1,
+                                            bgcolor: 'background.default',
+                                            borderRadius: 1,
+                                            border: '1px solid',
+                                            borderColor: 'divider'
+                                        }}
+                                    >
+                                        <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                                            {file.name}
+                                        </Typography>
+                                        <Box>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleDownload(file.path)}
+                                            >
+                                                <Download fontSize="small" />
+                                            </IconButton>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleRemoveFile(index)}
+                                                color="error"
+                                            >
+                                                <Delete fontSize="small" />
+                                            </IconButton>
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </Stack>
+                        </Box>
                     )}
                 </Stack>
+                {/* Buttons */}
                 <Box sx={{
                     display: 'flex',
                     gap: 2,
@@ -64,7 +129,7 @@ export default function TaskForm({ onSubmit, onCancel, isPending }) {
                             variant="contained"
                             color="primary"
                         >
-                            Add Task
+                            {inputData ? "Update Task" : "Add Task"}
                         </Button></>}
                 </Box>
             </Box>

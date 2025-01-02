@@ -1,11 +1,11 @@
 import { Box, Grid2 as Grid, Container, CircularProgress } from "@mui/material";
-import ProgressCircle from "../../../components/ProgressCircle";
-import CustomButton from "../../../components/CustomButton";
+import ProgressCircle from "../../../../components/ProgressCircle";
+import CustomButton from "../../../../components/CustomButton";
 import { useState } from "react";
-import TaskProgressCard from "../../../components/TaskProgressCard";
+import TaskProgressCard from "../../../../components/TaskProgressCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useWorkgroup } from "./WorkgroupCustomHook/useWorkgroup";
-import useTasks from "./WorkgroupCustomHook/useTasks";
+import { useWorkgroup } from "../WorkgroupCustomHook/useWorkgroup";
+import useTasks from "../WorkgroupCustomHook/useTasks";
 
 export default function TasksPage() {
     const navigate = useNavigate();
@@ -24,17 +24,16 @@ export default function TasksPage() {
             </Box>
         );
     }
-    if (error) {
-        return <div>Error: {error.message}</div>;
+    if (error || tasksErr) {
+        return <div>Error: {error.message || tasksErr.message}</div>;
     }
-    console.log(tasks)
     return (
         <Container maxWidth="lg"
         >
-            <CustomButton
+            {WorkgroupData.role === 'supervisor' && <CustomButton
                 onClick={() => { navigate('addtask') }}
                 sx={{ flex: 1 }}
-            >Add Task</CustomButton>
+            >Add Task</CustomButton>}
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -91,7 +90,7 @@ export default function TasksPage() {
                             <TaskProgressCard
                                 title={task.title}
                                 buttonName='Go to task ->'
-                                link={`${task.id}`}
+                                link={`viewtask/${task.id}`}
                                 status={task.status}
                                 sx={{
                                     backgroundColor: '#CAD1F7',
@@ -105,13 +104,12 @@ export default function TasksPage() {
                                     }
                                 }}
                             >
-                                {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`editTask/${task.id}`)}>edit</CustomButton>}
+                                {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
                             </TaskProgressCard>
                         </Grid>
                     ))
                     }
                 </Grid> : <h1>No Tasks</h1>}
-
             </Box>
         </Container>
     );
