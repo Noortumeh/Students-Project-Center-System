@@ -1,6 +1,6 @@
 export const fetchUsers = async () => {
   try {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
@@ -14,7 +14,8 @@ export const fetchUsers = async () => {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unauthorized'}`);
     }
 
     const data = await response.json();
@@ -26,9 +27,10 @@ export const fetchUsers = async () => {
     }));
   } catch (error) {
     console.error('Error fetching users:', error.message);
-    throw error;
+    throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
+
 
 export const fetchProjects = async () => {
   try {
@@ -346,7 +348,7 @@ export const postContactUs = async (contactData) => {
 
 export const fetchProjectSections = async (projectId) => {
   try {
-    console.log('Project ID received:', projectId); // طباعة الـ projectId للتأكد من وصوله
+    console.log('Project ID received:', projectId);
 
     if (!projectId) {
       throw new Error('Project ID is required');
@@ -362,9 +364,10 @@ export const fetchProjectSections = async (projectId) => {
     console.log('Fetching project sections for project ID:', projectId);
 
     const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
-        accept: 'text/plain', 
+        'Content-Type': 'application/json', 
       },
     });
 
@@ -384,13 +387,13 @@ export const fetchProjectSections = async (projectId) => {
 
     return data.result;
   } catch (error) {
-    console.error('Error fetching project sections:', error);
+    console.error('Error fetching project sections:', error.message);
     throw new Error(`Failed to fetch project sections: ${error.message}`);
   }
 };
 
-
 export const createProjectSection = async (projectId, sectionData) => {
+  console.log("section data is.", sectionData);
   if (!projectId || !sectionData || !sectionData.name) {
     throw new Error('Project ID and section name are required');
   }
@@ -398,9 +401,10 @@ export const createProjectSection = async (projectId, sectionData) => {
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-sections?projectId=${projectId}`, {
       method: 'POST',
-      headers: addAuthToken({
+      headers: {
         'Content-Type': 'application/json',
-      }),
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
       body: JSON.stringify(sectionData),
     });
 
@@ -416,6 +420,7 @@ export const createProjectSection = async (projectId, sectionData) => {
     throw error;
   }
 };
+
 
 export const updateProjectSection = async (sectionId, sectionData) => {
   if (!sectionId || !sectionData || !sectionData.name) {
@@ -747,26 +752,36 @@ export const leaveChat = async (workgroupName) => {
   return response.json();
 };
 
-export const fetchProjectData = async (id) => {
-  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${id}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch project data');
-  }
-  return response.json();
-};
 
-export const updateProject = async ({ id, updatedProject }) => {
-  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${id}`, {
-    method: 'PATCH',
+export const updateProject = async ({ projectid, updatedProject }) => {
+  if (!projectid) {
+    throw new Error('Project ID is missing!');
+  }
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('Token is missing. Please log in again.');
+  }
+
+  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${projectid}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(updatedProject),
+    body: JSON.stringify({
+      name: updatedProject.name,
+      supervisorId: updatedProject.supervisorId || null,
+      customerId: updatedProject.customerId || null,
+      status: updatedProject.status,
+    }),
   });
 
   if (!response.ok) {
     const errorData = await response.json();
+    console.error('Error response:', errorData);
     throw new Error(errorData.message || 'Failed to update project');
   }
+
   return response.json();
 };

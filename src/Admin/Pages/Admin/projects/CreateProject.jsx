@@ -7,7 +7,7 @@ import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
-import { fetchUsers, createProject } from '../../../../util/http for admin/http.js'; // تأكد من أن المسار صحيح
+import { fetchUsers, createProject } from '../../../../util/http for admin/http.js'; 
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -35,7 +35,7 @@ const CreateProject = () => {
       toast.error('Please fill in all fields before submitting.');
       return;
     }
-
+  
     setLoading(true);
     try {
       const projectData = {
@@ -43,25 +43,38 @@ const CreateProject = () => {
         supervisorId: selectedSupervisor.value,
         customerId: selectedCustomer.value,
       };
+  
       const newProject = await createProject(projectData);
-
-      // تحديث الكاش
-      queryClient.setQueryData(['projects'], (oldData) => {
-        return {
-          ...oldData,
-          result: [...oldData.result, newProject], // إضافة المشروع الجديد
-        };
-      });
-
-      toast.success('Project added successfully!');
-      navigate('/projects/Projects');
+  
+      // تحقق من النجاح في الاستجابة
+      if (newProject.isSuccess) {
+        queryClient.setQueryData(['projects'], (oldData) => {
+          // تحقق من وجود oldData و oldData.result
+          const updatedData = oldData ? { 
+            ...oldData, 
+            result: oldData.result ? [...oldData.result, newProject.result] : [newProject.result] 
+          } : { result: [newProject.result] };
+          
+          return updatedData;
+        });
+  
+        toast.success('Project added successfully!');
+  
+        setTimeout(() => {
+          navigate('/projects');
+        }, 1000); 
+      } else {
+    
+        toast.error('Failed to add project.');
+      }
     } catch (error) {
-      toast.error('Failed to add project.');
+      console.error('Error:', error.message);
+      toast.error(error.message || 'Failed to add project.');
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>

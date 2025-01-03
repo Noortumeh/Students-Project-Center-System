@@ -25,18 +25,19 @@ import {
   Visibility as VisibilityIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { fetchProjects } from '../../../../util/http for admin/http.js';
+import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { setFavoriteProject } from '../../../../util/http for admin/http.js';
 import { useNavigate } from 'react-router-dom'; 
+import Swal from 'sweetalert2';
 
 const ProjectPage = () => {
   const navigate = useNavigate();
-  const { data, error, isLoading } = useQuery({
+  const queryClient = useQueryClient(); // Get the query client to invalidate queries
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
   });
@@ -54,37 +55,49 @@ const ProjectPage = () => {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const toggleFavorite = async (id, projectName, isFavorite) => {
-    const confirmationMessage = isFavorite
-      ? `Are you sure you want to remove "${projectName}" from favorites?`
-      : `Are you sure you want to add "${projectName}" to favorites?`;
 
-    if (window.confirm(confirmationMessage)) {
-      try {
-        const result = await setFavoriteProject(id);
-        if (result.isSuccess) {
-          toast.success(
-            isFavorite
-              ? `"${projectName}" has been removed from favorites.`
-              : `"${projectName}" has been added to favorites.`
-          );
-          setFavoriteProjects((prev) => ({
-            ...prev,
-            [id]: !isFavorite,
-          }));
-        }
-      } catch (error) {
-        toast.error(error.message || 'An error occurred while updating the favorite status.');
+const toggleFavorite = async (id, projectName, isFavorite) => {
+  const confirmationMessage = isFavorite
+    ? `Are you sure you want to remove "${projectName}" from favorites?`
+    : `Are you sure you want to add "${projectName}" to favorites?`;
+
+  if (window.confirm(confirmationMessage)) {
+    try {
+      const result = await setFavoriteProject(id);
+      if (result.isSuccess) {
+        Swal.fire({
+          title: 'Updated!',
+          text: isFavorite
+            ? `"${projectName}" has been removed from favorites.`
+            : `"${projectName}" has been added to favorites.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+
+        setFavoriteProjects((prev) => ({
+          ...prev,
+          [id]: !isFavorite,
+        }));
+        refetch(); // Refetch projects after updating favorites
       }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: error.message || 'An error occurred while updating the favorite status.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
     }
-  };
+  }
+};
+
 
   const statusColors = {
     active: 'success',
@@ -195,7 +208,7 @@ const ProjectPage = () => {
                     <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
                       <VisibilityIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
+                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.projectid}`)}>
                       <EditIcon color="secondary" />
                     </IconButton>
                     <IconButton

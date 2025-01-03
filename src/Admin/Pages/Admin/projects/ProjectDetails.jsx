@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Container, Button, TextField } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, useNavigate } from 'react-router-dom';  // إضافة useNavigate
+import { useParams } from 'react-router-dom';  
 import { 
   fetchProjectSections, 
   createProjectSection, 
@@ -16,18 +16,16 @@ import AddProject from '../../../Components/projectdeatils/AddProjects.jsx';
 
 const ProjectDetails = () => {
   const { projectId } = useParams(); 
-  const navigate = useNavigate();  // إضافة useNavigate لتوجيه المستخدم
   const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = useState(false);
   const [newDetail, setNewDetail] = useState({ title: '', description: '' });
 
-  console.log('Project ID from URL:', projectId); // طباعة الـ projectId من الـ URL
+  console.log('Project ID from URL:', projectId); 
 
   if (!projectId) {
-    return <div>Error: Project ID is missing from URL</div>; // رسالة خطأ عند غياب الـ projectId
+    return <div>Error: Project ID is missing from URL</div>; 
   }
 
-  // استعلامات React Query لجلب وتعديل وحذف الأقسام
   const { data, error, isLoading } = useQuery({
     queryKey: projectId ? ['projectSections', projectId] : [],
     queryFn: () => fetchProjectSections(projectId),
@@ -37,7 +35,6 @@ const ProjectDetails = () => {
     },
   });
 
-  // عمليات التعديل والإضافة
   const createSectionMutation = useMutation({
     mutationFn: (sectionData) => {
       console.log('Creating section with name:', sectionData.name);
@@ -80,7 +77,6 @@ const ProjectDetails = () => {
     },
   });
 
-  // إضافة تفاصيل المشروع
   const createDetailsMutation = useMutation({
     mutationFn: (detailsData) => {
       console.log('Creating project details:', detailsData);

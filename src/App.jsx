@@ -127,15 +127,15 @@ const router = createBrowserRouter([
     element: <Projects />,
   },
   {
-    path: '/projects/:id',
+    path: '/projects/:projectId',
     element: <ProjectDetails />,
   },
   {
-    path: '/projects/create',
+    path: '/projects/CreateProject',
     element: <CreateProject />,
   },
   {
-    path: '/projects/edit/:id',
+    path: '/projects/EditProject/:projectid',
     element: <EditProject />,
   },
   {
