@@ -7,7 +7,7 @@ import ProgressCircle from './ProgressCircle';
 import CustomButton from './CustomButton';
 import { useNavigate } from 'react-router-dom';
 
-export default function TaskProgressCard({ title, buttonName, link, percentage, status, ...props }) {
+export default function TaskProgressCard({ title, buttonName, link, percentage, status, children, ...props }) {
   const navigate = useNavigate();
   return (
     <Card sx={{
@@ -35,9 +35,10 @@ export default function TaskProgressCard({ title, buttonName, link, percentage, 
             textColor: '#FFF',
             trailColor: '#d6d6d6',
           }} />}
-          {status ? <Typography component="div" variant="h5" sx={{ color: '#543DE4' }}>
+          {status ? <Typography component="div" variant="h7" sx={{ color: '#543DE4' }}>
             {status}
           </Typography> : null}
+          {children}
         </CardContent>
       </Box>
     </Card>
