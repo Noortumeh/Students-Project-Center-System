@@ -119,3 +119,4 @@ export async function fetchWorkgroupData(id) {
   const data = await response.json();
   return data.result;
 }
+

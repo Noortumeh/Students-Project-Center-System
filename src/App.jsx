@@ -1,8 +1,19 @@
+// App.jsx
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import { queryClient } from './util/httpsForUser/https.js';
+
+// Admin Pages
 import Home from './Admin/Pages/Admin/home/Home.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
+import EditStudent from './Admin/Pages/Admin/users/EditStudent.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
+import EditCustomer from './Admin/Pages/Admin/users/EditCustomer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
+import EditSupervisor from './Admin/Pages/Admin/users/EditSupervisior.jsx';
+import IndexUsers from './Admin/Pages/Admin/users/Index-users.jsx';
 import TermOfServices from './Admin/Pages/Admin/termofservices/TermOfServices.jsx';
 import Reports from './Admin/Pages/Admin/report/Reports.jsx';
 import WorkGroup from './Admin/Pages/Admin/workgroup/WorkGroup.jsx';
@@ -12,13 +23,14 @@ import OurCustomer from './Admin/Pages/Admin/ourpartner/OurPartner.jsx';
 import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
-import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
-import PageNotFound from './PageNotFound.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
+import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
- import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
+import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
+import Chat from './Admin/Pages/Admin/Chat.jsx';
+import PageNotFound from './PageNotFound.jsx';
 
-//User Pages
+// User Pages
 import RootLayout from "./Users/pages/Root.jsx";
 import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
 import LoginPage from "./Users/pages/Authantication/Login.jsx";
@@ -27,18 +39,10 @@ import WorkGroupsPage from "./Users/pages/workgroupIndex/WorkGroups.jsx";
 import WorkgroupsHome from "./Users/pages/workgroupIndex/WorkgroupsHome.jsx";
 import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.jsx";
 import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
-
-// WorkGroup by ID
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
 import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
-// Loaders to fetch data before rendering components
-import {fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
-// Tanstack Query 
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
-import { queryClient } from './util/httpsForUser/https.js';
 
 // Routes Configuration
 const router = createBrowserRouter([
@@ -46,77 +50,91 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <Home />,
   },
- 
   {
-    path: "contact",
-    element: <ContactUsForm />, 
+    path: '/contact',
+    element: <ContactUsForm />,
   },
-  
   {
     path: '/users/student',
     element: <IndexStudent />,
+  },
+  {
+    path: '/users/student/edit/:id',
+    element: <EditStudent />,
   },
   {
     path: '/users/customer',
     element: <IndexCustomer />,
   },
   {
+    path: '/users/customer/edit/:id',
+    element: <EditCustomer />,
+  },
+  {
     path: '/users/supervisor',
     element: <IndexSupervisor />,
   },
-
   {
-    path: '/termofservices/TermOfServices',
+    path: '/users/supervisor/edit/:id',
+    element: <EditSupervisor />,
+  },
+  
+  {
+    path: '/users/users',
+    element: <IndexUsers />,
+  },
+  {
+    path: '/termofservices',
     element: <TermOfServices />,
   },
   {
-    path: '/report/Reports',
+    path: '/report',
     element: <Reports />,
   },
+  
   {
-    path: '/report/ReportDetails/:reportId',
+    path: '/report/details/:reportId',
     element: <ReportDetails />,
-    loader: ({ params }) => fetchReportDetails(params.reportId),
   },
   {
-    path: '/workgroup/WorkGroup',
+    path: '/workgroup',
     element: <WorkGroup />,
   },
   {
     path: '/workgroup/edit/:id',
     element: <EditWorkGroup />,
-    loader: ({ params }) => fetchWorkGroupDetails(params.id),
   },
   {
-    path: '/workgroup/workgroupdetails/:id',
+    path: '/workgroup/details/:id',
     element: <WorkGroupDetails />,
-    loader: ({ params }) => fetchWorkGroupDetails(params.id),
   },
   {
-    path: '/ourcustomer/OurCustomer',
+    path: '/ourcustomer',
     element: <OurCustomer />,
   },
   {
-    path: '/projects/Projects',
+    path: '/projects',
     element: <Projects />,
   },
   {
     path: '/projects/:id',
     element: <ProjectDetails />,
-    loader: ({ params }) => fetchProjectDetails(params.id),
   },
   {
-    path: '/projects/CreateProject/',
+    path: '/projects/create',
     element: <CreateProject />,
   },
   {
-    path: '/projects/EditProject/:id',
+    path: '/projects/edit/:id',
     element: <EditProject />,
-    loader: ({ params }) => fetchProjectDetails(params.id),
   },
   {
     path: '/roles',
     element: <Roles />,
+  },
+  {
+    path: '/chat',
+    element: <Chat />,
   },
   {
     path: '*',
@@ -129,7 +147,6 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
-      // { path: 'logout' ,element: <Logout />},
       { element: <Authentication />, children: [
         {
           path: 'workgroups', element: <WorkGroupsPage />, children: [
@@ -143,10 +160,11 @@ const router = createBrowserRouter([
             { path: 'tasks', element: <WorkgroupsTasks /> },
           ]
         }
-      ]}
+      ]},
     ]
   }
 ]);
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -155,4 +173,5 @@ function App() {
     </QueryClientProvider>
   );
 }
+
 export default App;
