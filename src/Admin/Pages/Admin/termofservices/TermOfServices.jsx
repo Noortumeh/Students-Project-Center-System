@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { fetchTerms, postTerm, deleteTerm } from '../../../../util/http for admin/http.js';
+import { fetchTerms, postTerm, deleteTerm ,putTerm} from '../../../../util/http for admin/http.js';
 
 const styles = {
   title: {
@@ -100,7 +100,7 @@ export default function TermOfServices() {
   });
 
   const createOrUpdateMutation = useMutation({
-    mutationFn: postTerm,
+    mutationFn: isCreating ? postTerm : putTerm,  
     onSuccess: () => {
       queryClient.invalidateQueries('terms');
       setSnackbarMessage('Your changes have been saved.');
@@ -126,6 +126,17 @@ export default function TermOfServices() {
     },
   });
 
+  // دالة لفتح الـ Modal مع تعبئة البيانات
+  const handleEdit = () => {
+    if (termsData?.result?.[0]) {
+      const term = termsData.result[0];
+      setModalTitle(term.title);
+      setModalDescription(term.description);
+    }
+    setIsCreating(false);
+    setShowModal(true);
+  };
+
   const handleSave = () => {
     if (!modalTitle.trim() || !modalDescription.trim()) {
       setSnackbarMessage('Title and description cannot be empty.');
@@ -143,14 +154,24 @@ export default function TermOfServices() {
     } else {
       const existingTermId = termsData?.result?.[0]?.id;
       if (existingTermId) {
-        termData.id = existingTermId; 
-        createOrUpdateMutation.mutate(termData);
+        console.log(JSON.stringify(termData) + "123");
+const term ={
+id:existingTermId,
+termData:termData,
+};
+
+        createOrUpdateMutation.mutate(term); 
+        console.log(JSON.stringify(termData) + "1545456");
+
+      } else {
+        setSnackbarMessage('Term not found for update.');
+        setOpenSnackbar(true);
       }
     }
   };
 
   const handleDelete = () => {
-    const existingTermId = termsData?.result?.[0]?.id; 
+    const existingTermId = termsData?.result?.[0]?.id;
     if (existingTermId) {
       deleteMutation.mutate(existingTermId);
     } else {
@@ -201,7 +222,7 @@ export default function TermOfServices() {
             )}
             {hasTerms && (
               <Box display="flex" justifyContent="center" mt={4}>
-                <Button variant="contained" sx={styles.button} onClick={() => { setIsCreating(false); setShowModal(true); }}>
+                <Button variant="contained" sx={styles.button} onClick={handleEdit}>
                   Edit
                 </Button>
                 <Button variant="contained" sx={styles.deleteButton} onClick={handleDelete}>
@@ -218,35 +239,31 @@ export default function TermOfServices() {
             <TextField
               label="Title"
               fullWidth
-              value={modalTitle}
-              onChange={(e) => setModalTitle(e.target.value)}
               variant="outlined"
               margin="normal"
+              value={modalTitle}
+              onChange={(e) => setModalTitle(e.target.value)}
             />
             <TextField
               label="Description"
-              multiline
-              rows={10}
               fullWidth
-              value={modalDescription}
-              onChange={(e) => setModalDescription(e.target.value)}
+              multiline
+              rows={4}
               variant="outlined"
               margin="normal"
+              value={modalDescription}
+              onChange={(e) => setModalDescription(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setShowModal(false)} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleSave} sx={styles.button}>
-              Save
-            </Button>
+            <Button onClick={() => setShowModal(false)} color="secondary">Cancel</Button>
+            <Button onClick={handleSave} variant="contained" color="primary">Save</Button>
           </DialogActions>
         </Dialog>
 
         <Snackbar
           open={openSnackbar}
-          autoHideDuration={4000}
+          autoHideDuration={6000}
           onClose={handleSnackbarClose}
           message={snackbarMessage}
         />

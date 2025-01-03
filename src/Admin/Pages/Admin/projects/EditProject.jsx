@@ -1,344 +1,159 @@
-import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { Box, Button, TextField, Typography, Container, Paper, CircularProgress } from '@mui/material';
+import { Box, Container, Paper, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import Select from 'react-select';
+import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
+import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
+import { fetchProjectData, updateProject, fetchUsers } from '../../../../util/http for admin/http.js';
 
 export default function EditProject() {
+  const { id } = useParams(); 
   const navigate = useNavigate();
-  const { id } = useParams(); // الحصول على معرف المشروع من عنوان URL
-  const [loading, setLoading] = useState(false); // حالة التحميل
-  const [isDataFetched, setIsDataFetched] = useState(false); // حالة التحقق من تحميل البيانات
-  const [status, setStatus] = useState(''); // حالة المشروع
+
+  const { data: users, error: usersError } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
+  const { data: project, isLoading: isFetching } = useQuery({
+    queryKey: ['project', id],
+    queryFn: () => fetchProjectData(id),
+    enabled: !!id,
+  });
+
+  const mutation = useMutation({
+    mutationFn: updateProject,
+    onSuccess: () => {
+      Swal.fire({
+        title: 'Updated!',
+        text: 'Project data has been updated successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      }).then(() => {
+        navigate('/projects');
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message || 'An error occurred while updating the project.');
+    },
+  });
 
   const formik = useFormik({
     initialValues: {
       projectName: '',
-      supervisor: '',
-      customer: '',
-      team: '',
-      workGroup: '',
-      status: '', // إضافة الحقل للحالة
+      supervisor: null,
+      customer: null,
+      status: '',
     },
-    enableReinitialize: true, // إعادة التهيئة عند تحديث البيانات
-    onSubmit: async (values) => {
-      const result = await Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'هل ترغب في حفظ التعديلات؟',
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to save the changes?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'نعم، احفظ التعديلات!',
-      });
-
-      if (result.isConfirmed) {
-        setLoading(true); // بدء التحميل
-
-        try {
-          // تحديث بيانات المشروع
-          const updatedProject = {
-            projectName: values.projectName,
-            supervisor: values.supervisor,
-            customer: values.customer,
-            team: values.team,
-            workGroup: values.workGroup,
-          };
-
-          // إرسال التحديث إلى الـ API
-          await axios.patch(`https://api.example.com/projects/${id}`, updatedProject);
-
-          // تحديث حالة المشروع مع التحقق من القيم المسموحة
-          const allowedStatuses = ['Active', 'Completed', 'Pending'];
-          if (allowedStatuses.includes(values.status)) {
-            const response = await axios.put(`https://localhost:7206/api/projects/${id}/status`, { status: values.status });
-
-            // إضافة جملة طباعة للتحقق من استجابة API الخاصة بتحديث الحالة
-            console.log('Status update response:', response.data);  // طباعة استجابة الـ API
-
-          } else {
-            toast.error('الحالة التي تم إدخالها غير مسموح بها. يجب أن تكون: Active, Completed, أو Pending.');
-            return;
-          }
-
-          Swal.fire({
-            title: 'تم التحديث!',
-            text: `تم تحديث بيانات المشروع بنجاح.`,
-            icon: 'success',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'موافق',
-          }).then(() => {
-            navigate('/projects'); // إعادة التوجيه إلى صفحة المشاريع
+        confirmButtonText: 'Yes, save changes!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          mutation.mutate({
+            id,
+            updatedProject: {
+              name: values.projectName,
+              supervisorId: values.supervisor.value,
+              customerId: values.customer.value,
+              status: values.status,
+            },
           });
-        } catch (error) {
-          toast.error(error.response?.data?.message || 'حدث خطأ غير معروف.');
-        } finally {
-          setLoading(false); // إنهاء التحميل
         }
-      }
+      });
     },
   });
 
-  // جلب بيانات المشروع عند تحميل الصفحة
-  useEffect(() => {
-    const getProjectData = async () => {
-      try {
-        setLoading(true); // بدء التحميل
-        const response = await axios.get(`https://api.example.com/projects/${id}`);
-        const project = response.data;
-
-        // تعبئة الحقول بالبيانات المستردة
-        formik.setValues({
-          projectName: project.projectName || '',
-          supervisor: project.supervisor || '',
-          customer: project.customer || '',
-          team: project.team || '',
-          workGroup: project.workGroup || '',
-          status: project.status || '', // تعيين حالة المشروع من البيانات المسترجعة
-        });
-
-        setStatus(project.status); // تعيين حالة المشروع
-        setIsDataFetched(true); // تم تحميل البيانات بنجاح
-      } catch (error) {
-        toast.error('فشل في تحميل بيانات المشروع.');
-      } finally {
-        setLoading(false); // إنهاء التحميل
-      }
-    };
-
-    getProjectData(); // استدعاء الدالة لجلب البيانات
-  }, [id, formik]);
-
-  // إذا كانت البيانات لم تُحمل بعد، عرض دائرة التحميل
-  if (!isDataFetched) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
+  if (usersError) {
+    toast.error('Failed to fetch users.');
   }
+
+  const supervisors = users?.filter((user) => user.isSupervisor) || [];
+  const customers = users?.filter((user) => !user.isSupervisor) || [];
+
+  // تعبئة البيانات عند وجود المشروع
+  if (project && !formik.touched.projectName) {
+    formik.setValues({
+      projectName: project.name || '',
+      supervisor: supervisors.find((sup) => sup.value === project.supervisorId) || null,
+      customer: customers.find((cust) => cust.value === project.customerId) || null,
+      status: project.status || '',
+    });
+  }
+
+  if (isFetching) {
+    return <Typography>Loading project data...</Typography>;
+  }
+
+  const statusOptions = [
+    { value: 'Active', label: 'Active' },
+    { value: 'Pending', label: 'Pending' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Complete', label: 'Complete' },
+  ];
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          تعديل بيانات المشروع
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
+          Edit Project
         </Typography>
         <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              id="projectName"
-              label="اسم المشروع"
-              variant="outlined"
-              value={formik.values.projectName}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              id="supervisor"
-              label="المشرف"
-              variant="outlined"
-              value={formik.values.supervisor}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              id="customer"
-              label="العميل"
-              variant="outlined"
-              value={formik.values.customer}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              id="team"
-              label="الفريق"
-              variant="outlined"
-              value={formik.values.team}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              id="workGroup"
-              label="مجموعة العمل"
-              variant="outlined"
-              value={formik.values.workGroup}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              id="status"
-              label="الحالة"
-              variant="outlined"
-              value={formik.values.status}
-              onChange={formik.handleChange}
-              fullWidth
-              required
-              helperText="القيم المسموحة: Active, Completed, أو Pending"
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ py: 1.5 }}
-              disabled={loading} // تعطيل الزر أثناء التحميل
-            >
-              تحديث المشروع
-            </Button>
-          </Box>
+          <ProjectNameField 
+            projectName={formik.values.projectName} 
+            setProjectName={(value) => formik.setFieldValue('projectName', value)} 
+          />
+          <Select
+            options={supervisors}
+            getOptionLabel={(option) => option.label}
+            getOptionValue={(option) => option.value}
+            value={formik.values.supervisor}
+            onChange={(value) => formik.setFieldValue('supervisor', value)}
+            placeholder="Select a Supervisor"
+            isClearable
+            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
+          />
+          <Select
+            options={customers}
+            getOptionLabel={(option) => option.label}
+            getOptionValue={(option) => option.value}
+            value={formik.values.customer}
+            onChange={(value) => formik.setFieldValue('customer', value)}
+            placeholder="Select a Customer"
+            isClearable
+            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
+          />
+          <Select
+            options={statusOptions}
+            value={statusOptions.find((option) => option.value === formik.values.status)}
+            onChange={(value) => formik.setFieldValue('status', value.value)}
+            placeholder="Select Status"
+            isClearable
+            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
+          />
+          <LoadingButton
+            loading={mutation.isLoading}
+            label="Save Changes"
+            type="submit"
+            sx={{
+              mt: 2,
+              width: '100%',
+              backgroundColor: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#115293',
+              },
+            }}
+          />
         </form>
       </Paper>
     </Container>
   );
 }
-
-
-/*import React, { useEffect, useState } from 'react';
-import { useFormik } from 'formik';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { Box, Typography, Container, Paper, CircularProgress } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
-import SelectUser from './SelectUser'; // استيراد المكون
-import ProjectForm from './ProjectForm'; // استيراد المكون
-
-export default function EditProject() {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [supervisors, setSupervisors] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-
-  const formik = useFormik({
-    initialValues: {
-      projectName: '',
-    },
-    enableReinitialize: true,
-    onSubmit: async (values) => {
-      const result = await Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'هل ترغب في حفظ التغييرات؟',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'نعم، احفظ التغييرات!',
-      });
-
-      if (result.isConfirmed) {
-        setLoading(true);
-
-        try {
-          const updatedProject = {
-            projectName: values.projectName,
-            supervisorId: selectedSupervisor.value,
-            customerId: selectedCustomer.value,
-          };
-
-          await axios.patch(`https://api.example.com/projects/${id}`, updatedProject);
-
-          Swal.fire({
-            title: 'تم التحديث!',
-            text: 'تم تحديث بيانات المشروع بنجاح.',
-            icon: 'success',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'حسناً',
-          }).then(() => {
-            navigate('/projects');
-          });
-        } catch (error) {
-          toast.error(error.response?.data?.message || 'حدث خطأ غير معروف.');
-        } finally {
-          setLoading(false);
-        }
-      }
-    },
-  });
-
-  useEffect(() => {
-    const fetchSupervisors = async () => {
-      try {
-        const response = await axios.get('https://localhost:7206/api/users/get-users?PageSize=6&PageNumber=1');
-        const supervisorData = response.data.result.map((supervisor) => ({
-          value: supervisor.id,
-          label: supervisor.userName.toLowerCase(),
-        }));
-        setSupervisors(supervisorData);
-      } catch (error) {
-        toast.error('فشل في جلب المشرفين');
-      }
-    };
-
-    const fetchCustomers = async () => {
-      try {
-        const response = await axios.get('https://localhost:7206/api/users/get-users?PageSize=6&PageNumber=1');
-        const customerData = response.data.result.map((customer) => ({
-          value: customer.id,
-          label: customer.userName.toLowerCase(),
-        }));
-        setCustomers(customerData);
-      } catch (error) {
-        toast.error('فشل في جلب العملاء');
-      }
-    };
-
-    fetchSupervisors();
-    fetchCustomers();
-    
-    const getProjectData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`https://api.example.com/projects/${id}`);
-        const project = response.data;
-
-        // تعبئة الحقول بالبيانات المستردة
-        formik.setValues({
-          projectName: project.projectName || '',
-        });
-
-        // تعيين المشرف والعميل بناءً على البيانات المستردة
-        setSelectedSupervisor({ value: project.supervisorId, label: project.supervisor });
-        setSelectedCustomer({ value: project.customerId, label: project.customer });
-      } catch (error) {
-        toast.error('فشل في جلب بيانات المشروع.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getProjectData();
-  }, [id, formik]);
-
-  return (
-    <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          تعديل بيانات المشروع
-        </Typography>
-        {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" height="100px">
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            <ProjectForm formik={formik} loading={loading} />
-            <SelectUser options={supervisors} selectedUser={selectedSupervisor} setSelectedUser={setSelectedSupervisor} placeholder="اختر مشرف" />
-            <SelectUser options={customers} selectedUser={selectedCustomer} setSelectedUser={setSelectedCustomer} placeholder="اختر عميل" />
-          </>
-        )}
-      </Paper>
-    </Container>
-  );
-}
-*/
