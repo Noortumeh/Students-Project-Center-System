@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -7,11 +8,13 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import Select from 'react-select';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
-import { fetchProjectData, updateProject, fetchUsers } from '../../../../util/http for admin/http.js';
+import { updateProject, fetchUsers } from '../../../../util/http for admin/http.js';
 
 export default function EditProject() {
-  const { id } = useParams();
+  const { projectid } = useParams();
   const navigate = useNavigate();
+
+  console.log('Project ID:', projectid); 
 
   const { data: users, error: usersError, isLoading: isUsersLoading } = useQuery({
     queryKey: ['users'],
@@ -19,9 +22,9 @@ export default function EditProject() {
   });
 
   const { data: project, isLoading: isFetchingProject, error: projectError } = useQuery({
-    queryKey: ['project', id],
-    queryFn: () => fetchProjectData(id),
-    enabled: !!id,
+    queryKey: ['project', projectid],
+    queryFn: () => fetchProjectData(projectid),
+    enabled: !!projectid, // تأكد من تفعيل الاستعلام فقط إذا كانت قيمة id موجودة
   });
 
   const mutation = useMutation({
@@ -50,7 +53,7 @@ export default function EditProject() {
     },
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (!id) {
+      if (!projectid) {
         toast.error('Cannot update project: ID is undefined!');
         return;
       }
@@ -64,7 +67,7 @@ export default function EditProject() {
       }).then((result) => {
         if (result.isConfirmed) {
           mutation.mutate({
-            id,
+            projectid,
             updatedProject: {
               name: values.projectName,
               supervisorId: values.supervisor?.value || null,
@@ -77,17 +80,24 @@ export default function EditProject() {
     },
   });
 
+  useEffect(() => {
+    if (project && projectid) {
+      const oldSupervisor = users?.find((user) => user.id === project.supervisorId);
+      if (!oldSupervisor) {
+        toast.error('The old supervisor for this project does not exist.');
+      }
+  
+      formik.setValues({
+        projectName: project.name || '',
+        supervisor: oldSupervisor || null,
+        customer: users?.find((user) => user.id === project.customerId) || null,
+        status: project.status || '',
+      });
+    }
+  }, [project, users, projectid]);
+  
   if (usersError) {
     toast.error('Failed to fetch users.');
-  }
-
-  if (project && id) {
-    formik.setValues({
-      projectName: project.name || '',
-      supervisor: users?.find((user) => user.id === project.supervisorId) || null,
-      customer: users?.find((user) => user.id === project.customerId) || null,
-      status: project.status || '',
-    });
   }
 
   if (isFetchingProject || isUsersLoading) {
@@ -108,9 +118,9 @@ export default function EditProject() {
           Edit Project
         </Typography>
         <form onSubmit={formik.handleSubmit}>
-          <ProjectNameField 
-            projectName={formik.values.projectName} 
-            setProjectName={(value) => formik.setFieldValue('projectName', value)} 
+          <ProjectNameField
+            projectName={formik.values.projectName}
+            setProjectName={(value) => formik.setFieldValue('projectName', value)}
           />
           <Select
             options={users?.filter((user) => user.isSupervisor) || []}
@@ -157,4 +167,4 @@ export default function EditProject() {
       </Paper>
     </Container>
   );
-} 
+}

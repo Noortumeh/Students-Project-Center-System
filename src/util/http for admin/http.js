@@ -752,28 +752,18 @@ export const leaveChat = async (workgroupName) => {
   return response.json();
 };
 
-export const fetchProjectData = async (id) => {
-  const token = localStorage.getItem('token'); 
-  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${id}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`, 
-    },
-  });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch project data');
-  }
-
-  return response.json();
-};
-
-export const updateProject = async ({ id, updatedProject }) => {
-  if (!id) {
+export const updateProject = async ({ projectid, updatedProject }) => {
+  if (!projectid) {
     throw new Error('Project ID is missing!');
   }
 
   const token = localStorage.getItem('token');
-  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${id}`, {
+  if (!token) {
+    throw new Error('Token is missing. Please log in again.');
+  }
+
+  const response = await fetch(`http://spcs.somee.com/api/admin/projects/${projectid}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -781,14 +771,15 @@ export const updateProject = async ({ id, updatedProject }) => {
     },
     body: JSON.stringify({
       name: updatedProject.name,
-      supervisorId: updatedProject.supervisorId || undefined,
-      customerId: updatedProject.customerId || undefined,
+      supervisorId: updatedProject.supervisorId || null,
+      customerId: updatedProject.customerId || null,
       status: updatedProject.status,
     }),
   });
 
   if (!response.ok) {
     const errorData = await response.json();
+    console.error('Error response:', errorData);
     throw new Error(errorData.message || 'Failed to update project');
   }
 
