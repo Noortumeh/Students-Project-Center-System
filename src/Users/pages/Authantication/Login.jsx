@@ -12,7 +12,7 @@ import { FormContainer, RightSection, SignUpContainer } from "./AuthStyle";
 import { useLogin } from "./CustomHook/useLogin.js";
 import { useUser } from "./CustomHook/useUser.js";
 import { useEffect } from "react";
- 
+
 const LoginPage = () => {
     const navigate = useNavigate();
     const {loginMutate , isPending, error, isError } = useLogin();
