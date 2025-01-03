@@ -84,15 +84,37 @@ export function logout() {
     throw error;
   }
 }
+//* Projects APIs
+export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
+  const response = await fetch(
+    `${API_URL}/user/projects/get-all-for-user?PageSize=${pageSize}&PageNumber=${pageNumber}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    }
+  );
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching Projects");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data;
+}
 //* Workgroup APIs
-export async function getWorkgroups() {
-  const token = getToken();
-  const response = await fetch(`${API_URL}/workgroups/get-all-for-user`, {
-    "Content-Type": "application/json",
-    headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-  });
+export async function getWorkgroups({ pageSize = 6, pageNumber = 1 }) {
+  const response = await fetch(
+    `${API_URL}/workgroups/get-all-for-user?PageSize=${pageSize}&PageNumber=${pageNumber}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    }
+  );
   if (!response.ok) {
     const error = new Error("An error occurred while fetching");
     error.code = response.status;
