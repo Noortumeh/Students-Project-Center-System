@@ -233,10 +233,97 @@ export async function deleteTask(taskid) {
       throw new Error("Failed to delete task");
     }
     const data = await response.json();
-    console.log(data)
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Error throw deleting task:", error);
     throw error;
   }
+}
+//* Chat APIs
+
+// GET /api/chat/get-messages
+export async function getMessages({ workgroupId }) {
+  const response = await fetch(`${API_URL}/chat/${workgroupId}/get-messages`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching messages");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+// POST /api/chat/send
+export async function sendMessageToChat({ message, workgroupId }) {
+  const response = await fetch(`${API_URL}/chat/${workgroupId}/send`, {
+    method: "POST",
+    body: JSON.stringify(message),
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while sending a message");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+// POST /api/chat/join
+export async function joinChat({ workgroupId }) {
+  const response = await fetch(`${API_URL}/chat/${workgroupId}/join`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while joining the chat");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+// POST /api/chat/leave
+export async function leaveChat(chatData) {
+  const token = getToken();
+  const response = await fetch(`${API_URL}/chat/leave`, {
+    method: "POST",
+    body: JSON.stringify(chatData),
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while leaving the chat");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
 }

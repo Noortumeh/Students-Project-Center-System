@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { deleteTask, queryClient, updateTask } from "../../../../../util/httpsForUser/https";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../../../components/ConfirmDialog";
 
 export default function EditTask() {
     const { taskid } = useParams();
@@ -25,7 +26,6 @@ export default function EditTask() {
         mutationFn: deleteTask,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
-            toast.success('Deleted successfully!');
             navigate('../tasks');
         },
         onError: (error) => {
@@ -36,12 +36,15 @@ export default function EditTask() {
     const handleSubmit = (formData) => {
         mutate({ formData, taskid });
     };
-
+    
     const handleDelete = () => {
-        if (window.confirm('Are you sure you want to delete this task?')) {
-            deleteMutate(taskid);
-        }
+        deleteMutate(taskid);
     };
+    const { showConfirmDialog } = ConfirmDialog({
+        title: "Are you sure you want to delete this task?",
+        text: "This action cannot be undone!",
+        onConfirm: handleDelete
+    });
 
     if (taskDataLoading) {
         return (
@@ -70,7 +73,7 @@ export default function EditTask() {
                         type="button"
                         variant="outlined"
                         color="error"
-                        onClick={handleDelete}
+                        onClick={showConfirmDialog}
                         disabled={isDeleting}
                     >
                         {isDeleting ? "Deleting..." : "Delete Task"}

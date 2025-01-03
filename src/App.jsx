@@ -43,6 +43,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
 import { queryClient } from './util/httpsForUser/https.js';
+import Chat from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
 
 
 // Routes Configuration
@@ -146,8 +147,8 @@ const router = createBrowserRouter([
                   { path: 'tasks', element: <TasksPage /> },
                   { path: 'tasks/addtask', element: <AddTask />},
                   { path: 'tasks/edittask/:taskid', element: <EditTask />},
-                  { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />}
-                  
+                  { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />},
+                  { path: 'chat', element: <Chat /> }
                 ]
               },
               { path: 'projects', element: <WorkgroupsProjects /> },
