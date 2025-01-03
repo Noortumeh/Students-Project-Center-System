@@ -30,7 +30,7 @@ export default function WorkGroupsPage() {
                     </List>
                 </Sidebar>
             )}
-            <Box sx={{ pt: '50px', pl: `${!isMobile && open && !hide ? '160px' : '50px'}`, zIndex: 0, transition: '0.3s' }}>
+            <Box sx={{ pt: '50px', pl: `${!isMobile && open && !hide ? '250px' : '70px'}`, zIndex: 0, transition: '0.3s' }}>
                 <Outlet />
             </Box>
         </Box>

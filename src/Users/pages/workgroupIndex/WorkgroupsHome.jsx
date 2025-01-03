@@ -1,39 +1,81 @@
-import { Box, CircularProgress } from "@mui/material";
-import WorkgroupCard from "../../components/Card";
+import { Box, CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
+import DescriptionCard from "../../components/Card";
 import { getWorkgroups } from "../../../util/httpsForUser/https";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import PaginationComponent from "../../components/PaginationComponent";
+
 export default function WorkgroupsHome() {
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize, setPageSize] = useState(6);
+
     const { data, isFetching, isError, error } = useQuery({
-        queryKey: ['workgroups'],
-        queryFn: getWorkgroups,
+        queryKey: ["workgroups", pageNumber, pageSize],
+        queryFn: () => getWorkgroups({ pageSize, pageNumber }),
+        keepPreviousData: true,
+        staleTime: 10000,
     });
+
+    const handlePageChange = (newPage) => {
+        setPageNumber(newPage);
+    };
+
+    const handlePageSizeChange = (newPageSize) => {
+        setPageSize(newPageSize);
+        setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الحجم
+    };
+
     let content = null;
     if (isFetching) {
         content = <Box sx={{ textAlign: 'center' }}><CircularProgress /></Box>;
     }
     if (isError) {
-        content = <Box sx={{ textAlign: 'center' }}>{error.message}</Box>;
+        content = (
+            <Box sx={{ textAlign: "center" }}>
+                <Typography color="error">{error.message}</Typography>
+            </Box>
+        );
     }
     if (data) {
+        console.log(data)
         content = (
-            <Box sx={{ display: 'flex', flexDirection:{xs: 'column', md:'row'}, alignItems: 'center', justifyContent: 'space-around' }}>
+            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
                 {data.result.map((workgroup) => (
-                    <WorkgroupCard
-                        key={workgroup.id}
-                        title={workgroup.name}
-                        description={`Team: ${workgroup.team}, Customer: ${workgroup.customerName}, Supervisor: ${workgroup.supervisorName}`}
-                        action={'Enter'}
-                        id={workgroup.id}
-                    />
+                    <Grid xs={12} sm={6} md={4} key={workgroup.id}>
+                        <DescriptionCard
+                            key={workgroup.id}
+                            title={workgroup.name}
+                            description={`Team: ${workgroup.team}, Customer: ${workgroup.customerName}, Supervisor: ${workgroup.supervisorName}`}
+                            action={'Enter'}
+                            link={`workgroups/${workgroup.id}`}
+                        />
+                    </Grid>
                 ))}
-            </Box>
+            </Grid>
         );
     }
 
     return (
-        <Box sx={{ mt: 5 }}>
-            <h1 style={{ textAlign: "center" }}>Workgroups Home</h1>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 5
+            }}
+        >
+            <Typography variant="h4" textAlign="center" gutterBottom>
+                Explore Your Workgroups
+            </Typography>
             {content}
+            <PaginationComponent
+                totalCount={data?.totalCount || 25}
+                pageNumber={pageNumber}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+            />
         </Box>
     );
 }

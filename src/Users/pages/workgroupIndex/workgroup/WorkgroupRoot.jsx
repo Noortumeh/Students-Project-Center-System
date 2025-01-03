@@ -27,8 +27,8 @@ export default function WorkgroupRoot() {
                     <ButtonLink name="WorkGroup" link="" icon={<DashboardIcon />} open={isMobile ? false : open} />
                     <ButtonLink name="Tasks" link="tasks" icon={<InventoryIcon />} open={isMobile ? false : open} />
                     <ButtonLink name="Scheduling Meeting" link="tasks" icon={<CalendarMonthIcon />} open={isMobile ? false : open} />
-                    <ButtonLink name="Files" link="tasks" icon={<TaskIcon />} open={isMobile ? false : open} />
-                    <ButtonLink name="Evaluation Report" link="tasks" icon={<SummarizeIcon />} open={isMobile ? false : open} />
+                    {/* <ButtonLink name="Files" link="tasks" icon={<TaskIcon />} open={isMobile ? false : open} /> */}
+                    {/* <ButtonLink name="Evaluation Report" link="tasks" icon={<SummarizeIcon />} open={isMobile ? false : open} /> */}
                     <ButtonLink name="Chat" link="chat" icon={<ChatIcon />} open={isMobile ? false : open} />
                 </List>
             </Sidebar>
