@@ -1,9 +1,9 @@
 // App.jsx
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
-import { queryClient } from './util/httpsForUser/https.js';
+// import { QueryClientProvider } from '@tanstack/react-query';
+// import { ToastContainer } from 'react-toastify';
+// import { queryClient } from './util/httpsForUser/https.js';
 
 // Admin Pages
 import Home from './Admin/Pages/Admin/home/Home.jsx';
@@ -41,9 +41,19 @@ import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.
 import WorkgroupsTasks from "./Users/pages/workgroupIndex/WorkgroupsTasks.jsx";
 import WorkgroupRoot from "./Users/pages/workgroupIndex/workgroup/WorkgroupRoot.jsx";
 import WorkgroupHome from './Users/pages/workgroupIndex/workgroup/Workgroup.jsx';
-import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
+//Task pages
+import TasksPage from './Users/pages/workgroupIndex/workgroup/Tasks/Tasks.jsx';
+import AddTask from './Users/pages/workgroupIndex/workgroup/Tasks/AddTask.jsx';
+import EditTask from './Users/pages/workgroupIndex/workgroup/Tasks/EditTask.jsx';
+import ViewTaskDetails from './Users/pages/workgroupIndex/workgroup/Tasks/ViewTaskDetails.jsx';
+// Loaders to fetch data before rendering components
+// import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
+// Tanstack Query 
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
-
+import { queryClient } from './util/httpsForUser/https.js';
+import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -147,20 +157,28 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
-      { element: <Authentication />, children: [
-        {
-          path: 'workgroups', element: <WorkGroupsPage />, children: [
-            { index: true, element: <WorkgroupsHome /> },
-            { path: ':workgroupId', element: <WorkgroupRoot />, children: [
-                { index: true, element: <WorkgroupHome /> },
-                { path: 'tasks', element: <TasksPage /> }
-              ]
-            },
-            { path: 'projects', element: <WorkgroupsProjects /> },
-            { path: 'tasks', element: <WorkgroupsTasks /> },
-          ]
-        }
-      ]},
+      // { path: 'logout' ,element: <Logout />},
+      {
+        element: <Authentication />, children: [
+          {
+            path: 'workgroups', element: <WorkGroupsPage />, children: [
+              { index: true, element: <WorkgroupsHome /> },
+              {
+                path: ':workgroupId', element: <WorkgroupRoot />, children: [
+                  { index: true, element: <WorkgroupHome /> },
+                  { path: 'tasks', element: <TasksPage /> },
+                  { path: 'tasks/addtask', element: <AddTask />},
+                  { path: 'tasks/edittask/:taskid', element: <EditTask />},
+                  { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />},
+                  { path: 'chat', element: <ChatPage /> }
+                ]
+              },
+              { path: 'projects', element: <WorkgroupsProjects /> },
+              { path: 'tasks', element: <WorkgroupsTasks /> },
+            ]
+          }
+        ]
+      }
     ]
   }
 ]);
