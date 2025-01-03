@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { Box, Container, Paper, Typography } from '@mui/material';
+import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import Select from 'react-select';
@@ -10,15 +10,15 @@ import ProjectNameField from '../../../Components/generalcomponent/ProjectNameFi
 import { fetchProjectData, updateProject, fetchUsers } from '../../../../util/http for admin/http.js';
 
 export default function EditProject() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: users, error: usersError } = useQuery({
+  const { data: users, error: usersError, isLoading: isUsersLoading } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
 
-  const { data: project, isLoading: isFetching } = useQuery({
+  const { data: project, isLoading: isFetchingProject, error: projectError } = useQuery({
     queryKey: ['project', id],
     queryFn: () => fetchProjectData(id),
     enabled: !!id,
@@ -50,6 +50,11 @@ export default function EditProject() {
     },
     enableReinitialize: true,
     onSubmit: (values) => {
+      if (!id) {
+        toast.error('Cannot update project: ID is undefined!');
+        return;
+      }
+
       Swal.fire({
         title: 'Are you sure?',
         text: 'Do you want to save the changes?',
@@ -62,8 +67,8 @@ export default function EditProject() {
             id,
             updatedProject: {
               name: values.projectName,
-              supervisorId: values.supervisor.value,
-              customerId: values.customer.value,
+              supervisorId: values.supervisor?.value || null,
+              customerId: values.customer?.value || null,
               status: values.status,
             },
           });
@@ -76,21 +81,17 @@ export default function EditProject() {
     toast.error('Failed to fetch users.');
   }
 
-  const supervisors = users?.filter((user) => user.isSupervisor) || [];
-  const customers = users?.filter((user) => !user.isSupervisor) || [];
-
-  // تعبئة البيانات عند وجود المشروع
-  if (project && !formik.touched.projectName) {
+  if (project && id) {
     formik.setValues({
       projectName: project.name || '',
-      supervisor: supervisors.find((sup) => sup.value === project.supervisorId) || null,
-      customer: customers.find((cust) => cust.value === project.customerId) || null,
+      supervisor: users?.find((user) => user.id === project.supervisorId) || null,
+      customer: users?.find((user) => user.id === project.customerId) || null,
       status: project.status || '',
     });
   }
 
-  if (isFetching) {
-    return <Typography>Loading project data...</Typography>;
+  if (isFetchingProject || isUsersLoading) {
+    return <Typography>Loading data...</Typography>;
   }
 
   const statusOptions = [
@@ -112,7 +113,7 @@ export default function EditProject() {
             setProjectName={(value) => formik.setFieldValue('projectName', value)} 
           />
           <Select
-            options={supervisors}
+            options={users?.filter((user) => user.isSupervisor) || []}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             value={formik.values.supervisor}
@@ -122,7 +123,7 @@ export default function EditProject() {
             styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <Select
-            options={customers}
+            options={users?.filter((user) => !user.isSupervisor) || []}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
             value={formik.values.customer}
@@ -156,4 +157,4 @@ export default function EditProject() {
       </Paper>
     </Container>
   );
-}
+} 

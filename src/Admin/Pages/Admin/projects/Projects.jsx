@@ -114,6 +114,7 @@ const ProjectPage = () => {
   const endIndex = startIndex + projectsPerPage;
   const paginatedProjects = filteredProjects?.slice(startIndex, endIndex);
 
+  console.log("paginated",paginatedProjects);
   return (
     <Dashboard>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
@@ -180,7 +181,10 @@ const ProjectPage = () => {
             </TableHead>
             <TableBody>
               {paginatedProjects?.map((project) => (
+                
+                console.log(project.id),
                 <TableRow key={project.id}>
+
                   <TableCell>{project.name}</TableCell>
                   <TableCell>{project.supervisorName}</TableCell>
                   <TableCell>{project.customerName || 'N/A'}</TableCell>
@@ -192,6 +196,7 @@ const ProjectPage = () => {
                     />
                   </TableCell>
                   <TableCell>
+                    
                     <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
                       <VisibilityIcon color="primary" />
                     </IconButton>
