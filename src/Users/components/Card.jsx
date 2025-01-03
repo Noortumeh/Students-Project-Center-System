@@ -7,7 +7,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import image from "../../assets/images/SignBg.jpg";
 
-export default function WorkgroupCard({ title, description, action, id}) {
+export default function DescriptionCard({ title, description, action, link}) {
     return (
         <Card sx={{  width: 320,  // عرض ثابت للبطاقة
             minHeight: 350, // ارتفاع ثابت للبطاقة
@@ -33,7 +33,7 @@ export default function WorkgroupCard({ title, description, action, id}) {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button href= {`/workgroups/${id}`} style={{ backgroundColor: '#7367F0' }} variant="contained">
+                <Button href= {link} style={{ backgroundColor: '#7367F0' }} variant="contained">
                     {action}
                 </Button>
             </CardActions>
