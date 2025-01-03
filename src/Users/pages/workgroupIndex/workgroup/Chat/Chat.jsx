@@ -7,7 +7,7 @@ import { getToken, joinChat, sendMessageToChat } from "../../../../../util/https
 import { useParams } from "react-router-dom";
 import { useWorkgroup } from "../WorkgroupCustomHook/useWorkgroup";
 
-const Chat = ({ userName="noor" }) => {
+const ChatPage = ({ userName="noor" }) => {
     const {workgroupId} = useParams();
     const [connection, setConnection] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -71,4 +71,4 @@ const Chat = ({ userName="noor" }) => {
     );
 };
 
-export default Chat;
+export default ChatPage;

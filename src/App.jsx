@@ -1,9 +1,9 @@
 // App.jsx
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
-import { queryClient } from './util/httpsForUser/https.js';
+// import { QueryClientProvider } from '@tanstack/react-query';
+// import { ToastContainer } from 'react-toastify';
+// import { queryClient } from './util/httpsForUser/https.js';
 
 // Admin Pages
 import Home from './Admin/Pages/Admin/home/Home.jsx';
@@ -47,17 +47,13 @@ import AddTask from './Users/pages/workgroupIndex/workgroup/Tasks/AddTask.jsx';
 import EditTask from './Users/pages/workgroupIndex/workgroup/Tasks/EditTask.jsx';
 import ViewTaskDetails from './Users/pages/workgroupIndex/workgroup/Tasks/ViewTaskDetails.jsx';
 // Loaders to fetch data before rendering components
-import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
+// import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
 import { queryClient } from './util/httpsForUser/https.js';
-import Chat from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
-
-import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
-import { Authentication } from './Users/pages/Authantication.jsx';
-
+import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -174,7 +170,7 @@ const router = createBrowserRouter([
                   { path: 'tasks/addtask', element: <AddTask />},
                   { path: 'tasks/edittask/:taskid', element: <EditTask />},
                   { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />},
-                  { path: 'chat', element: <Chat /> }
+                  { path: 'chat', element: <ChatPage /> }
                 ]
               },
               { path: 'projects', element: <WorkgroupsProjects /> },
