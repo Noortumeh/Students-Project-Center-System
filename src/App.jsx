@@ -51,6 +51,10 @@ import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from '
 // Tanstack Query 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
+import { Authentication } from './Users/pages/Authantication.jsx';
+import { queryClient } from './util/httpsForUser/https.js';
+import Chat from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
+
 import TasksPage from './Users/pages/workgroupIndex/workgroup/tasks.jsx';
 import { Authentication } from './Users/pages/Authantication.jsx';
 
@@ -179,20 +183,6 @@ const router = createBrowserRouter([
           }
         ]
       }
-      { element: <Authentication />, children: [
-        {
-          path: 'workgroups', element: <WorkGroupsPage />, children: [
-            { index: true, element: <WorkgroupsHome /> },
-            { path: ':workgroupId', element: <WorkgroupRoot />, children: [
-                { index: true, element: <WorkgroupHome /> },
-                { path: 'tasks', element: <TasksPage /> }
-              ]
-            },
-            { path: 'projects', element: <WorkgroupsProjects /> },
-            { path: 'tasks', element: <WorkgroupsTasks /> },
-          ]
-        }
-      ]},
     ]
   }
 ]);
