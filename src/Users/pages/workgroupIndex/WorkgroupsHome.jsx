@@ -37,10 +37,9 @@ export default function WorkgroupsHome() {
         );
     }
     if (data) {
-        console.log(data)
         content = (
             <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
-                {data.result.map((workgroup) => (
+                {data.workgroups.map((workgroup) => (
                     <Grid xs={12} sm={6} md={4} key={workgroup.id}>
                         <DescriptionCard
                             key={workgroup.id}
@@ -70,7 +69,7 @@ export default function WorkgroupsHome() {
             </Typography>
             {content}
             <PaginationComponent
-                totalCount={data?.totalCount || 25}
+                totalCount={data?.total || 6}
                 pageNumber={pageNumber}
                 pageSize={pageSize}
                 onPageChange={handlePageChange}

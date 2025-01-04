@@ -84,7 +84,7 @@ export default function TasksPage() {
                 </Box>
 
                 {/* شبكة البطاقات */}
-                {tasks ? <Grid container justifyContent="center"  alignItems="center"  style={{ minHeight: '100vh' }} spacing={3} columns={12}>
+                {tasks ? <Grid container alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
                     {tasks.map((task) => (
                         <Grid xs={12} sm={6} md={4} key={task.id}>
                             <TaskProgressCard

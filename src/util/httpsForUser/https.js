@@ -87,7 +87,7 @@ export function logout() {
 //* Projects APIs
 export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
   const response = await fetch(
-    `${API_URL}/user/projects/get-all-for-user?PageSize=${pageSize}&PageNumber=${pageNumber}`,
+    `${API_URL}/user/projects/get-all-for-user/${pageSize}/${pageNumber}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -102,12 +102,32 @@ export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
     throw error;
   }
   const data = await response.json();
+  console.log(data)
+  return data.result;
+}
+//* Supervisor Tasks
+export async function getSupervisorTasks() {
+  const response = await fetch(`${API_URL}/tasks/all-supervisor-tasks`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!response.ok) {
+    const error = new Error(
+      "An error occurred while fetching Supervisor Tasks"
+    );
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
   return data;
 }
 //* Workgroup APIs
 export async function getWorkgroups({ pageSize = 6, pageNumber = 1 }) {
   const response = await fetch(
-    `${API_URL}/workgroups/get-all-for-user?PageSize=${pageSize}&PageNumber=${pageNumber}`,
+    `${API_URL}/workgroups/get-all-for-user/${pageSize}/${pageNumber}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -122,7 +142,7 @@ export async function getWorkgroups({ pageSize = 6, pageNumber = 1 }) {
     throw error;
   }
   const data = await response.json();
-  return data;
+  return data.result;
 }
 // Fetch data for each Workgroup:
 export async function fetchWorkgroupData(id) {

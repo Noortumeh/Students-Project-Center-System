@@ -1,8 +1,9 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Container, Stack, Button } from '@mui/material';
+import { Children } from 'react';
 
-const DataTable = ({ columns, rows, title }) => {
+export default function DataTable({ columns, rows, title, children }) {
     return (
-        <Box sx={{ width: '100%', mt: 3 }}>
+        <Container maxWidth="lg">
             {title && (
                 <Typography variant="h6" sx={{ mb: 2 }}>
                     {title}
@@ -32,51 +33,20 @@ const DataTable = ({ columns, rows, title }) => {
                                 hover
                                 key={index}
                                 sx={{
-                                    '&:nth-of-type(odd)': { backgroundColor: '#fafafa' },
-                                    ...(row.role === 'supervisor' && {
-                                        backgroundColor: '#e3f2fd !important'
-                                    }),
-                                    ...(row.role === 'co_supervisor' && {
-                                        backgroundColor: '#e8f5e9 !important'
-                                    }),
-                                    ...(row.role === 'customer' && {
-                                        backgroundColor: '#fff3e0 !important'
-                                    })
-                                }}
-                            >
+                                    '&:nth-of-type(odd)': { backgroundColor: '#fafafa' }
+                                }}>
                                 {columns.map((column) => (
                                     <TableCell key={column.id}>
-                                        {column.id === 'role' ? (
-                                            <Typography
-                                                component="span"
-                                                sx={{
-                                                    px: 2,
-                                                    py: 0.5,
-                                                    borderRadius: 1,
-                                                    fontSize: '0.875rem',
-                                                    ...(row.role === 'supervisor' && {
-                                                        backgroundColor: '#90caf9',
-                                                        color: '#0d47a1'
-                                                    }),
-                                                    ...(row.role === 'co_supervisor' && {
-                                                        backgroundColor: '#a5d6a7',
-                                                        color: '#1b5e20'
-                                                    }),
-                                                    ...(row.role === 'customer' && {
-                                                        backgroundColor: '#ffcc80',
-                                                        color: '#e65100'
-                                                    }),
-                                                    ...(row.role === 'student' && {
-                                                        backgroundColor: '#e0e0e0',
-                                                        color: '#424242'
-                                                    })
-                                                }}
-                                            >
-                                                {row[column.id]}
-                                            </Typography>
-                                        ) : (
-                                            row[column.id]
-                                        )}
+                                        <Typography
+                                            component="span">
+                                            {column.id === 'action' ?
+                                                <Stack direction={"row"} gap={1}>
+                                                    <Button variant="contained" href={`viewtask/${row.id}`}>view</Button>
+                                                    <Button variant="contained" href={`edittask/${row.id}`}>edit</Button>
+                                                </Stack>
+                                                : row[column.id]}
+                                        </Typography>
+
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -84,8 +54,6 @@ const DataTable = ({ columns, rows, title }) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Box>
+        </Container>
     );
 };
-
-export default DataTable;

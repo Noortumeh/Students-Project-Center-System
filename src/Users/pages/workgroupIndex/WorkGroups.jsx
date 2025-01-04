@@ -26,7 +26,7 @@ export default function WorkGroupsPage() {
                     <List>
                         <ButtonLink name="Workgroups" link="" icon={<DashboardIcon />} open={isMobile ? false : open} />
                         <ButtonLink name="Projects" link="projects" icon={<InventoryIcon />} open={isMobile ? false : open} />
-                        <ButtonLink name="Tasks" link="tasks" icon={<TaskIcon />} open={isMobile ? false : open} />
+                        <ButtonLink name="AllTasks" link="alltasks" icon={<TaskIcon />} open={isMobile ? false : open} />
                     </List>
                 </Sidebar>
             )}

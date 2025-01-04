@@ -174,7 +174,9 @@ const router = createBrowserRouter([
                 ]
               },
               { path: 'projects', element: <WorkgroupsProjects /> },
-              { path: 'tasks', element: <WorkgroupsTasks /> },
+              { path: 'alltasks', element: <WorkgroupsTasks />},
+              { path: 'edittask/:taskid', element: <EditTask />},
+              { path: 'viewtask/:taskid', element: <ViewTaskDetails />},
             ]
           }
         ]
