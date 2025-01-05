@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'; 
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -23,8 +23,12 @@ export default function EditProject() {
 
   const { data: project, isLoading: isFetchingProject, error: projectError } = useQuery({
     queryKey: ['project', projectid],
-    queryFn: () => fetchProjectData(projectid),
-    enabled: !!projectid, // تأكد من تفعيل الاستعلام فقط إذا كانت قيمة id موجودة
+    queryFn: async () => {
+      const response = await fetch(`/api/projects/${projectid}`);
+      if (!response.ok) throw new Error('Failed to fetch project data');
+      return response.json();
+    },
+    enabled: !!projectid, 
   });
 
   const mutation = useMutation({
@@ -44,6 +48,7 @@ export default function EditProject() {
     },
   });
 
+  // إعداد الفورم
   const formik = useFormik({
     initialValues: {
       projectName: '',
@@ -79,7 +84,13 @@ export default function EditProject() {
       });
     },
   });
-
+  useEffect(() => {
+    if (!projectid) {
+      toast.error('Project ID is missing or invalid!');
+      navigate('/projects'); 
+    }
+  }, [projectid, navigate]);
+  
   useEffect(() => {
     if (project && projectid) {
       const oldSupervisor = users?.find((user) => user.id === project.supervisorId);

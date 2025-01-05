@@ -27,7 +27,7 @@ const ProjectDetails = () => {
   }
 
   const { data, error, isLoading } = useQuery({
-    queryKey: projectId ? ['projectSections', projectId] : [],
+    queryKey: ['projectSections', projectId] ,
     queryFn: () => fetchProjectSections(projectId),
     enabled: Boolean(projectId),
     onError: (error) => {

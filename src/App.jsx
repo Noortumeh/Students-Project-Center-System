@@ -80,6 +80,7 @@ const router = createBrowserRouter([
     path: '/users/customer/edit/:id',
     element: <EditCustomer />,
   },
+  
   {
     path: '/users/supervisor',
     element: <IndexSupervisor />,

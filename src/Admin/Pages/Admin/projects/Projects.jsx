@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import {
   Container,
   Box,
@@ -27,77 +27,77 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom'; 
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { useNavigate } from 'react-router-dom'; 
-import Swal from 'sweetalert2';
+import { fetchProjects,setFavoriteProject } from '../../../../util/http for admin/http.js';
+import PaginationComponent from '../../../../Users/components/'
+
 
 const ProjectPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient(); // Get the query client to invalidate queries
-  const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['projects'],
-    queryFn: fetchProjects,
-  });
+  const queryClient = useQueryClient(); 
 
-  const [filters, setFilters] = useState({
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(6); 
+   const [filters, setFilters] = useState({
     filterType: 'all',
     filterValue: '',
     projectStatus: 'all',
   });
-
-  const [currentPage, setCurrentPage] = useState(1);
   const [favoriteProjects, setFavoriteProjects] = useState({});
   const projectsPerPage = 6;
+
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ['projects', { pageSize: setPageSize, pageNumber: setPageNumber }],
+    queryFn: fetchProjects,
+  });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1); 
   };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
+  const toggleFavorite = async (id, projectName, isFavorite) => {
+    const confirmationMessage = isFavorite
+      ? `Are you sure you want to remove "${projectName}" from favorites?`
+      : `Are you sure you want to add "${projectName}" to favorites?`;
 
-const toggleFavorite = async (id, projectName, isFavorite) => {
-  const confirmationMessage = isFavorite
-    ? `Are you sure you want to remove "${projectName}" from favorites?`
-    : `Are you sure you want to add "${projectName}" to favorites?`;
+    if (window.confirm(confirmationMessage)) {
+      try {
+        const result = await setFavoriteProject(id);
+        if (result.isSuccess) {
+          Swal.fire({
+            title: 'Updated!',
+            text: isFavorite
+              ? `"${projectName}" has been removed from favorites.`
+              : `"${projectName}" has been added to favorites.`,
+            icon: 'success',
+            confirmButtonText: 'OK',
+          });
 
-  if (window.confirm(confirmationMessage)) {
-    try {
-      const result = await setFavoriteProject(id);
-      if (result.isSuccess) {
+          setFavoriteProjects((prev) => ({
+            ...prev,
+            [id]: !isFavorite,
+          }));
+          refetch();
+        }
+      } catch (error) {
         Swal.fire({
-          title: 'Updated!',
-          text: isFavorite
-            ? `"${projectName}" has been removed from favorites.`
-            : `"${projectName}" has been added to favorites.`,
-          icon: 'success',
+          title: 'Error!',
+          text: error.message || 'An error occurred while updating the favorite status.',
+          icon: 'error',
           confirmButtonText: 'OK',
         });
-
-        setFavoriteProjects((prev) => ({
-          ...prev,
-          [id]: !isFavorite,
-        }));
-        refetch(); // Refetch projects after updating favorites
       }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: error.message || 'An error occurred while updating the favorite status.',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
     }
-  }
-};
-
+  };
 
   const statusColors = {
     active: 'success',
@@ -109,13 +109,17 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
 
-  const filteredProjects = data?.result.filter((project) => {
+  if (!Array.isArray(data?.result?.projects)) {
+    return <Typography color="error">Invalid data format received from API.</Typography>;
+  }
+
+  const filteredProjects = data.result.projects.filter((project) => {
     const matchesFilterType =
       filters.filterType === 'all' ||
       (filters.filterType === 'projectName' &&
-        project.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
+          project.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
       (filters.filterType === 'supervisorName' &&
-        project.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
+          project.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
 
     const matchesStatus =
       filters.projectStatus === 'all' || project.status === filters.projectStatus;
@@ -125,7 +129,7 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
 
   const startIndex = (currentPage - 1) * projectsPerPage;
   const endIndex = startIndex + projectsPerPage;
-  const paginatedProjects = filteredProjects?.slice(startIndex, endIndex);
+  const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
 
   return (
     <Dashboard>
@@ -192,7 +196,7 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedProjects?.map((project) => (
+              {paginatedProjects.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell>{project.name}</TableCell>
                   <TableCell>{project.supervisorName}</TableCell>
@@ -234,12 +238,13 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
         </TableContainer>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination
-            count={Math.ceil((filteredProjects?.length || 0) / projectsPerPage)}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-          />
+        <PaginationComponent
+                totalCount={data?.total || 6}
+                pageNumber={pageNumber}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+            />
         </Box>
       </Container>
     </Dashboard>
