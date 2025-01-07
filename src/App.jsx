@@ -54,6 +54,7 @@ import { ToastContainer } from 'react-toastify';
 import { Authentication } from './Users/pages/Authantication.jsx';
 import { queryClient } from './util/httpsForUser/https.js';
 import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
+import Calendar from './Users/pages/workgroupIndex/workgroup/ScheduleMeeting/ScheduleMeeting.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -170,7 +171,8 @@ const router = createBrowserRouter([
                   { path: 'tasks/addtask', element: <AddTask />},
                   { path: 'tasks/edittask/:taskid', element: <EditTask />},
                   { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />},
-                  { path: 'chat', element: <ChatPage /> }
+                  { path: 'chat', element: <ChatPage /> },
+                  { path:'calendar', element: <Calendar />}
                 ]
               },
               { path: 'projects', element: <WorkgroupsProjects /> },

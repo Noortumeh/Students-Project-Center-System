@@ -102,7 +102,7 @@ export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
     throw error;
   }
   const data = await response.json();
-  console.log(data)
+  console.log(data);
   return data.result;
 }
 //* Supervisor Tasks
@@ -221,8 +221,6 @@ export async function fetchTaskData(id) {
 }
 // Update Task Data
 export async function updateTask({ formData, taskid }) {
-  const data2 = Object.fromEntries(formData);
-  console.log(data2);
   const response = await fetch(`${API_URL}/tasks/${taskid}`, {
     method: "PUT",
     headers: {
@@ -242,8 +240,6 @@ export async function updateTask({ formData, taskid }) {
 }
 // Submit task answer
 export async function submitAnswer({ formData, taskid }) {
-  const data2 = Object.fromEntries(formData);
-  console.log(data2);
   try {
     const response = await fetch(`${API_URL}/tasks/${taskid}/submit-answer`, {
       method: "POST",
@@ -282,8 +278,87 @@ export async function deleteTask(taskid) {
     throw error;
   }
 }
-//* Chat APIs
 
+//* Calendar API
+// Fetch Calendar events from the API
+export async function fetchEvents({ workgroupId }) {
+  const response = await fetch(`${API_URL}/celender/${workgroupId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching messages");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data.result;
+}
+
+// Add Calendar event to the API
+export async function addEvent( {newEvent, workgroupId} ) {
+  console.log(newEvent)
+  const response = await fetch(`${API_URL}/celender/${workgroupId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: JSON.stringify(newEvent),
+  });
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching messages");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data;
+};
+// Edit Calendar event to the API
+export async function updatedEvent (event){
+  console.log(event)
+  const response = await fetch(`${API_URL}/celender/${event.id}`, {
+    method: "PUT",
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: event,
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while updating the Task");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+  const data = await response.json();
+  return data.result;
+}
+// Delete Calendar event to the API
+export async function deleteEvent (eventId){
+  try {
+    const response = await fetch(`${API_URL}/celender/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete task");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error throw deleting task:", error);
+    throw error;
+  }
+}
+//* Chat APIs
 // GET /api/chat/get-messages
 export async function getMessages({ workgroupId }) {
   const response = await fetch(`${API_URL}/chat/${workgroupId}/get-messages`, {

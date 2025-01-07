@@ -1,4 +1,4 @@
-import { Box, Grid2 as Grid, Container, CircularProgress } from "@mui/material";
+import { Box, Grid2 as Grid, Container, CircularProgress, Typography } from "@mui/material";
 import ProgressCircle from "../../../../components/ProgressCircle";
 import CustomButton from "../../../../components/CustomButton";
 import { useState } from "react";
@@ -17,6 +17,11 @@ export default function TasksPage() {
     const handleFilterClick = (filter) => {
         setActiveFilter(filter);
     };
+    const filteredTasks = tasks?.filter((task) => {
+        if (activeFilter === 'all') return true;
+        return task.status === activeFilter;
+    });
+
     if (isLoading || tasksLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -72,8 +77,8 @@ export default function TasksPage() {
                         sx={{ flex: 1 }}
                     >All</CustomButton>
                     <CustomButton
-                        onClick={() => handleFilterClick('todo')}
-                        isActive={activeFilter === 'todo'}
+                        onClick={() => handleFilterClick('Not Started')}
+                        isActive={activeFilter === 'Not Started'}
                         sx={{ flex: 1 }}
                     >To Do</CustomButton>
                     <CustomButton
@@ -84,32 +89,35 @@ export default function TasksPage() {
                 </Box>
 
                 {/* شبكة البطاقات */}
-                {tasks ? <Grid container alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
-                    {tasks.map((task) => (
-                        <Grid xs={12} sm={6} md={4} key={task.id}>
-                            <TaskProgressCard
-                                title={task.title}
-                                buttonName='Go to task ->'
-                                link={`viewtask/${task.id}`}
-                                status={task.status}
-                                sx={{
-                                    backgroundColor: '#CAD1F7',
-                                    height: '100%',
-                                    width: { xs: '100%', sm: 'auto' },
-                                    mx: 'auto', // توسيط البطاقة
-                                    transition: 'transform 0.2s ease-in-out',
-                                    '&:hover': {
-                                        transform: 'translateY(-5px)',
-                                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-                                    }
-                                }}
-                            >
-                                {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
-                            </TaskProgressCard>
-                        </Grid>
-                    ))
-                    }
-                </Grid> : <h1>No Tasks</h1>}
+                {filteredTasks && filteredTasks.length > 0 ? (
+                    <Grid container alignItems="center" spacing={3} columns={12}>
+                        {filteredTasks.map((task) => (
+                            <Grid xs={12} sm={6} md={4} key={task.id}>
+                                <TaskProgressCard
+                                    title={task.title}
+                                    buttonName='Go to task ->'
+                                    link={`viewtask/${task.id}`}
+                                    status={task.status}
+                                    sx={{
+                                        backgroundColor: '#CAD1F7',
+                                        height: '100%',
+                                        width: { xs: '100%', sm: 'auto' },
+                                        mx: 'auto', // توسيط البطاقة
+                                        transition: 'transform 0.2s ease-in-out',
+                                        '&:hover': {
+                                            transform: 'translateY(-5px)',
+                                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                                        }
+                                    }}
+                                >
+                                    {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
+                                </TaskProgressCard>
+                            </Grid>
+                        ))
+                        }
+                    </Grid>) : <Typography component="div" variant="h4" sx={{ textAlign: 'center', mt: 3, color: '#543DE4' }}>
+                    No Tasks
+                </Typography>}
             </Box>
         </Container>
     );
