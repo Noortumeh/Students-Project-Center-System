@@ -1,10 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { logout, queryClient } from "../../../../util/httpsForUser/https";
-import { useNavigate } from "react-router-dom";
 
 export const useLogout = () =>{
-    const navigate = useNavigate()
 
     const { mutateAsync , isPending } = useMutation({
         mutationFn: logout,
@@ -13,8 +11,6 @@ export const useLogout = () =>{
             await queryClient.cancelQueries();
             queryClient.clear();
             queryClient.invalidateQueries();
-            // queryClient.removeQueries();
-            // queryClient.invalidateQueries();
             window.location.replace('/');
         },
         onError: ()=>{
