@@ -1,9 +1,10 @@
 import { Button } from "@mui/material";
 import { useLogout } from "./CustomHook/useLogout";
 import { useUser } from "./CustomHook/useUser";
+import { toast } from "react-toastify";
 
 export default function Logout() {
-    const { logoutMutate, isPending, error, isError } = useLogout();
+    const { logoutMutate, isPending} = useLogout();
     const { isAuth } = useUser();
     async function handleLogout() {
         try {
@@ -11,7 +12,7 @@ export default function Logout() {
                 await logoutMutate();
             }
         } catch (err) {
-            console.log('Invalid Credentials!');
+            toast.error('Invalid Credentials!');
         }
     }
 

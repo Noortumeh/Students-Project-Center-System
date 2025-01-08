@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material';
 import TaskProgressCard from '../../../components/TaskProgressCard';
 import { useWorkgroup } from './WorkgroupCustomHook/useWorkgroup';
 import { useParams } from 'react-router-dom';
-import DataTable from '../../../components/DataTable';
+import MemberTable from '../../../components/MemberTable';
 
 export default function WorkgroupHome() {
     const { workgroupId } = useParams();
@@ -27,7 +27,7 @@ export default function WorkgroupHome() {
             <Box sx={{ mb: 5 }}>
                 <TaskProgressCard title= 'Task Name' buttonName='Go to Tasks' link="./tasks" percentage={data.progress} />
             </Box>
-            <DataTable
+            <MemberTable
                 columns={columns}
                 rows={data.members}
                 title="Workgroup Members"
