@@ -1,35 +1,28 @@
 import { useEffect } from 'react';
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
-import { useNavigate, useLoaderData } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
+import { confirmEmail } from './AuthHttp';
 
-export default function ConfirmEmail() {
+export default function ConfirmationComponent({ apiEndpoint, successMessage, errorMessage, buttonLabel, redirectPath }) {
     const navigate = useNavigate();
-    const { token, id } = useLoaderData();
 
-    // Mutation for sending token and id to the backend
-    const {mutate, isLoading, isSuccess, error} = useMutation({
-        mutationFn: async () => {
-            const response = await fetch(`http://spcs.somee.com/api/auth/confirm-email?userId=${id}&token=${token}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to confirm email.');
-            }
-
-            return response.json();
-        }
+    const { mutate, isLoading, isSuccess, error } = useMutation({
+        mutationFn: confirmEmail,
     });
 
     useEffect(() => {
-        mutate();
+        // Replace this with actual token and id logic
+        const queryParams = new URLSearchParams(window.location.search);
+        const token = queryParams.get('token');
+        const email = queryParams.get('email');
+        if (token && email) {
+            mutate({ apiEndpoint, token, email });
+        }
     }, []);
 
-    const handleLoginRedirect = () => {
-        navigate('/login');
+    const handleRedirect = () => {
+        navigate(redirectPath);
     };
 
     if (isLoading) {
@@ -63,32 +56,26 @@ export default function ConfirmEmail() {
             {isSuccess ? (
                 <>
                     <Typography variant="h4" component="h1">
-                        Email Confirmed Successfully!
-                    </Typography>
-                    <Typography variant="body1">
-                        Your email address has been successfully verified. You can now log in to your account.
+                        {successMessage}
                     </Typography>
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleLoginRedirect}
+                        onClick={handleRedirect}
                     >
-                        Go to Login
+                        {buttonLabel}
                     </Button>
                 </>
             ) : (
                 <>
                     <Typography variant="h4" component="h1" color="error">
-                        Confirmation Failed
+                        {errorMessage}
                     </Typography>
                     <Typography variant="body1">
-                        {error?.message || 'Something went wrong. Please try again later.'}
+                        {error?.info.message || 'Something went wrong. Please try again later.'}
                     </Typography>
                 </>
             )}
         </Box>
     );
 }
-// export function Loader({ params }){
-
-// }

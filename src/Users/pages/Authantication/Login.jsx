@@ -17,6 +17,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { loginMutate, isPending, error, isError } = useLogin();
     const { isAuth } = useUser();
+    
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);

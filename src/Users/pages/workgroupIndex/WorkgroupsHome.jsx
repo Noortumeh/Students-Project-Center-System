@@ -59,22 +59,30 @@ export default function WorkgroupsHome() {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
+                justifyContent: "end",
                 alignItems: "center",
                 mt: 5
             }}
         >
-            <Typography variant="h4" textAlign="center" gutterBottom>
-                Explore Your Workgroups
-            </Typography>
-            {content}
-            <PaginationComponent
-                totalCount={data?.total || 6}
-                pageNumber={pageNumber}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-            />
+            {!content ?
+                <Typography variant="h4" textAlign="center" gutterBottom>
+                    You don't have any WorkGroups
+                </Typography>
+                :
+                <>
+                <Typography variant="h4" textAlign="center" gutterBottom>
+                    Explore Your Workgroups
+                </Typography>
+                {content}
+                <PaginationComponent
+                    totalCount={data?.total || 6}
+                    pageNumber={pageNumber}
+                    pageSize={pageSize}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                />
+                </>
+            }
         </Box>
     );
 }
