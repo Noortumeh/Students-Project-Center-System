@@ -1,10 +1,12 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Container } from '@mui/material';
 import TaskProgressCard from '../../../components/TaskProgressCard';
 import { useWorkgroup } from './WorkgroupCustomHook/useWorkgroup';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MemberTable from '../../../components/MemberTable';
+import CustomButton from '../../../components/CustomButton';
 
 export default function WorkgroupHome() {
+    const navigate = useNavigate();
     const { workgroupId } = useParams();
     const { data, isLoading, error } = useWorkgroup(workgroupId);
     if (isLoading) {
@@ -22,16 +24,26 @@ export default function WorkgroupHome() {
         { id: 'email', label: 'Email', minWidth: 170 },
         { id: 'role', label: 'Role', minWidth: 130 },
     ];
+    console.log(data)
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginRight: '30px', marginTop: '10px' }}>
-            <Box sx={{ mb: 5 }}>
-                <TaskProgressCard title= 'Task Name' buttonName='Go to Tasks' link="./tasks" percentage={data.progress} />
-            </Box>
-            <MemberTable
-                columns={columns}
-                rows={data.members}
-                title="Workgroup Members"
-            />
-        </Box >
+        <Container maxWidth="lg"
+        >
+            {(data.role === 'supervisor' || data.role === 'co_supervisor') && <CustomButton
+                onClick={() => { navigate('addmembers') }}
+                sx={{ flex: 1 }}
+            >
+                Add Members
+            </CustomButton>}
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mr: 5, mt: 3, mb: 5 }}>
+                <Box sx={{ mb: 5 }}>
+                    <TaskProgressCard title='Task Name' buttonName='Go to Tasks' link="./tasks" percentage={data.progress} />
+                </Box>
+                <MemberTable
+                    columns={columns}
+                    rows={data.members}
+                    title="Workgroup Members"
+                />
+            </Box >
+        </Container>
     );
 }

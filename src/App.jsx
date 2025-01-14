@@ -62,6 +62,7 @@ import ConfirmationComponent from './Users/pages/Authantication/ConfirmationComp
 import ResetPasswordPage from './Users/pages/Authantication/ResetPasswordPage.jsx';
 import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
 import ResetPasswordProfile from './Users/pages/UserProfile/ResetPasswoedProfile.jsx';
+import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMembers/AddMembers.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -182,6 +183,7 @@ const router = createBrowserRouter([
               {
                 path: ':workgroupId', element: <WorkgroupRoot />, children: [
                   { index: true, element: <WorkgroupHome /> },
+                  { path: 'addmembers', element: <AddMemebersPage /> },
                   { path: 'tasks', element: <TasksPage /> },
                   { path: 'tasks/addtask', element: <AddTask /> },
                   { path: 'tasks/edittask/:taskid', element: <EditTask /> },
