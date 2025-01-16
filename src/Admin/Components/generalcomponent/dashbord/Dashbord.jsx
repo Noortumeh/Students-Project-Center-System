@@ -182,12 +182,7 @@ function Dashboard({ children }) {
             </ListItemIcon>
             <ListItemText primary="Roles" />
           </ListItem>
-          <ListItem button component={Link} to="/chat" selected={activeLink === 'chat'}>
-            <ListItemIcon>
-              <ChatIcon />
-            </ListItemIcon>
-            <ListItemText primary="Chat" />
-          </ListItem>
+         
         </List>
       </Drawer>
 

@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Box,
@@ -25,43 +25,48 @@ import {
   Visibility as VisibilityIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom'; 
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { fetchProjects,setFavoriteProject } from '../../../../util/http for admin/http.js';
-import PaginationComponent from '../../../../Users/components/'
-
+import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
+import PaginationComponent from '../../../../Users/components/PaginationComponent.jsx';
 
 const ProjectPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient(); 
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(6); 
-   const [filters, setFilters] = useState({
+  const [pageSize, setPageSize] = useState(6);
+  const [filters, setFilters] = useState({
     filterType: 'all',
     filterValue: '',
     projectStatus: 'all',
   });
   const [favoriteProjects, setFavoriteProjects] = useState({});
-  const projectsPerPage = 6;
 
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['projects', { pageSize: setPageSize, pageNumber: setPageNumber }],
-    queryFn: fetchProjects,
+    queryKey: ['projects', pageNumber, pageSize],
+    queryFn: () => fetchProjects({ pageSize, pageNumber }),
+    keepPreviousData: true,
+    staleTime: 10000,
   });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1); 
+    setPageNumber(1);
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  const handlePageChange = (newPage) => {
+    setPageNumber(newPage);
+    refetch();
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الحجم
   };
 
   const toggleFavorite = async (id, projectName, isFavorite) => {
@@ -104,12 +109,14 @@ const ProjectPage = () => {
     pending: 'warning',
     'in progress': 'info',
     complete: 'primary',
+    archive: 'default', // Added archive status color
   };
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
 
-  if (!Array.isArray(data?.result?.projects)) {
+  // التحقق من البيانات المرسلة من الـ API
+  if (!data || !data.result || !Array.isArray(data.result.projects)) {
     return <Typography color="error">Invalid data format received from API.</Typography>;
   }
 
@@ -117,9 +124,9 @@ const ProjectPage = () => {
     const matchesFilterType =
       filters.filterType === 'all' ||
       (filters.filterType === 'projectName' &&
-          project.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
+        project.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
       (filters.filterType === 'supervisorName' &&
-          project.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
+        project.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
 
     const matchesStatus =
       filters.projectStatus === 'all' || project.status === filters.projectStatus;
@@ -127,8 +134,8 @@ const ProjectPage = () => {
     return matchesFilterType && matchesStatus;
   });
 
-  const startIndex = (currentPage - 1) * projectsPerPage;
-  const endIndex = startIndex + projectsPerPage;
+  const startIndex = (pageNumber - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
   const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
 
   return (
@@ -180,6 +187,7 @@ const ProjectPage = () => {
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="in progress">In Progress</MenuItem>
             <MenuItem value="complete">Complete</MenuItem>
+            <MenuItem value="archive">Archive</MenuItem> {/* Added Archive option */}
           </Select>
         </Box>
 
@@ -212,9 +220,11 @@ const ProjectPage = () => {
                     <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
                       <VisibilityIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.projectid}`)}>
+                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
                       <EditIcon color="secondary" />
-                    </IconButton>
+                      </IconButton>
+
+
                     <IconButton
                       onClick={() =>
                         toggleFavorite(
@@ -238,13 +248,13 @@ const ProjectPage = () => {
         </TableContainer>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-        <PaginationComponent
-                totalCount={data?.total || 6}
-                pageNumber={pageNumber}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-            />
+          <PaginationComponent
+            totalCount={data.result.total}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </Box>
       </Container>
     </Dashboard>

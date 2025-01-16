@@ -27,7 +27,7 @@ import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
 import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
-import Chat from './Admin/Pages/Admin/Chat.jsx';
+
 import PageNotFound from './PageNotFound.jsx';
 
 // User Pages
@@ -143,10 +143,7 @@ const router = createBrowserRouter([
     path: '/roles',
     element: <Roles />,
   },
-  {
-    path: '/chat',
-    element: <Chat />,
-  },
+
   {
     path: '*',
     element: <PageNotFound />,
