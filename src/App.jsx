@@ -46,14 +46,21 @@ import TasksPage from './Users/pages/workgroupIndex/workgroup/Tasks/Tasks.jsx';
 import AddTask from './Users/pages/workgroupIndex/workgroup/Tasks/AddTask.jsx';
 import EditTask from './Users/pages/workgroupIndex/workgroup/Tasks/EditTask.jsx';
 import ViewTaskDetails from './Users/pages/workgroupIndex/workgroup/Tasks/ViewTaskDetails.jsx';
+// 
+import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
+import Calendar from './Users/pages/workgroupIndex/workgroup/ScheduleMeeting/ScheduleMeeting.jsx';
 // Loaders to fetch data before rendering components
 // import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
-import { Authentication } from './Users/pages/Authantication.jsx';
 import { queryClient } from './util/httpsForUser/https.js';
-import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
+// Authantication pages
+import { Authentication } from './Users/pages/Authantication.jsx';
+import ForgetPasswordPage from './Users/pages/Authantication/ForgotPassword.jsx';
+import ConfirmationComponent from './Users/pages/Authantication/ConfirmationComponent.jsx';
+import ResetPasswordPage from './Users/pages/Authantication/ResetPasswordPage.jsx';
+import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -89,7 +96,7 @@ const router = createBrowserRouter([
     path: '/users/supervisor/edit/:id',
     element: <EditSupervisor />,
   },
-  
+
   {
     path: '/users/users',
     element: <IndexUsers />,
@@ -102,7 +109,7 @@ const router = createBrowserRouter([
     path: '/report',
     element: <Reports />,
   },
-  
+
   {
     path: '/report/details/:reportId',
     element: <ReportDetails />,
@@ -148,6 +155,35 @@ const router = createBrowserRouter([
     path: '*',
     element: <PageNotFound />,
   },
+  //* Users Authantication Routes
+  {
+    path: 'reset-password',
+    element: <ResetPasswordPage />
+  },
+  {
+    path: 'confirm-email',
+    element: (
+      <ConfirmationComponent
+        apiEndpoint="auth/confirm-email"
+        successMessage="Email Confirmed Successfully!"
+        errorMessage="Failed to confirm email."
+        buttonLabel="Go to Login"
+        redirectPath="/login"
+      />
+    ),
+  },
+  {
+    path: 'reset-password-confirm',
+    element: (
+      <ConfirmationComponent
+        apiEndpoint="auth/confirm-email"
+        successMessage="Reset Email Confirmed!"
+        errorMessage="Failed to confirm reset email."
+        buttonLabel="Reset Password"
+        redirectPath="/reset-password"
+      />
+    ),
+  },
   {
     path: '/',
     element: <RootLayout />,
@@ -155,6 +191,9 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'forgot-password', element: <ForgetPasswordPage /> },
+      { path: 'user-profile', element: <UserProfilePage /> },
+      // { path: 'confirm-email', element: <ConfirmEmail /> },
       // { path: 'logout' ,element: <Logout />},
       {
         element: <Authentication />, children: [
@@ -165,14 +204,17 @@ const router = createBrowserRouter([
                 path: ':workgroupId', element: <WorkgroupRoot />, children: [
                   { index: true, element: <WorkgroupHome /> },
                   { path: 'tasks', element: <TasksPage /> },
-                  { path: 'tasks/addtask', element: <AddTask />},
-                  { path: 'tasks/edittask/:taskid', element: <EditTask />},
-                  { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails />},
-                  { path: 'chat', element: <ChatPage /> }
+                  { path: 'tasks/addtask', element: <AddTask /> },
+                  { path: 'tasks/edittask/:taskid', element: <EditTask /> },
+                  { path: 'tasks/viewtask/:taskid', element: <ViewTaskDetails /> },
+                  { path: 'chat', element: <ChatPage /> },
+                  { path: 'calendar', element: <Calendar /> }
                 ]
               },
               { path: 'projects', element: <WorkgroupsProjects /> },
-              { path: 'tasks', element: <WorkgroupsTasks /> },
+              { path: 'alltasks', element: <WorkgroupsTasks /> },
+              { path: 'edittask/:taskid', element: <EditTask /> },
+              { path: 'viewtask/:taskid', element: <ViewTaskDetails /> },
             ]
           }
         ]

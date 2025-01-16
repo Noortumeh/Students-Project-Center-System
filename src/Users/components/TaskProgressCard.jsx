@@ -20,7 +20,7 @@ export default function TaskProgressCard({ title, buttonName, link, percentage, 
       borderRadius: 4,
       ...props.sx
     }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems:'center' }}>
         <CardContent sx={{ flex: '1 0 auto', color: 'white' }}>
           <Typography component="div" variant="h5">
             {title}

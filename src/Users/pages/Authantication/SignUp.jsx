@@ -20,7 +20,7 @@ const SignUpPage = () => {
   const { isFetching, isAuth } = useUser();
 
 
-  const { mutate, isPending, error, isError, data } = useMutation({
+  const { mutate, isPending, error, isError} = useMutation({
     mutationFn: signUp,
     onSuccess: () => {
       navigate("/login");
@@ -112,7 +112,7 @@ const SignUpPage = () => {
             {isPending && "Submitting..."}
             {isError &&
               (error.info?.message ||
-                "Failed to create event. Please check your inputs and try again later.")}
+                "Failed to Sign up. Please check your inputs and try again later.")}
           </Form>
           <Box mt={2} textAlign="center">
             <Link to="/login" style={{ color: "white" }}>

@@ -15,8 +15,8 @@ import { useEffect } from "react";
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const {loginMutate , isPending, error, isError } = useLogin();
-    const {isAuth} = useUser();
+    const { loginMutate, isPending, error, isError } = useLogin();
+    const { isAuth } = useUser();
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -28,7 +28,7 @@ const LoginPage = () => {
             navigate('/');
         }
     }, [isAuth, navigate]);
-    
+
     return (
         <SignUpContainer>
             {/* القسم الأيسر */}
@@ -75,9 +75,15 @@ const LoginPage = () => {
                         </Box>
                     </Form>
                     {isPending && "Submitting..."}
-                    {isError &&
-                        (error.info?.message ||
-                            "Failed to login. Please check your inputs and try again.")}
+                    {isError && (
+                        <Typography
+                            variant="body1"
+                            color="error"
+                        >
+                            {error.info?.message +", Please check your inputs and try again." ||
+                            "Failed to login. Please check your inputs and try again."}
+                        </Typography>
+                    )}
                     <Box
                         mt={2}
                         sx={{
@@ -87,7 +93,7 @@ const LoginPage = () => {
                             flexDirection: "column",
                         }}
                     >
-                        <Link to="/" style={{ color: "white", marginBottom: 6 }}>
+                        <Link to="/forgot-password" style={{ color: "white", marginBottom: 6 }}>
                             Forgot password?
                         </Link>
                         <Link to="/signup" style={{ color: "white" }}>

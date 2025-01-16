@@ -18,7 +18,7 @@ export default function EditTask() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
             toast.success('Updated successfully!')
-            navigate('../tasks');
+            navigate(-1);
         }
     });
     // Mutation for deleting task
@@ -26,7 +26,7 @@ export default function EditTask() {
         mutationFn: deleteTask,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
-            navigate('../tasks');
+            navigate(-1);
         },
         onError: (error) => {
             toast.error(`${error.message}`);

@@ -15,8 +15,6 @@ export default function AddTask() {
         }
     });
     const handleSubmit = (formData) => {
-        // const data = Object.fromEntries(formData);
-        // console.log(data)
         mutate(formData);
     };
     if(isError){
