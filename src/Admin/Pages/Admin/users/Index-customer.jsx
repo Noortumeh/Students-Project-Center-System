@@ -16,9 +16,11 @@ import {
 } from '@mui/material';
 import { fetchCustomers } from '../../../../util/http for admin/http.js';
 import { Edit } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // استيراد useNavigate
 
 export default function IndexCustomer() {
   const [entriesToShow] = useState(20);
+  const navigate = useNavigate(); // تعريف useNavigate
 
   const { data: customers = [], isLoading, error } = useQuery({
     queryKey: ['customers', entriesToShow],
@@ -55,10 +57,14 @@ export default function IndexCustomer() {
       id: 'actions',
       label: 'Actions',
       render: (row) => (
-        <IconButton color="primary" onClick={() => console.log(`Edit customer with ID: ${row.id}`)}>
+        <IconButton
+          color="primary"
+          onClick={() => navigate(`/users/customer/edit/${row.id}`)}
+        >
           <Edit />
         </IconButton>
-      ),
+      )
+      
     },
   ];
 
