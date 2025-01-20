@@ -34,7 +34,7 @@ import PageNotFound from './PageNotFound.jsx';
 import RootLayout from "./Users/pages/Root.jsx";
 import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
 import LoginPage from "./Users/pages/Authantication/Login.jsx";
-import HomePage from "./Users/pages/Home.jsx";
+import HomePage from "./Users/pages/Home/Home.jsx";
 import WorkGroupsPage from "./Users/pages/workgroupIndex/WorkGroups.jsx";
 import WorkgroupsHome from "./Users/pages/workgroupIndex/WorkgroupsHome.jsx";
 import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.jsx";

@@ -13,16 +13,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useUser } from '../pages/Authantication/CustomHook/useUser';
 import Logout from '../pages/Authantication/Logout';
 import { useNavigate } from 'react-router-dom';
-import AdbIcon from '@mui/icons-material/Adb';
-import { AccountCircle } from '@mui/icons-material';
 import { Avatar, Menu, MenuItem } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'Customers', 'Projects', 'Forms', 'About Us', 'Contact'];
+const navItems = ['Home', 'About Us', 'Clients', 'Services', 'Projects', 'Contact'];
 
 export default function Navbar() {
     const { isFetching, user, isAuth } = useUser();
@@ -30,6 +28,8 @@ export default function Navbar() {
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
+    const location = useLocation();
+    const isHome = location.pathname === '/';
     // Handle Scroll
     const handleScroll = () => {
         if (window.scrollY > 50) {
@@ -103,14 +103,14 @@ export default function Navbar() {
                     </Box>
                     <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                         <NavLink to={'workgroups'}>
-                            <Button variant="contained" size='small' color="primary" sx={{ marginRight: '3px' }}>Workgroups</Button>
+                            <Button variant="contained" size='small' color={isHome ? "primary" : "secondary"} sx={{ marginRight: '3px' }}>Workgroups</Button>
                         </NavLink>
                         <NavLink to={'/admin'}>
                             <Button variant="contained" size='small' color="primary" sx={{ marginRight: '3px' }}>Admin Dashboard</Button>
                         </NavLink>
                         {navItems.map((item) => (
                             <NavLink to={'/'} key={item}>
-                                <Button>
+                                <Button sx={{color: isHome && '#FF5733'}}>
                                     {item}
                                 </Button>
                             </NavLink>
