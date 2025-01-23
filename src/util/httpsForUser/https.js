@@ -257,6 +257,28 @@ export async function submitAnswer({ formData, taskid }) {
     throw error;
   }
 }
+// Change task Status
+export async function changeTaskStatus({ taskid, status }) {
+  console.log(taskid + status)
+  try {
+    const response = await fetch(`${API_URL}/tasks/${taskid}/change-status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(status),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating task:", error);
+    throw error;
+  }
+}
 // Delete Task
 export async function deleteTask(taskid) {
   try {
