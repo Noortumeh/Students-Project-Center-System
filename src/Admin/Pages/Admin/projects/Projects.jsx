@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Box,
@@ -25,91 +25,102 @@ import {
   Visibility as VisibilityIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom'; 
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { useNavigate } from 'react-router-dom'; 
-import Swal from 'sweetalert2';
+import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
+import PaginationComponent from '../../../../Users/components/PaginationComponent.jsx';
 
 const ProjectPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient(); // Get the query client to invalidate queries
-  const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['projects'],
-    queryFn: fetchProjects,
-  });
 
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
   const [filters, setFilters] = useState({
     filterType: 'all',
     filterValue: '',
     projectStatus: 'all',
   });
-
-  const [currentPage, setCurrentPage] = useState(1);
   const [favoriteProjects, setFavoriteProjects] = useState({});
-  const projectsPerPage = 6;
+
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ['projects', pageNumber, pageSize],
+    queryFn: () => fetchProjects({ pageSize, pageNumber }),
+    keepPreviousData: true,
+    staleTime: 10000,
+  });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1); // Reset to first page on filter change
+    setPageNumber(1);
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  const handlePageChange = (newPage) => {
+    setPageNumber(newPage);
+    refetch();
   };
 
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الحجم
+  };
 
-const toggleFavorite = async (id, projectName, isFavorite) => {
-  const confirmationMessage = isFavorite
-    ? `Are you sure you want to remove "${projectName}" from favorites?`
-    : `Are you sure you want to add "${projectName}" to favorites?`;
+  const toggleFavorite = async (id, projectName, isFavorite) => {
+    const confirmationMessage = isFavorite
+      ? `Are you sure you want to remove "${projectName}" from favorites?`
+      : `Are you sure you want to add "${projectName}" to favorites?`;
 
-  if (window.confirm(confirmationMessage)) {
-    try {
-      const result = await setFavoriteProject(id);
-      if (result.isSuccess) {
+    if (window.confirm(confirmationMessage)) {
+      try {
+        const result = await setFavoriteProject(id);
+        if (result.isSuccess) {
+          Swal.fire({
+            title: 'Updated!',
+            text: isFavorite
+              ? `"${projectName}" has been removed from favorites.`
+              : `"${projectName}" has been added to favorites.`,
+            icon: 'success',
+            confirmButtonText: 'OK',
+          });
+
+          setFavoriteProjects((prev) => ({
+            ...prev,
+            [id]: !isFavorite,
+          }));
+          refetch();
+        }
+      } catch (error) {
         Swal.fire({
-          title: 'Updated!',
-          text: isFavorite
-            ? `"${projectName}" has been removed from favorites.`
-            : `"${projectName}" has been added to favorites.`,
-          icon: 'success',
+          title: 'Error!',
+          text: error.message || 'An error occurred while updating the favorite status.',
+          icon: 'error',
           confirmButtonText: 'OK',
         });
-
-        setFavoriteProjects((prev) => ({
-          ...prev,
-          [id]: !isFavorite,
-        }));
-        refetch(); // Refetch projects after updating favorites
       }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: error.message || 'An error occurred while updating the favorite status.',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
     }
-  }
-};
-
+  };
 
   const statusColors = {
     active: 'success',
     pending: 'warning',
     'in progress': 'info',
     complete: 'primary',
+    archive: 'default', // Added archive status color
   };
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
 
-  const filteredProjects = data?.result.filter((project) => {
+  // التحقق من البيانات المرسلة من الـ API
+  if (!data || !data.result || !Array.isArray(data.result.projects)) {
+    return <Typography color="error">Invalid data format received from API.</Typography>;
+  }
+
+  const filteredProjects = data.result.projects.filter((project) => {
     const matchesFilterType =
       filters.filterType === 'all' ||
       (filters.filterType === 'projectName' &&
@@ -123,9 +134,9 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
     return matchesFilterType && matchesStatus;
   });
 
-  const startIndex = (currentPage - 1) * projectsPerPage;
-  const endIndex = startIndex + projectsPerPage;
-  const paginatedProjects = filteredProjects?.slice(startIndex, endIndex);
+  const startIndex = (pageNumber - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
 
   return (
     <Dashboard>
@@ -176,6 +187,7 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="in progress">In Progress</MenuItem>
             <MenuItem value="complete">Complete</MenuItem>
+            <MenuItem value="archive">Archive</MenuItem> {/* Added Archive option */}
           </Select>
         </Box>
 
@@ -192,7 +204,7 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedProjects?.map((project) => (
+              {paginatedProjects.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell>{project.name}</TableCell>
                   <TableCell>{project.supervisorName}</TableCell>
@@ -208,9 +220,11 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
                     <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
                       <VisibilityIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.projectid}`)}>
+                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
                       <EditIcon color="secondary" />
-                    </IconButton>
+                      </IconButton>
+
+
                     <IconButton
                       onClick={() =>
                         toggleFavorite(
@@ -234,11 +248,12 @@ const toggleFavorite = async (id, projectName, isFavorite) => {
         </TableContainer>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination
-            count={Math.ceil((filteredProjects?.length || 0) / projectsPerPage)}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
+          <PaginationComponent
+            totalCount={data.result.total}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
           />
         </Box>
       </Container>

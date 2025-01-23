@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
-import { fetchUsers, createProject } from '../../../../util/http for admin/http.js'; 
+import { fetchUsers, createProject } from '../../../../util/http for admin/http.js';
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -35,7 +35,12 @@ const CreateProject = () => {
       toast.error('Please fill in all fields before submitting.');
       return;
     }
-  
+
+    const isConfirmed = window.confirm('Are you sure you want to add this project?');
+    if (!isConfirmed) {
+      return; // الخروج إذا لم يتم التأكيد
+    }
+
     setLoading(true);
     try {
       const projectData = {
@@ -43,28 +48,34 @@ const CreateProject = () => {
         supervisorId: selectedSupervisor.value,
         customerId: selectedCustomer.value,
       };
-  
+
+      console.log('Sending Project Data:', projectData);
+
       const newProject = await createProject(projectData);
-  
-      // تحقق من النجاح في الاستجابة
+
+      console.log('New Project Response:', newProject);
+
       if (newProject.isSuccess) {
         queryClient.setQueryData(['projects'], (oldData) => {
-          // تحقق من وجود oldData و oldData.result
-          const updatedData = oldData ? { 
-            ...oldData, 
-            result: oldData.result ? [...oldData.result, newProject.result] : [newProject.result] 
-          } : { result: [newProject.result] };
-          
+          console.log('Old Data:', oldData);
+          const updatedData = oldData
+            ? {
+                ...oldData,
+                result: oldData.result
+                  ? [...oldData.result, newProject.result]
+                  : [newProject.result],
+              }
+            : { result: [newProject.result] };
+
+          console.log('Updated Data:', updatedData);
           return updatedData;
         });
-  
+
         toast.success('Project added successfully!');
-  
         setTimeout(() => {
-          navigate('/projects');
-        }, 1000); 
+          navigate('/projects'); // التوجيه بعد النجاح
+        }, 1500); // تأخير بسيط للتأكد من عرض الرسالة
       } else {
-    
         toast.error('Failed to add project.');
       }
     } catch (error) {
@@ -74,9 +85,10 @@ const CreateProject = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <ToastContainer />
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
           Create New Project
