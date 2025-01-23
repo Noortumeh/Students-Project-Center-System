@@ -13,19 +13,29 @@ const HomePage = () => {
     return (
         <Container maxWidth="100%" disableGutters>
             {/* Home Section */}
-            <HomeSection />
+            <section id='Home'>
+                <HomeSection />
+            </section>
 
             {/* About Section */}
-            <AboutSection />
+            <section id='About Us'>
+                <AboutSection />
+            </section>
 
             {/* Clients Section */}
-            <OurClientsSection />
+            <section id="Clients">
+                <OurClientsSection />
+            </section>
 
             {/* Services Section */}
-            <ServicesSection />
+            <section id="Services">
+                <ServicesSection />
+            </section>
 
             {/* Projects Section */}
-            <ProjectsSection />
+            <section id="Projects">
+                <ProjectsSection />
+            </section>
 
             {/* FAQ Section */}
             <FAQSection />

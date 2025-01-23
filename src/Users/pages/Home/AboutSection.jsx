@@ -102,6 +102,7 @@ const AboutSection = () => {
                 py: 5,
                 backgroundColor: "#f5f5f5",
                 textAlign: "center",
+                height:'100vh'
             }}
         >
             <Typography
