@@ -1,3 +1,4 @@
+import { formatDate } from "@fullcalendar/core/index.js";
 import { QueryClient } from "@tanstack/react-query";
 //
 const API_URL = "http://spcs.somee.com/api";
@@ -300,8 +301,8 @@ export async function fetchEvents({ workgroupId }) {
 }
 
 // Add Calendar event to the API
-export async function addEvent( {newEvent, workgroupId} ) {
-  console.log(newEvent)
+export async function addEvent({ newEvent, workgroupId }) {
+  console.log(newEvent);
   const response = await fetch(`${API_URL}/celender/${workgroupId}`, {
     method: "POST",
     headers: {
@@ -318,18 +319,18 @@ export async function addEvent( {newEvent, workgroupId} ) {
   }
   const data = await response.json();
   return data;
-};
+}
 // Edit Calendar event to the API
-export async function updatedEvent (event){
-  console.log(event)
+export async function updatedEvent(event) {
   const response = await fetch(`${API_URL}/celender/${event.id}`, {
     method: "PUT",
     headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: event,
+    body: JSON.stringify(event), // JSON.stringify هنا مهم
   });
-
+  
   if (!response.ok) {
     const error = new Error("An error occurred while updating the Task");
     error.code = response.status;
@@ -340,7 +341,7 @@ export async function updatedEvent (event){
   return data.result;
 }
 // Delete Calendar event to the API
-export async function deleteEvent (eventId){
+export async function deleteEvent(eventId) {
   try {
     const response = await fetch(`${API_URL}/celender/${eventId}`, {
       method: "DELETE",

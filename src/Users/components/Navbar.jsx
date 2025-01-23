@@ -17,12 +17,16 @@ import { NavLink } from 'react-router-dom';
 import { useUser } from '../pages/Authantication/CustomHook/useUser';
 import Logout from '../pages/Authantication/Logout';
 import { useNavigate } from 'react-router-dom';
+import AdbIcon from '@mui/icons-material/Adb';
+import { AccountCircle } from '@mui/icons-material';
+import { Avatar, Menu, MenuItem } from '@mui/material';
 
 const drawerWidth = 240;
 const navItems = ['Home', 'Customers', 'Projects', 'Forms', 'About Us', 'Contact'];
 
 export default function Navbar() {
     const { isFetching, user, isAuth } = useUser();
+    const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
@@ -33,6 +37,17 @@ export default function Navbar() {
         } else {
             setNavBackground('rgba(248, 250, 251, 0.4)'); // اللون الافتراضي عند العودة للأعلى
         }
+    };
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleProfileClick = () => {
+        navigate('/user-profile');
+        handleMenuClose();
     };
 
     useEffect(() => {
@@ -101,7 +116,26 @@ export default function Navbar() {
                             </NavLink>
                         ))}
                     </Box>
-                    {isAuth ? <Logout /> :
+                    {isAuth ?
+                        <Box>
+                            <IconButton onClick={handleMenuOpen}>
+                                <Avatar
+                                    src={user.userInfo.user.profileImageUrl}
+                                    alt="Profile"
+                                    sx={{ width: 40, height: 40 }}
+                                />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                                sx={{ mt: 1 }}
+                            >
+                                <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                                <Logout />
+                            </Menu>
+                        </Box>
+                        :
                         <Box>
                             <NavLink to={"login"} style={{ textDecoration: 'none', color: 'white' }}>
                                 <Button variant="contained" color="primary" sx={{ marginRight: '3px' }}>

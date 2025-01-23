@@ -1,31 +1,25 @@
 import { useState } from 'react';
 import { Box, TextField, Button, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import { forgetPassword } from './AuthHttp';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function ForgetPasswordPage() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
-    const [success, setSuccess] = useState(false);
 
     const { mutate, isLoading } = useMutation({
-            mutationFn: async () => {
-                const response = await fetch('https://your-backend-api.com/api/request-reset-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to send reset password email.');
-                }
-
-                return response.json();
-            },
-            onSuccess: () => setSuccess(true),
-        });
+        mutationFn: forgetPassword,
+        onSuccess: () => {
+            toast.success('Reset Code send successfully!')
+            navigate(`/reset-password?email=${email}`)
+        },
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutate();
+        mutate({ email });
     };
 
     return (
@@ -40,11 +34,6 @@ export default function ForgetPasswordPage() {
                 px: 2,
             }}
         >
-            {success ? (
-                <Typography variant="h5" component="p">
-                    A reset password link has been sent to your email.
-                </Typography>
-            ) : (
                 <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '400px' }}>
                     <Typography variant="h4" component="h1" gutterBottom>
                         Forgot Password
@@ -71,7 +60,6 @@ export default function ForgetPasswordPage() {
                         {isLoading ? 'Sending...' : 'Submit'}
                     </Button>
                 </form>
-            )}
         </Box>
     );
 }

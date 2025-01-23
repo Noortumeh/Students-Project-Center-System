@@ -140,7 +140,7 @@ export default function UserProfilePage() {
                 variant="text"
                 color="secondary"
                 fullWidth
-                onClick={() => navigate('/reset-password')}
+                onClick={() => navigate('reset-password')}
             >
                 Change Password
             </Button>

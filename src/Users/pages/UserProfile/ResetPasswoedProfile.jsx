@@ -1,17 +1,17 @@
 import { Box, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { resetForgottenPassword } from './AuthHttp';
 import { toast } from 'react-toastify';
+import { resetPasswordProfile } from '../Authantication/AuthHttp';
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordProfile() {
     const navigate = useNavigate();
 
-    const { mutate, isLoading, isSuccess, error } = useMutation({
-        mutationFn: resetForgottenPassword,
+    const { mutate, isLoading, error } = useMutation({
+        mutationFn: resetPasswordProfile,
         onSuccess: () => {
             toast.success('Password Reset successfully!')
-            navigate('/login')
+            navigate(-1);
         },
     }
     );
@@ -25,11 +25,8 @@ export default function ResetPasswordPage() {
             alert("Passwords do not match!");
             return;
         }
-        const queryParams = new URLSearchParams(window.location.search);
-        const email = queryParams.get('email');
-        console.log(data)
-        console.log(email)
-        mutate({ email, data });
+        
+        mutate({ data });
     };
 
     return (
@@ -48,14 +45,6 @@ export default function ResetPasswordPage() {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Reset Password
                 </Typography>
-                <TextField
-                    fullWidth
-                    label="Reset Code"
-                    name="resetCode"
-                    type="text"
-                    required
-                    variant="outlined"
-                />
                 <TextField
                     fullWidth
                     label="New Password"

@@ -64,17 +64,25 @@ export default function WorkgroupsProjects() {
                 mt: 5
             }}
         >
-            <Typography variant="h4" textAlign="center" gutterBottom>
-                Your Projects Overview
-            </Typography>
-            {content}
-            <PaginationComponent
-                totalCount={data?.total || 6}
-                pageNumber={pageNumber}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-            />
+            {!content ?
+                <Typography variant="h4" textAlign="center" gutterBottom>
+                    You are not registered in any project
+                </Typography>
+                :
+                <>
+                    <Typography variant="h4" textAlign="center" gutterBottom>
+                        Your Projects Overview
+                    </Typography>
+                    {content}
+                    <PaginationComponent
+                        totalCount={data?.total || 6}
+                        pageNumber={pageNumber}
+                        pageSize={pageSize}
+                        onPageChange={handlePageChange}
+                        onPageSizeChange={handlePageSizeChange}
+                    />
+                </>
+            }
         </Box>
     );
 }
