@@ -43,6 +43,7 @@ export default function EditTask() {
     const { showConfirmDialog } = ConfirmDialog({
         title: "Are you sure you want to delete this task?",
         text: "This action cannot be undone!",
+        action: 'Delete',
         onConfirm: handleDelete
     });
 

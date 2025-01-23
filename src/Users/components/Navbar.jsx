@@ -13,16 +13,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useUser } from '../pages/Authantication/CustomHook/useUser';
 import Logout from '../pages/Authantication/Logout';
 import { useNavigate } from 'react-router-dom';
-import AdbIcon from '@mui/icons-material/Adb';
-import { AccountCircle } from '@mui/icons-material';
 import { Avatar, Menu, MenuItem } from '@mui/material';
+import { HashLink } from 'react-router-hash-link';
+
 
 const drawerWidth = 240;
-const navItems = ['Home', 'Customers', 'Projects', 'Forms', 'About Us', 'Contact'];
+const navItems = ['Home', 'About Us', 'Clients', 'Services', 'Projects', 'Contact'];
 
 export default function Navbar() {
     const { isFetching, user, isAuth } = useUser();
@@ -30,6 +30,8 @@ export default function Navbar() {
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
+    const location = useLocation();
+    const isHome = location.pathname === '/';
     // Handle Scroll
     const handleScroll = () => {
         if (window.scrollY > 50) {
@@ -56,6 +58,13 @@ export default function Navbar() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    const scrollWithOffset = (el) => {
+        const yOffset = -50; // قيمة الإزاحة بالسالب لضمان أن العنوان يظهر أسفل النافبار
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+    };
+
     // handle Drawer Toggle
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -70,14 +79,26 @@ export default function Navbar() {
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item} disablePadding>
-                        <ListItemButton sx={{ textAlign: 'center' }}>
-                            <ListItemText primary={item} />
-                        </ListItemButton>
+                        {item === 'Contact' ? (
+                            <NavLink to="/contact" key={item} style={{ textDecoration: 'none' }}>
+                                <ListItemButton sx={{ width: 240, textAlign: 'center', color: isHome && 'black', "&:hover": isHome && { color: "#FF5733" } }}>
+                                    <ListItemText primary={item} />
+                                </ListItemButton>
+                            </NavLink>
+                        ) : (
+                            <HashLink scroll={scrollWithOffset} to={`/#${item}`} key={item} style={{ textDecoration: 'none' }}>
+                                <ListItemButton sx={{ width: 240, textAlign: 'center', color: isHome && 'black', "&:hover": isHome && { color: "#FF5733" } }}>
+                                    <ListItemText primary={item} />
+                                </ListItemButton>
+                            </HashLink>
+                        )}
+
                     </ListItem>
                 ))}
             </List>
         </Box>
     );
+
     return (
         <Box>
             <CssBaseline />
@@ -103,17 +124,38 @@ export default function Navbar() {
                     </Box>
                     <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                         <NavLink to={'workgroups'}>
-                            <Button variant="contained" size='small' color="primary" sx={{ marginRight: '3px' }}>Workgroups</Button>
+                            <Button variant="contained" size='small' sx={{
+                                marginRight: '3px', backgroundColor: isHome && "#FF8A65",
+                                "&:hover": isHome && { backgroundColor: "#FF7043" },
+                            }}>Workgroups</Button>
                         </NavLink>
                         <NavLink to={'/admin'}>
-                            <Button variant="contained" size='small' color="primary" sx={{ marginRight: '3px' }}>Admin Dashboard</Button>
+                            <Button variant="contained" size='small' sx={{ marginRight: '3px', backgroundColor: isHome && '#FF8A65', "&:hover": isHome && { backgroundColor: "#FF7043" }, }}>Admin Dashboard</Button>
                         </NavLink>
                         {navItems.map((item) => (
-                            <NavLink to={'/'} key={item}>
-                                <Button>
-                                    {item}
-                                </Button>
-                            </NavLink>
+                            item === 'Contact' ? (
+                                <NavLink to="/contact" key={item} style={{ textDecoration: 'none' }}>
+                                    <Button
+                                        sx={{
+                                            color: isHome && 'black',
+                                            "&:hover": isHome && { color: "#FF5733" },
+                                        }}
+                                    >
+                                        {item}
+                                    </Button>
+                                </NavLink>
+                            ) : (
+                                <HashLink scroll={scrollWithOffset} to={`/#${item}`} key={item} style={{ textDecoration: 'none' }}>
+                                    <Button
+                                        sx={{
+                                            color: isHome && 'black',
+                                            "&:hover": isHome && { color: "#FF5733" },
+                                        }}
+                                    >
+                                        {item}
+                                    </Button>
+                                </HashLink>
+                            )
                         ))}
                     </Box>
                     {isAuth ?
@@ -138,13 +180,19 @@ export default function Navbar() {
                         :
                         <Box>
                             <NavLink to={"login"} style={{ textDecoration: 'none', color: 'white' }}>
-                                <Button variant="contained" color="primary" sx={{ marginRight: '3px' }}>
+                                <Button variant="contained" sx={{
+                                    marginRight: '3px', backgroundColor: isHome && "#FF8A65",
+                                    "&:hover": isHome && { backgroundColor: "#FF7043" },
+                                }}>
                                     Log In
                                 </Button>
                             </NavLink>
 
                             <NavLink to={"signup"} style={{ textDecoration: 'none', color: 'white' }}>
-                                <Button variant="contained" color="primary">
+                                <Button variant="contained" sx={{
+                                    backgroundColor: isHome && "#FF8A65",
+                                    "&:hover": isHome && { backgroundColor: "#FF7043" },
+                                }}>
                                     Sign Up
                                 </Button>
                             </NavLink>
