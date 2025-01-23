@@ -34,7 +34,7 @@ import PageNotFound from './PageNotFound.jsx';
 import RootLayout from "./Users/pages/Root.jsx";
 import SignUpPage from "./Users/pages/Authantication/SignUp.jsx";
 import LoginPage from "./Users/pages/Authantication/Login.jsx";
-import HomePage from "./Users/pages/Home.jsx";
+import HomePage from "./Users/pages/Home/Home.jsx";
 import WorkGroupsPage from "./Users/pages/workgroupIndex/WorkGroups.jsx";
 import WorkgroupsHome from "./Users/pages/workgroupIndex/WorkgroupsHome.jsx";
 import WorkgroupsProjects from "./Users/pages/workgroupIndex/WorkgroupsProjects.jsx";
@@ -61,6 +61,8 @@ import ForgetPasswordPage from './Users/pages/Authantication/ForgotPassword.jsx'
 import ConfirmationComponent from './Users/pages/Authantication/ConfirmationComponent.jsx';
 import ResetPasswordPage from './Users/pages/Authantication/ResetPasswordPage.jsx';
 import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
+import ResetPasswordProfile from './Users/pages/UserProfile/ResetPasswoedProfile.jsx';
+import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMembers/AddMembers.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -155,35 +157,10 @@ const router = createBrowserRouter([
     path: '*',
     element: <PageNotFound />,
   },
-  //* Users Authantication Routes
-  {
-    path: 'reset-password',
-    element: <ResetPasswordPage />
-  },
-  {
-    path: 'confirm-email',
-    element: (
-      <ConfirmationComponent
-        apiEndpoint="auth/confirm-email"
-        successMessage="Email Confirmed Successfully!"
-        errorMessage="Failed to confirm email."
-        buttonLabel="Go to Login"
-        redirectPath="/login"
-      />
-    ),
-  },
-  {
-    path: 'reset-password-confirm',
-    element: (
-      <ConfirmationComponent
-        apiEndpoint="auth/confirm-email"
-        successMessage="Reset Email Confirmed!"
-        errorMessage="Failed to confirm reset email."
-        buttonLabel="Reset Password"
-        redirectPath="/reset-password"
-      />
-    ),
-  },
+  //* Users Routes
+  // confirm email path
+  { path: 'confirm-email', element: (<ConfirmationComponent />) },
+  // Authantications pathes
   {
     path: '/',
     element: <RootLayout />,
@@ -192,9 +169,10 @@ const router = createBrowserRouter([
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'forgot-password', element: <ForgetPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'user-profile', element: <UserProfilePage /> },
-      // { path: 'confirm-email', element: <ConfirmEmail /> },
-      // { path: 'logout' ,element: <Logout />},
+      { path: 'user-profile/reset-password', element: <ResetPasswordProfile /> },
+
       {
         element: <Authentication />, children: [
           {
@@ -203,6 +181,7 @@ const router = createBrowserRouter([
               {
                 path: ':workgroupId', element: <WorkgroupRoot />, children: [
                   { index: true, element: <WorkgroupHome /> },
+                  { path: 'addmembers', element: <AddMemebersPage /> },
                   { path: 'tasks', element: <TasksPage /> },
                   { path: 'tasks/addtask', element: <AddTask /> },
                   { path: 'tasks/edittask/:taskid', element: <EditTask /> },

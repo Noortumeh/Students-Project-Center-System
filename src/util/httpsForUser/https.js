@@ -102,7 +102,6 @@ export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
     throw error;
   }
   const data = await response.json();
-  console.log(data);
   return data.result;
 }
 //* Supervisor Tasks
@@ -168,7 +167,7 @@ export async function fetchTasksForworkgroup(id) {
   const response = await fetch(`${API_URL}/tasks/all-workgroup-tasks/${id}`, {
     "Content-Type": "application/json",
     headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(token && { Authorization: `Bearer ${token}`}),
     },
   });
   if (!response.ok) {
@@ -300,8 +299,8 @@ export async function fetchEvents({ workgroupId }) {
 }
 
 // Add Calendar event to the API
-export async function addEvent( {newEvent, workgroupId} ) {
-  console.log(newEvent)
+export async function addEvent({ newEvent, workgroupId }) {
+  console.log(newEvent);
   const response = await fetch(`${API_URL}/celender/${workgroupId}`, {
     method: "POST",
     headers: {
@@ -318,18 +317,18 @@ export async function addEvent( {newEvent, workgroupId} ) {
   }
   const data = await response.json();
   return data;
-};
+}
 // Edit Calendar event to the API
-export async function updatedEvent (event){
-  console.log(event)
+export async function updatedEvent(event) {
   const response = await fetch(`${API_URL}/celender/${event.id}`, {
     method: "PUT",
     headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: event,
+    body: JSON.stringify(event), // JSON.stringify هنا مهم
   });
-
+  
   if (!response.ok) {
     const error = new Error("An error occurred while updating the Task");
     error.code = response.status;
@@ -340,7 +339,7 @@ export async function updatedEvent (event){
   return data.result;
 }
 // Delete Calendar event to the API
-export async function deleteEvent (eventId){
+export async function deleteEvent(eventId) {
   try {
     const response = await fetch(`${API_URL}/celender/${eventId}`, {
       method: "DELETE",
@@ -376,20 +375,21 @@ export async function getMessages({ workgroupId }) {
   }
 
   const data = await response.json();
-  return data;
+  return data.result;
 }
 
 // POST /api/chat/send
 export async function sendMessageToChat({ message, workgroupId }) {
-  const response = await fetch(`${API_URL}/chat/${workgroupId}/send`, {
+  console.log(message +" "+ workgroupId)
+  const response = await fetch(`${API_URL}/chat/send-message/${workgroupId}`, {
     method: "POST",
-    body: JSON.stringify(message),
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
+    body: JSON.stringify(message)
   });
-
+  console.log(response)
   if (!response.ok) {
     const error = new Error("An error occurred while sending a message");
     error.code = response.status;
@@ -403,14 +403,17 @@ export async function sendMessageToChat({ message, workgroupId }) {
 
 // POST /api/chat/join
 export async function joinChat({ workgroupId }) {
-  const response = await fetch(`${API_URL}/chat/${workgroupId}/join`, {
+  console.log(token)
+  console.log(workgroupId)
+  const response = await fetch(`${API_URL}/chat/join-group/${workgroupId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
   });
-
+  // const data = await response.json();
+  // console.log("data")
   if (!response.ok) {
     const error = new Error("An error occurred while joining the chat");
     error.code = response.status;
@@ -423,11 +426,10 @@ export async function joinChat({ workgroupId }) {
 }
 
 // POST /api/chat/leave
-export async function leaveChat(chatData) {
+export async function leaveChat({workgroupId}) {
   const token = getToken();
-  const response = await fetch(`${API_URL}/chat/leave`, {
+  const response = await fetch(`${API_URL}/chat/${workgroupId}/leave`, {
     method: "POST",
-    body: JSON.stringify(chatData),
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),

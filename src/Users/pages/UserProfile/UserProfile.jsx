@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -6,43 +6,122 @@ import {
     Button,
     Avatar,
     IconButton,
+    CircularProgress,
+    Alert,
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getProfileinfo, updateProfileInfo, updateProfilePicture } from './httpProfile';
+import { toast } from 'react-toastify';
+import { validateInputs } from './validateInputs';
+import { queryClient } from '../../../util/httpsForUser/https';
 
 export default function UserProfilePage() {
     const navigate = useNavigate();
-    const [userData, setUserData] = useState({
-        profilePicture: 'https://via.placeholder.com/150', // صورة افتراضية
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        phone: '123-456-7890',
+    const [editable, setEditable] = useState(false);
+
+    const profileImage = JSON.parse(localStorage.getItem('userInfo')).user.profileImageUrl;
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [alert, setAlert] = useState('');
+    const [userInfo, setUserInfo] = useState({
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        address: '',
+        profilePicture: profileImage || '',
     });
 
-    const [editable, setEditable] = useState(false);
+    const { data: userData, isLoading } = useQuery({
+        queryKey: ['profile'],
+        queryFn: getProfileinfo,
+    });
+
+    useEffect(() => {
+        if (userData) {
+            setUserInfo({
+                firstName: userData.firstName,
+                middleName: userData.middleName,
+                lastName: userData.lastName,
+                email: userData.email,
+                phoneNumber: userData.phoneNumber,
+                address: userData.address,
+            });
+        }
+    }, [userData]);
+
+    const profileMutation = useMutation({
+        mutationFn: updateProfileInfo,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            toast.success('Profile updated successfully!');
+            setEditable(false);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+
+    const { mutate: pictureMutation } = useMutation({
+        mutationFn: updateProfilePicture,
+        onSuccess: () => { 
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+            toast.success('Profile picture updated successfully!') 
+        },
+        onError: (error) => toast.error(error.message),
+    });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setUserData((prev) => ({ ...prev, [name]: value }));
+        setUserInfo((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleProfilePictureChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setUserData((prev) => ({ ...prev, profilePicture: reader.result }));
-            };
-            reader.readAsDataURL(file);
+            // تحديث حالة الصورة للعرض الفوري
+            setProfilePicture(file);
+
+            // رفع الصورة إلى الخادم
+            const formData = new FormData();
+            formData.append('file', file);
+            pictureMutation({ file: formData });
+
+            // تحديث الصورة في localStorage
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (userInfo && userInfo.user) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // تعيين الصورة الجديدة
+                    userInfo.user.profileImageUrl = reader.result;
+
+                    // حفظ التحديث في localStorage
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                };
+                reader.readAsDataURL(file); // تحويل الصورة إلى Base64
+            }
         }
     };
 
     const handleSaveChanges = () => {
-        // حفظ البيانات المحدثة على الباك اند (طلب API هنا)
-        setEditable(false);
-        alert('Profile updated successfully!');
+        const validationErrors = validateInputs(userInfo);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        profileMutation.mutate({ userInfo });
     };
 
+    if (isLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
     return (
         <Box
             sx={{
@@ -56,6 +135,7 @@ export default function UserProfilePage() {
                 px: 2,
             }}
         >
+            {alert && <Alert severity="info">{alert}</Alert>}
             <Box
                 sx={{
                     position: 'relative',
@@ -65,7 +145,7 @@ export default function UserProfilePage() {
                 }}
             >
                 <Avatar
-                    src={userData.profilePicture}
+                    src={profilePicture ? URL.createObjectURL(profilePicture) : profileImage}
                     alt="Profile Picture"
                     sx={{ width: 150, height: 150 }}
                 />
@@ -95,25 +175,54 @@ export default function UserProfilePage() {
             </Typography>
             <TextField
                 fullWidth
-                label="Name"
-                name="name"
-                value={userData.name}
+                label="First Name"
+                name="firstName"
+                value={userInfo.firstName}
                 onChange={handleInputChange}
                 disabled={!editable}
+                error={editable && !!errors.firstName}
+                helperText={editable && errors.firstName}
+            />
+            <TextField
+                fullWidth
+                label="Middle Name"
+                name="middleName"
+                value={userInfo.middleName}
+                onChange={handleInputChange}
+                disabled={!editable}
+            />
+            <TextField
+                fullWidth
+                label="Last Name"
+                name="lastName"
+                value={userInfo.lastName}
+                onChange={handleInputChange}
+                disabled={!editable}
+                error={editable && !!errors.lastName}
+                helperText={editable && errors.lastName}
             />
             <TextField
                 fullWidth
                 label="Email"
                 name="email"
-                value={userData.email}
-                onChange={handleInputChange}
-                disabled={!editable}
+                value={userInfo.email}
+                disabled={true}
             />
             <TextField
                 fullWidth
                 label="Phone Number"
-                name="phone"
-                value={userData.phone}
+                name="phoneNumber"
+                value={userInfo.phoneNumber}
+                onChange={handleInputChange}
+                disabled={!editable}
+                error={editable && !!errors.phoneNumber}
+                helperText={editable && errors.phoneNumber}
+            />
+            <TextField
+                fullWidth
+                label="User Address"
+                name="address"
+                value={userInfo.address}
                 onChange={handleInputChange}
                 disabled={!editable}
             />
@@ -140,7 +249,7 @@ export default function UserProfilePage() {
                 variant="text"
                 color="secondary"
                 fullWidth
-                onClick={() => navigate('/reset-password')}
+                onClick={() => navigate('reset-password')}
             >
                 Change Password
             </Button>
