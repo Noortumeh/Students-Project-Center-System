@@ -16,8 +16,8 @@ function transformEvents(events) {
   return events.map(event => ({
     id: event.id,
     title: event.title,
-    start: formatToISO(event.startAt), // FullCalendar يمكنه التعامل مع الصيغتين ISO 8601
-    end: formatToISO(event.endAt),
+    start: event.startAt, // FullCalendar يمكنه التعامل مع الصيغتين ISO 8601
+    end: event.endAt,
     allDay: event.allDay,
     extendedProps: {
       description: event.description,
@@ -25,12 +25,8 @@ function transformEvents(events) {
     },
   }));
 }
-function formatToISO(date) {
-  return new Date(date).toISOString().slice(0, 19); // يزيل Z في النهاية
-}
 export default function Calendar() {
   const currentUser = JSON.parse(localStorage.getItem('userInfo'))?.user || {};
-  console.log(currentUser.userName)
   const { workgroupId } = useParams();
   // Fetch events
   const { data: events, isLoading, error } = useQuery({
@@ -64,7 +60,7 @@ export default function Calendar() {
   });
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState({});
 
   const handleDateSelect = (selectInfo) => {
     setSelectedEvent({
@@ -80,7 +76,7 @@ export default function Calendar() {
   const handleEventClick = (clickInfo) => {
     const isOwner = clickInfo.event.extendedProps.author === currentUser.userName;
     const event = {
-      id: clickInfo.event.id,
+      id: parseInt(clickInfo.event.id, 10),
       title: clickInfo.event.title,
       startAt: clickInfo.event.startStr,
       endAt: clickInfo.event.endStr,
@@ -97,10 +93,17 @@ export default function Calendar() {
       toast.error('Title is required');
       return;
     }
+    const currentDate = new Date();
+    const eventStartDate = new Date(selectedEvent?.startAt);
+  
+    // تحقق من أن تاريخ البداية بعد أو يساوي التاريخ الحالي
+    if (eventStartDate < currentDate) {
+      toast.error('The event start date cannot be before the current date.');
+      return;
+    }
     if (selectedEvent?.id) {
       editEventMutation(selectedEvent);
     } else {
-      console.log(selectedEvent)
       addEventMutation({ newEvent: selectedEvent, workgroupId });
     }
     setDialogOpen(false);
@@ -124,7 +127,13 @@ export default function Calendar() {
       description: changeInfo.event.extendedProps.description || '',
       allDay: changeInfo.event.allDay,
     };
-    console.log(updatedEvent)
+    const currentDate = new Date();
+    const eventStartDate = new Date(updatedEvent?.startAt);
+    // تحقق من أن تاريخ البداية بعد أو يساوي التاريخ الحالي
+    if (eventStartDate < currentDate) {
+      toast.error('The event start date cannot be before the current date.');
+      return;
+    }
     editEventMutation(updatedEvent);
   };
 
@@ -140,7 +149,6 @@ export default function Calendar() {
     return <div>Error: {error.message}</div>;
   }
   const formattedEvents = transformEvents(events);
-  console.log(events)
   return (
     <Box sx={{ boxShadow: 3, p: 3, mr: 5, mb: 2, borderRadius: 2, bgcolor: 'background.paper' }}>
       <HeaderCalendar events={events} />

@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-const MessageList = ({ messages }) => {
+const MessageList = ({ messages = [] }) => {
   return (
     <Box
       sx={{
@@ -15,8 +15,8 @@ const MessageList = ({ messages }) => {
       {messages.map((msg, index) => (
         <Box key={index} sx={{ marginBottom: 1 }}>
           <Typography variant="body1">
-            <strong>{msg.user}:</strong>
-            {msg.message}
+            <strong>{msg.user}:</strong><br></br>
+            {msg.content}
           </Typography>
         </Box>
       ))}

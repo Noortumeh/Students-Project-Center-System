@@ -1,41 +1,35 @@
-import { useState } from 'react';
 import { Box, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
+import { resetForgottenPassword } from './AuthHttp';
+import { toast } from 'react-toastify';
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate();
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
 
     const { mutate, isLoading, isSuccess, error } = useMutation({
-        mutationFn: async (data) => {
-            const response = await fetch('https://your-backend-api.com/api/reset-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to reset password.');
-            }
-
-            return response.json();
+        mutationFn: resetForgottenPassword,
+        onSuccess: () => {
+            toast.success('Password Reset successfully!')
+            navigate('/login')
         },
-        onSuccess: () => navigate('/login'),
     }
     );
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        if (data.newPassword !== data.confirmNewPassword) {
             alert("Passwords do not match!");
             return;
         }
         const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get('token');
-        const id = queryParams.get('id');
-        mutate({ token, id, password });
+        const email = queryParams.get('email');
+        console.log(data)
+        console.log(email)
+        mutate({ email, data });
     };
 
     return (
@@ -56,20 +50,28 @@ export default function ResetPasswordPage() {
                 </Typography>
                 <TextField
                     fullWidth
+                    label="Reset Code"
+                    name="resetCode"
+                    type="text"
+                    required
+                    variant="outlined"
+                />
+                <TextField
+                    fullWidth
                     label="New Password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="newPassword"
                     required
+                    margin="normal"
+                    variant="outlined"
                 />
                 <TextField
                     fullWidth
                     label="Confirm Password"
                     type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    name='confirmNewPassword'
+                    variant="outlined"
                     required
-                    sx={{ mt: 2 }}
                 />
                 <Button
                     type="submit"

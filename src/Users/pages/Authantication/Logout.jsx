@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, MenuItem } from "@mui/material";
 import { useLogout } from "./CustomHook/useLogout";
 import { useUser } from "./CustomHook/useUser";
 import { toast } from "react-toastify";
@@ -17,11 +17,12 @@ export default function Logout() {
     }
 
     return (
-        <Button
+        <MenuItem
             onClick={handleLogout}
             disabled={isPending}
-            variant="contained" color="primary">
+            sx={{color: '#DF0404'}}
+            >
             {isPending ? 'Logging out...' : 'Logout'}
-        </Button>
+        </MenuItem>
     );
 }

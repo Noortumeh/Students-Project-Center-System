@@ -1,44 +1,13 @@
-import { useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { confirmEmail } from './AuthHttp';
 
-export default function ConfirmationComponent({ apiEndpoint, successMessage, errorMessage, buttonLabel, redirectPath }) {
+
+export default function ConfirmationComponent() {
     const navigate = useNavigate();
 
-    const { mutate, isLoading, isSuccess, error } = useMutation({
-        mutationFn: confirmEmail,
-    });
-
-    useEffect(() => {
-        // Replace this with actual token and id logic
-        const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get('token');
-        const id = queryParams.get('userId');
-        if (token && id) {
-            mutate({ apiEndpoint, token, id });
-        }
-    }, []);
-
     const handleRedirect = () => {
-        navigate(redirectPath);
+        navigate('/login');
     };
-
-    if (isLoading) {
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100vh',
-                }}
-            >
-                <CircularProgress />
-            </Box>
-        );
-    }
 
     return (
         <Box
@@ -47,35 +16,25 @@ export default function ConfirmationComponent({ apiEndpoint, successMessage, err
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '100vh',
+                height: '95vh',
                 textAlign: 'center',
                 gap: 3,
-                px: 2,
+                color: 'Green'
             }}
         >
-            {isSuccess ? (
-                <>
-                    <Typography variant="h4" component="h1">
-                        {successMessage}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleRedirect}
-                    >
-                        {buttonLabel}
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <Typography variant="h4" component="h1" color="error">
-                        {errorMessage}
-                    </Typography>
-                    <Typography variant="body1">
-                        {error?.message || 'Something went wrong. Please try again later.'}
-                    </Typography>
-                </>
-            )}
+            <Typography variant="h3" component="h1" sx={{}}>
+                Email Confirmed Successfully!
+            </Typography>
+            <Typography variant="h4" component="h1">
+                You Can Log in Now!
+            </Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleRedirect}
+            >
+                Go To Login
+            </Button>
         </Box>
     );
 }
