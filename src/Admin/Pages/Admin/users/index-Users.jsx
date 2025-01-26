@@ -10,27 +10,24 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Button,
   Paper,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchRoleData } from '../../../../util/http for admin/http.js';
 import { Edit, Delete } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { assignRoleToUser, removeRoleFromUser } from '../../../../util/http for admin/http.js'; // تأكد من استيراد هذه الدوال بشكل صحيح
+import { assignRoleToUser, removeRoleFromUser } from '../../../../util/http for admin/http.js';
 
 export default function IndexUsers() {
   const queryClient = useQueryClient();
-  
-  // استعلام لجلب المستخدمين بناءً على الدور
+
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['users'],
-    queryFn: () => fetchRoleData('customer'), // استبدال fetchUsers بـ fetchRoleData
+    queryFn: () => fetchRoleData('customer'),
   });
 
-  // Mutation لتعيين الدور
   const assignRoleMutation = useMutation({
-    mutationFn: ({ roleId, userId }) => assignRoleToUser(roleId, userId),
+    mutationFn: ({ roleId, userId }) => assignRoleToUser({ roleId, userId }),
     onSuccess: () => {
       queryClient.invalidateQueries(['users']);
       toast.success('Role assigned successfully');
@@ -40,9 +37,8 @@ export default function IndexUsers() {
     }
   });
 
-  // Mutation لإزالة الدور
   const removeRoleMutation = useMutation({
-    mutationFn: ({ roleId, userId }) => removeRoleFromUser(roleId, userId),
+    mutationFn: ({ roleId, userId }) => removeRoleFromUser({ roleId, userId }),
     onSuccess: () => {
       queryClient.invalidateQueries(['users']);
       toast.success('Role removed successfully');
@@ -68,18 +64,17 @@ export default function IndexUsers() {
     );
   }
 
-  // الدالة لتعيين الدور
   const handleAssignRole = (roleId, userId) => {
     assignRoleMutation.mutate({ roleId, userId });
   };
 
-  // الدالة لإزالة الدور
   const handleRemoveRole = (roleId, userId) => {
     removeRoleMutation.mutate({ roleId, userId });
   };
 
   const columns = [
-    { id: 'name', label: 'Name' },
+    { id: 'firstName', label: 'First Name' },
+    { id: 'lastName', label: 'Last Name' },
     { id: 'email', label: 'Email' },
     { id: 'role', label: 'Role' },
     {
@@ -89,13 +84,13 @@ export default function IndexUsers() {
         <Box display="flex" justifyContent="space-around">
           <IconButton
             color="primary"
-            onClick={() => handleAssignRole(1, row.id)} // استبدال 1 بالقيم الصحيحة للدور
+            onClick={() => handleAssignRole(1, row.id)} 
           >
             <Edit />
           </IconButton>
           <IconButton
             color="secondary"
-            onClick={() => handleRemoveRole(1, row.id)} // استبدال 1 بالقيم الصحيحة للدور
+            onClick={() => handleRemoveRole(1, row.id)} 
           >
             <Delete />
           </IconButton>
