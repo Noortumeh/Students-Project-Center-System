@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Box,
@@ -16,7 +16,6 @@ import {
   IconButton,
   Chip,
   Paper,
-  Pagination,
 } from '@mui/material';
 import {
   Star as StarIcon,
@@ -28,7 +27,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
@@ -37,7 +36,11 @@ import PaginationComponent from '../../../../Users/components/PaginationComponen
 const ProjectPage = () => {
   const navigate = useNavigate();
 
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(() => {
+    const savedPageNumber = localStorage.getItem('pageNumber');
+    return savedPageNumber ? parseInt(savedPageNumber, 10) : 1;
+  });
+
   const [pageSize, setPageSize] = useState(6);
   const [filters, setFilters] = useState({
     filterType: 'all',
@@ -53,6 +56,16 @@ const ProjectPage = () => {
     staleTime: 10000,
   });
 
+  useEffect(() => {
+    localStorage.setItem('pageNumber', pageNumber);
+  }, [pageNumber]);
+
+  useEffect(() => {
+    console.log('Current pageNumber:', pageNumber);
+    console.log('Current pageSize:', pageSize);
+    console.log('Filters:', filters);
+  }, [pageNumber, pageSize, filters]);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -66,7 +79,7 @@ const ProjectPage = () => {
 
   const handlePageSizeChange = (newPageSize) => {
     setPageSize(newPageSize);
-    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الحجم
+    setPageNumber(1);
   };
 
   const toggleFavorite = async (id, projectName, isFavorite) => {
@@ -107,15 +120,14 @@ const ProjectPage = () => {
   const statusColors = {
     active: 'success',
     pending: 'warning',
-    'in progress': 'info',
+    inprogress: 'info',
     complete: 'primary',
-    archive: 'default', // Added archive status color
+    archive: 'default',
   };
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
 
-  // التحقق من البيانات المرسلة من الـ API
   if (!data || !data.result || !Array.isArray(data.result.projects)) {
     return <Typography color="error">Invalid data format received from API.</Typography>;
   }
@@ -137,6 +149,8 @@ const ProjectPage = () => {
   const startIndex = (pageNumber - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
+
+  console.log('Paginated Projects:', paginatedProjects);
 
   return (
     <Dashboard>
@@ -187,7 +201,7 @@ const ProjectPage = () => {
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="in progress">In Progress</MenuItem>
             <MenuItem value="complete">Complete</MenuItem>
-            <MenuItem value="archive">Archive</MenuItem> {/* Added Archive option */}
+            <MenuItem value="archive">Archive</MenuItem>
           </Select>
         </Box>
 
@@ -222,9 +236,7 @@ const ProjectPage = () => {
                     </IconButton>
                     <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
                       <EditIcon color="secondary" />
-                      </IconButton>
-
-
+                    </IconButton>
                     <IconButton
                       onClick={() =>
                         toggleFavorite(

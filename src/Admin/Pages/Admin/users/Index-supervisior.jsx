@@ -21,23 +21,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-
-const fetchSupervisors = async () => {
-  try {
-    const response = await fetch('http://spcs.somee.com/api/users/supervisors');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (!data.isSuccess) {
-      throw new Error(data.message);
-    }
-    return data.result || [];
-  } catch (error) {
-    console.error('Error fetching supervisors:', error);
-    return [];
-  }
-};
+import { fetchSupervisors } from '../../../../util/http for admin/http.js'; 
 
 export default function IndexSupervisor() {
   const { data: supervisors = [], isLoading, error } = useQuery({
@@ -89,7 +73,6 @@ export default function IndexSupervisor() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Projects</TableCell>
@@ -99,13 +82,10 @@ export default function IndexSupervisor() {
             <TableBody>
               {supervisors.map((supervisor) => (
                 <TableRow key={supervisor.id}>
-                  <TableCell>{supervisor.id}</TableCell>
-                  <TableCell>
-                    {`${supervisor.firstName} ${supervisor.middleName} ${supervisor.lastName}`.trim()}
-                  </TableCell>
+                  <TableCell>{`${supervisor.firstName} ${supervisor.middleName} ${supervisor.lastName}`.trim()}</TableCell>
                   <TableCell>{supervisor.email}</TableCell>
                   <TableCell>
-                    {supervisor.projectsName.length > 3 ? (
+                    {supervisor.projectsName && supervisor.projectsName.length > 3 ? (
                       <Button
                         size="small"
                         color="primary"
@@ -115,7 +95,7 @@ export default function IndexSupervisor() {
                       </Button>
                     ) : (
                       <Typography variant="body2">
-                        {supervisor.projectsName.join(', ')}
+                        {supervisor.projectsName?.join(', ')}
                       </Typography>
                     )}
                   </TableCell>
@@ -138,7 +118,7 @@ export default function IndexSupervisor() {
         <DialogTitle>Projects of {selectedSupervisor?.firstName} {selectedSupervisor?.lastName}</DialogTitle>
         <DialogContent>
           <Box>
-            {selectedSupervisor?.projectsName.map((project, index) => (
+            {selectedSupervisor?.projectsName?.map((project, index) => (
               <Box key={index}>
                 <Typography variant="body1" sx={{ paddingBottom: '8px' }}>
                   {project}

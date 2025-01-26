@@ -32,10 +32,10 @@ const Roles = () => {
     queryFn: fetchRoles,
     onError: (error) => {
       console.error('Error fetching roles:', error);
-      toast.error('Failed to load roles. Please try again.');
+      toast.error(`Failed to load roles: ${error.message}`);
     },
-    onSuccess: () => {
-      console.log('Roles fetched successfully:', roles);
+    onSuccess: (data) => {
+      console.log('Roles fetched successfully:', data);
     },
   });
 

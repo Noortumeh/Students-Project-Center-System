@@ -38,7 +38,11 @@ const WorkgroupPage = () => {
     const loadWorkgroups = async () => {
       try {
         const data = await fetchWorkgroups();
-        setWorkgroups(data?.result || []);
+        if (!data || !data.result || !data.result.workgroups) {
+          console.error('Invalid data structure:', data);
+          throw new Error('Failed to fetch workgroups. Invalid data structure.');
+        }
+        setWorkgroups(data.result.workgroups);
       } catch (error) {
         console.error('Error fetching workgroups:', error);
       }
@@ -86,7 +90,6 @@ const WorkgroupPage = () => {
           <Typography variant="h4" fontWeight="bold" color="primary">
             Workgroups
           </Typography>
-          
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
