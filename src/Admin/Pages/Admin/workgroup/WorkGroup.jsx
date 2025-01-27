@@ -14,7 +14,6 @@ import {
   MenuItem,
   TextField,
   Paper,
-  Pagination,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,6 +22,7 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import { fetchWorkgroups } from '../../../../util/http for admin/http.js';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import PaginationComponent from '../../../../Users/components/PaginationComponent.jsx';
 
 const WorkgroupPage = () => {
   const [workgroups, setWorkgroups] = useState([]);
@@ -32,23 +32,25 @@ const WorkgroupPage = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const workgroupsPerPage = 6;
+  const [pageSize, setPageSize] = useState(6);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     const loadWorkgroups = async () => {
       try {
-        const data = await fetchWorkgroups();
+        const data = await fetchWorkgroups(pageSize, currentPage, filters.filterValue);
         if (!data || !data.result || !data.result.workgroups) {
           console.error('Invalid data structure:', data);
           throw new Error('Failed to fetch workgroups. Invalid data structure.');
         }
         setWorkgroups(data.result.workgroups);
+        setTotalCount(data.result.total);
       } catch (error) {
         console.error('Error fetching workgroups:', error);
       }
     };
     loadWorkgroups();
-  }, []);
+  }, [currentPage, pageSize, filters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -56,16 +58,21 @@ const WorkgroupPage = () => {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
   };
 
   const handleTeamClick = (team) => {
-    setSelectedTeam(team); 
+    setSelectedTeam(team);
   };
 
   const handleCloseDialog = () => {
-    setSelectedTeam(null); 
+    setSelectedTeam(null);
   };
 
   const filteredWorkgroups = workgroups.filter((workgroup) => {
@@ -78,10 +85,6 @@ const WorkgroupPage = () => {
 
     return matchesFilterType;
   });
-
-  const startIndex = (currentPage - 1) * workgroupsPerPage;
-  const endIndex = startIndex + workgroupsPerPage;
-  const paginatedWorkgroups = filteredWorkgroups.slice(startIndex, endIndex);
 
   return (
     <Dashboard>
@@ -127,7 +130,7 @@ const WorkgroupPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedWorkgroups.map((workgroup) => (
+              {filteredWorkgroups.map((workgroup) => (
                 <TableRow key={workgroup.id}>
                   <TableCell>{workgroup.name}</TableCell>
                   <TableCell>{workgroup.supervisorName}</TableCell>
@@ -146,11 +149,12 @@ const WorkgroupPage = () => {
         </TableContainer>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination
-            count={Math.ceil(filteredWorkgroups.length / workgroupsPerPage)}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
+          <PaginationComponent
+            totalCount={totalCount}
+            pageNumber={currentPage}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
           />
         </Box>
 

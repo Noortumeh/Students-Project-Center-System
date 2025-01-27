@@ -2,13 +2,15 @@ import { toast } from 'react-toastify';
 
 const API_BASE_URL = 'http://spcs.somee.com/api';
 const token = localStorage.getItem('token');
-
 export const fetchUsers = async () => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
+      console.error('Token is missing. Please login to get a token.');
       throw new Error('Token is missing. Please login to get a token.');
     }
+
+    console.log('Token found:', token);
 
     const response = await fetch('http://spcs.somee.com/api/users', {
       method: 'GET',
@@ -18,32 +20,60 @@ export const fetchUsers = async () => {
       },
     });
 
+    console.log('Response received:', response);
+
     if (!response.ok) {
+      console.error('HTTP error occurred. Parsing error data...');
       const errorData = await response.json();
+      console.error('Error data:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unauthorized'}`);
     }
 
+    console.log('Parsing response data...');
     const data = await response.json();
-    return data.result.map(user => ({
-      id: user.id,
-      label: user.fullName,
-      value: user.id,
-      isSupervisor: user.role.includes('supervisor'),
-    }));
+    console.log('API Response:', data); // تحقق من البيانات
+
+    // تحويل البيانات إلى الشكل المطلوب
+    if (data.result && Array.isArray(data.result)) {
+      console.log('Processing data.result as an array...');
+      const formattedUsers = data.result.map((user) => ({
+        id: user.id,
+        firstName: user.fullName.split(' ')[0], // افترضنا أن الاسم الكامل يحتوي على الاسم الأول والأخير
+        lastName: user.fullName.split(' ')[1] || '', // إذا لم يكن هناك اسم أخير، نعطي قيمة فارغة
+        email: user.email,
+        role: user.role,
+      }));
+
+      console.log('Formatted users:', formattedUsers);
+      return formattedUsers;
+    }
+
+    return [];
   } catch (error) {
     console.error('Error fetching users:', error.message);
     throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
-
-export const fetchProjects = async ({ pageSize, pageNumber }) => {
+export const fetchProjects = async ({ pageSize, pageNumber, filters }) => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
 
-    const url = `http://spcs.somee.com/api/admin/projects/${pageSize}/${pageNumber}`;
+    let url = `http://spcs.somee.com/api/admin/projects/${pageSize}/${pageNumber}`;
+
+    const queryParams = [];
+    if (filters.filterType === 'projectName' && filters.filterValue) {
+      queryParams.push(`projectName=${encodeURIComponent(filters.filterValue)}`);
+    }
+    if (filters.projectStatus !== 'all') {
+      queryParams.push(`projectStatus=${encodeURIComponent(filters.projectStatus)}`);
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`;
+    }
 
     const response = await fetch(url, {
       method: 'GET',
@@ -60,13 +90,23 @@ export const fetchProjects = async ({ pageSize, pageNumber }) => {
     const data = await response.json();
     console.log('API Response:', data);
 
+    // إذا لم توجد مشاريع، نعيد بيانات صحيحة مع قائمة فارغة
+    if (!data.isSuccess || !data.result.projects) {
+      return {
+        isSuccess: true,
+        result: {
+          projects: [],
+          totalCount: 0,
+        },
+      };
+    }
+
     return data;
   } catch (error) {
     console.error('Error fetching projects:', error.message);
     throw error;
   }
 };
-
 export const createProject = async (projectData) => {
   try {
     const token = localStorage.getItem('token'); 
@@ -539,15 +579,16 @@ export const createProjectDetails = async (sectionId, detailsData) => {
   }
 };
 export const updateProjectDetails = async (detailId, detailsData) => {
-  if (!detailId || !detailsData || !detailsData.title || !detailsData.description) {
-    throw new Error('Detail ID, title, and description are required');
+  if (!detailId || !detailsData || !detailsData.title || !detailsData.description || !detailsData.section) {
+    throw new Error('Detail ID, title, description, and section are required');
   }
 
   try {
     const updatedData = {
       title: detailsData.title,
       description: detailsData.description,
-      iconData: detailsData.iconData || "defaultIcon",
+      section: detailsData.section, // إضافة الحقل المطلوب
+      iconData: detailsData.iconData ? btoa(detailsData.iconData) : "defaultIcon", // تحويل iconData إلى base64 إذا كان string
     };
 
     console.log('Updating detail with:', updatedData); // تحقق من البيانات
@@ -620,7 +661,7 @@ export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
       throw new Error(data.message);
     }
 
-    return data.result?.customers || [];
+    return data.result?.customers || [];  // يجب أن تكون البيانات في `data.result.customers`
   } catch (error) {
     console.error('Error fetching customers:', error);
     throw error;
@@ -629,6 +670,8 @@ export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
 
 export const fetchStudents = async (pageSize, pageNumber) => {
   try {
+    console.log('Fetching students with pageSize:', pageSize, 'and pageNumber:', pageNumber); // جملة طباعة قبل الطلب
+
     const response = await fetch(
       `http://spcs.somee.com/api/users/students/${pageSize}/${pageNumber}`,
       {
@@ -637,17 +680,22 @@ export const fetchStudents = async (pageSize, pageNumber) => {
     );
 
     if (!response.ok) {
+      console.error('HTTP error! status:', response.status); // جملة طباعة في حالة الخطأ
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('API response data:', data); // جملة طباعة لعرض البيانات المستلمة من الخادم
+
     if (!data.isSuccess) {
+      console.error('API error:', data.message); // جملة طباعة في حالة خطأ من الخادم
       throw new Error(data.message);
     }
 
+    console.log('Fetched students:', data.result.students); // جملة طباعة لعرض الطلاب المستلمين
     return Array.isArray(data.result.students) ? data.result.students : [];
   } catch (error) {
-    console.error('Error fetching students:', error);
+    console.error('Error fetching students:', error); // جملة طباعة في حالة حدوث استثناء
     throw error;
   }
 };
@@ -666,7 +714,7 @@ export const fetchSupervisors = async () => {
       throw new Error(data.message);
     }
 
-    return data.supervisors || [];  
+    return data.result || [];  // يجب أن تكون البيانات في `data.result` وليس `data.supervisors`
 
   } catch (error) {
     console.error('Error fetching supervisors:', error);
@@ -836,49 +884,27 @@ export const updateProject = async ({ projectid, updatedProject }) => {
   }
 
   console.log('Sending request to update project with ID:', projectid);
-
-  try {
+  console.log("updated project",updatedProject);
+  
     const response = await fetch(`http://spcs.somee.com/api/admin/projects/${projectid}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        updateProjectDTO: {
-          name: updatedProject.name,
-          supervisorId: updatedProject.supervisorId || null,
-          customerId: updatedProject.customerId || null,
-          status: updatedProject.status,
-          changeOldSupervisorNotes: updatedProject.changeOldSupervisorNotes || '',
-          changeOldCustomerNotes: updatedProject.changeOldCustomerNotes || '',
-          changeStatusNotes: updatedProject.changeStatusNotes || '',
-        },
-      }),
+      body:JSON.stringify(
+        updatedProject
+      ),
     });
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error response (text):', errorText);
       throw new Error('Failed to update project, received non-JSON response');
     }
-
-    const contentType = response.headers.get('Content-Type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.error('Expected JSON response but got:', contentType);
-      throw new Error('Expected JSON response but received non-JSON data');
-    }
-
     const responseData = await response.json();
     console.log('Project updated successfully:', responseData);
     return responseData;
-
-  } catch (error) {
-    console.error('Error during API request:', error.message);
-    throw error;
-  }
 };
-
 
 export const fetchRoleData = async (role) => {
   const token = localStorage.getItem('token');

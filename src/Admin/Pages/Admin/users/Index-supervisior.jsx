@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import {
   CircularProgress,
@@ -17,7 +18,6 @@ import {
   DialogTitle,
   Divider,
 } from '@mui/material';
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -91,7 +91,7 @@ export default function IndexSupervisor() {
                         color="primary"
                         onClick={() => handleOpenDialog(supervisor)}
                       >
-                        project
+                        View Projects
                       </Button>
                     ) : (
                       <Typography variant="body2">

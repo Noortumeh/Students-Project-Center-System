@@ -7,7 +7,7 @@ import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
-import { fetchUsers, createProject } from '../../../../util/http for admin/http.js';
+import { fetchUsers, createProject, fetchSupervisors } from '../../../../util/http for admin/http.js';
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -18,17 +18,49 @@ const CreateProject = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: users, error: usersError } = useQuery({
+  // Fetch supervisors
+  const { data: supervisorsData, error: supervisorsError } = useQuery({
+    queryKey: ['supervisors'],
+    queryFn: fetchSupervisors,
+  });
+
+  // Fetch users (customers)
+  const { data: usersData, error: usersError } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
 
-  if (usersError) {
-    toast.error('Failed to fetch users');
+  // Handle errors
+  if (supervisorsError) {
+    toast.error('Failed to fetch supervisors');
+    console.error('Supervisors Error:', supervisorsError);
   }
 
-  const supervisors = users?.filter((user) => user.isSupervisor) || [];
-  const customers = users?.filter((user) => !user.isSupervisor) || [];
+  if (usersError) {
+    toast.error('Failed to fetch users');
+    console.error('Users Error:', usersError);
+  }
+
+  // Format supervisors data
+  const supervisors = supervisorsData?.map((supervisor) => ({
+    value: supervisor.id,
+    label: `${supervisor.firstName} ${supervisor.lastName}`,
+  })) || [];
+
+  // Format customers data with additional checks
+  const customers = usersData?.map((user) => {
+    if (!user.id || !user.firstName || !user.lastName) {
+      console.error('Invalid user data:', user);
+      return null;
+    }
+    return {
+      value: user.id,
+      label: `${user.firstName} ${user.lastName}`,
+    };
+  }).filter(Boolean) || []; // Remove null values
+
+  console.log('Fetched Users Data:', usersData); // طباعة بيانات المستخدمين التي تم جلبها من الـ API
+  console.log('Processed Customers Data:', customers); // طباعة بيانات العملاء بعد المعالجة
 
   const handleAddProject = async () => {
     if (!projectName || !selectedSupervisor || !selectedCustomer) {
@@ -38,7 +70,7 @@ const CreateProject = () => {
 
     const isConfirmed = window.confirm('Are you sure you want to add this project?');
     if (!isConfirmed) {
-      return; // الخروج إذا لم يتم التأكيد
+      return;
     }
 
     setLoading(true);
@@ -49,15 +81,12 @@ const CreateProject = () => {
         customerId: selectedCustomer.value,
       };
 
-      console.log('Sending Project Data:', projectData);
+      console.log('Project Data to be sent:', projectData); // طباعة بيانات المشروع قبل الإرسال
 
       const newProject = await createProject(projectData);
 
-      console.log('New Project Response:', newProject);
-
       if (newProject.isSuccess) {
         queryClient.setQueryData(['projects'], (oldData) => {
-          console.log('Old Data:', oldData);
           const updatedData = oldData
             ? {
                 ...oldData,
@@ -67,14 +96,14 @@ const CreateProject = () => {
               }
             : { result: [newProject.result] };
 
-          console.log('Updated Data:', updatedData);
+          console.log('Updated Projects Data:', updatedData); // طباعة البيانات المحدثة بعد إضافة المشروع الجديد
           return updatedData;
         });
 
         toast.success('Project added successfully!');
         setTimeout(() => {
-          navigate('/projects'); // التوجيه بعد النجاح
-        }, 1500); // تأخير بسيط للتأكد من عرض الرسالة
+          navigate('/projects');
+        }, 1500);
       } else {
         toast.error('Failed to add project.');
       }
@@ -99,7 +128,10 @@ const CreateProject = () => {
             options={supervisors}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
-            onChange={setSelectedSupervisor}
+            onChange={(selectedOption) => {
+              setSelectedSupervisor(selectedOption);
+              console.log('Selected Supervisor:', selectedOption); // طباعة المشرف المحدد
+            }}
             placeholder="Select a Supervisor"
             isClearable
             styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
@@ -108,7 +140,10 @@ const CreateProject = () => {
             options={customers}
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
-            onChange={setSelectedCustomer}
+            onChange={(selectedOption) => {
+              setSelectedCustomer(selectedOption);
+              console.log('Selected Customer:', selectedOption); // طباعة العميل المحدد
+            }}
             placeholder="Select a Customer"
             isClearable
             styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
