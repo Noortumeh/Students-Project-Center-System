@@ -13,7 +13,6 @@ export default function WorkgroupsProjects() {
         queryKey: ["projects", pageNumber, pageSize],
         queryFn: () => getProjects({ pageSize, pageNumber }),
         keepPreviousData: true,
-        staleTime: 10000,
     });
 
     const handlePageChange = (newPage) => {

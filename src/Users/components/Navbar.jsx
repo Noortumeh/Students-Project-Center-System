@@ -1,37 +1,26 @@
 import { useEffect, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { NavLink, useLocation } from 'react-router-dom';
-import { useUser } from '../pages/Authantication/CustomHook/useUser';
+import { AppBar, Box, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Menu, MenuItem, Toolbar,
+    Typography, Button, Avatar, } from '@mui/material';
 import Logout from '../pages/Authantication/Logout';
-import { useNavigate } from 'react-router-dom';
-import { Avatar, Menu, MenuItem } from '@mui/material';
+import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
-
+import MenuIcon from '@mui/icons-material/Menu';
+import { useUser } from '../pages/Authantication/CustomHook/useUser';
 
 const drawerWidth = 240;
 const navItems = ['Home', 'About Us', 'Clients', 'Services', 'Projects', 'Contact'];
 
 export default function Navbar() {
     const { isFetching, user, isAuth } = useUser();
+    
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
     const location = useLocation();
-    const isHome = location.pathname === '/';
+    const isHome = location.pathname === '/' || location.pathname === '/contact';
+
+    
     // Handle Scroll
     const handleScroll = () => {
         if (window.scrollY > 50) {
@@ -95,9 +84,28 @@ export default function Navbar() {
 
                     </ListItem>
                 ))}
+                {isAuth && <>
+                    <NavLink to={'workgroups'}>
+                        <Button variant="contained" size='small' sx={{
+                            mb: '5px', mt: '5px', backgroundColor: isHome && "#FF8A65",
+                            "&:hover": isHome && { backgroundColor: "#FF7043" }
+                        }}>
+                            Workgroups</Button>
+                    </NavLink>
+                    {user.userInfo.role.includes('admin') &&
+                        <NavLink to={'/admin'}>
+                            <Button variant="contained" size='small' sx={{ mt: '5px', backgroundColor: isHome && '#FF8A65', "&:hover": isHome && { backgroundColor: "#FF7043" }, }}>
+                                Admin Dashboard</Button>
+                        </NavLink>
+                    }
+                </>}
             </List>
         </Box>
     );
+
+    if(isFetching){
+        return 'loading...';
+    }
 
     return (
         <Box>
@@ -123,15 +131,22 @@ export default function Navbar() {
                         </Typography>
                     </Box>
                     <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                        <NavLink to={'workgroups'}>
-                            <Button variant="contained" size='small' sx={{
-                                marginRight: '3px', backgroundColor: isHome && "#FF8A65",
-                                "&:hover": isHome && { backgroundColor: "#FF7043" },
-                            }}>Workgroups</Button>
-                        </NavLink>
-                        <NavLink to={'/admin'}>
-                            <Button variant="contained" size='small' sx={{ marginRight: '3px', backgroundColor: isHome && '#FF8A65', "&:hover": isHome && { backgroundColor: "#FF7043" }, }}>Admin Dashboard</Button>
-                        </NavLink>
+                        {isAuth && <>
+                            <NavLink to={'workgroups'}>
+                                <Button variant="contained" size='small' sx={{
+                                    marginRight: '3px', backgroundColor: isHome && "#FF8A65",
+                                    "&:hover": isHome && { backgroundColor: "#FF7043" }
+                                }}>
+                                    Workgroups</Button>
+                            </NavLink>
+                            {user && user.userInfo.role.includes('admin') &&
+                                <NavLink to={'/admin'}>
+                                    <Button variant="contained" size='small' sx={{ marginRight: '3px', backgroundColor: isHome && '#FF8A65', "&:hover": isHome && { backgroundColor: "#FF7043" }, }}>
+                                        Admin Dashboard</Button>
+                                </NavLink>
+                            }
+                        </>
+                        }
                         {navItems.map((item) => (
                             item === 'Contact' ? (
                                 <NavLink to="/contact" key={item} style={{ textDecoration: 'none' }}>

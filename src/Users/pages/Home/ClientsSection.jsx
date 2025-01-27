@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Typography, Grid2, Avatar } from "@mui/material";
+import { Box, Typography, Grid2, Avatar, CircularProgress } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-// import client1 from "../../../assets/images/client1.png"; // شعار عميل إذا كان موجودًا
-// import client2 from "../../../assets/images/client2.png";
+import { useQuery } from "@tanstack/react-query";
+import { getOurClients } from "./HttpHome";
 
 const clients = [
     { name: "Palestine Technical uneversity Kadoori", logo: null },
@@ -14,6 +14,42 @@ const clients = [
 ];
 
 export default function OurClientsSection(){
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['ourClients'],
+        queryFn: getOurClients,
+        keepPreviousData: true,
+        staleTime: 10000,
+    })
+    let content = null;
+    if (isLoading) {
+        content = (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+    if (error) {
+        content = (
+            <Box sx={{ textAlign: "center", py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <Typography variant="h5" color="error">
+                    Oops! Something went wrong. Please try again later.
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (!data || data.length === 0) {
+        content = (
+            <Box sx={{ textAlign: "center", py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <Typography variant="h5" color="error">
+                    No Clients available at the moment.
+                </Typography>
+            </Box>
+        );
+    }
+
+    console.log(data);
+
     return (
         <Box
             sx={{

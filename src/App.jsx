@@ -25,7 +25,6 @@ import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
-import ContactUsForm from './Admin/Pages/Admin/Contact.jsx';
 import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
 
 import PageNotFound from './PageNotFound.jsx';
@@ -63,15 +62,12 @@ import ResetPasswordPage from './Users/pages/Authantication/ResetPasswordPage.js
 import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
 import ResetPasswordProfile from './Users/pages/UserProfile/ResetPasswoedProfile.jsx';
 import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMembers/AddMembers.jsx';
+import ContactUsForm from './Users/pages/Home/Contact.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
     path: '/admin',
     element: <Home />,
-  },
-  {
-    path: '/contact',
-    element: <ContactUsForm />,
   },
   {
     path: '/users/student',
@@ -89,7 +85,7 @@ const router = createBrowserRouter([
     path: '/users/customer/edit/:id',
     element: <EditCustomer />,
   },
-  
+
   {
     path: '/users/supervisor',
     element: <IndexSupervisor />,
@@ -166,15 +162,17 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      {path: '/contact', element: <ContactUsForm />},
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'forgot-password', element: <ForgetPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'user-profile', element: <UserProfilePage /> },
+      // { path: 'user-profile', element: <UserProfilePage /> },
       { path: 'user-profile/reset-password', element: <ResetPasswordProfile /> },
 
       {
         element: <Authentication />, children: [
+          { path: 'user-profile', element: <UserProfilePage /> },
           {
             path: 'workgroups', element: <WorkGroupsPage />, children: [
               { index: true, element: <WorkgroupsHome /> },

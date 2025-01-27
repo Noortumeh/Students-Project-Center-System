@@ -13,9 +13,12 @@ import { useWorkgroup } from '../WorkgroupCustomHook/useWorkgroup';
 import SelectedList from '../../../../components/SelectedList';
 
 export default function ViewTaskDetails() {
+    const queryParams = new URLSearchParams(window.location.search);
     const navigate = useNavigate();
+    //
     const { taskid } = useParams();
-    const { workgroupId } = useParams();
+    const workgroupId = useParams().workgroupId || queryParams.get('workgroupId');
+    //
     const { taskData: task, taskDataLoading: isLoading, taskDataErr: error } = useTaskData(taskid);
     const [openSubmitDialog, setOpenSubmitDialog] = useState(false);
     const [submitFiles, setSubmitFiles] = useState([]);

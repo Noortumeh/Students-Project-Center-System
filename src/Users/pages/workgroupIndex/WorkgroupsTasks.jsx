@@ -7,7 +7,7 @@ export default function WorkgroupsTasks() {
     const {data, isLoading, error} = useQuery({
         queryKey:['tasks'],
         queryFn: getSupervisorTasks,
-        staleTime: 10000,
+        keepPreviousData: true,
     });
     if (isLoading) {
         return (

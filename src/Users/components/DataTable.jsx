@@ -41,7 +41,7 @@ export default function DataTable({ columns, rows, title, children }) {
                                             component="span">
                                             {column.id === 'action' ?
                                                 <Stack direction={"row"} gap={1}>
-                                                    <Button variant="contained" href={`viewtask/${row.id}`}>view</Button>
+                                                    <Button variant="contained" href={`viewtask/${row.id}?workgroupId=${row.workgroupId}`}>view</Button>
                                                     <Button variant="contained" href={`edittask/${row.id}`}>edit</Button>
                                                 </Stack>
                                                 : row[column.id]}

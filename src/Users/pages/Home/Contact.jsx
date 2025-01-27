@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { TextField, Button, Typography, Checkbox, FormControlLabel, Box, Alert, Paper } from "@mui/material";
-import { postContactUs } from "../../../util/http for admin/http.js"; // تأكد من المسار الصحيح
+import { postContactUs } from "./HttpHome";
+import ContactUs from '../../../assets/images/ContactUs.jpeg'
 
 const ContactUsForm = () => {
   const [contactData, setContactData] = useState({
@@ -53,12 +54,36 @@ const ContactUsForm = () => {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        background: "linear-gradient(to right, #374151, #1f2937)",
-        padding: 2,
+        backgroundImage: `url(${ContactUs})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        pt: 10,
+        pb: 5,
       }}
     >
-      <Paper elevation={6} sx={{ padding: 4, maxWidth: 500, width: "100%" }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#374151" }}>
+      <Paper elevation={6} sx={{
+        textAlign: 'center',
+        padding: 4, maxWidth: 500, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.6)",
+      }}>
+        <Typography
+          variant="h4"
+          sx={{
+            mb: 4,
+            fontWeight: "bold",
+            color: "#333",
+            position: "relative",
+            display: "inline-block",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              bottom: -5,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "50%",
+              height: "3px",
+              backgroundColor: "#FF5733", // لون الخط
+            },
+          }}>
           CONTACT US
         </Typography>
         <Typography variant="body2" align="center" gutterBottom color="textSecondary">
@@ -119,7 +144,7 @@ const ContactUsForm = () => {
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 2, py: 1.5, fontWeight: "bold" }}
+            sx={{ mt: 2, py: 1.5, fontWeight: "bold", backgroundColor: '#FF5733' }}
           >
             Submit
           </Button>

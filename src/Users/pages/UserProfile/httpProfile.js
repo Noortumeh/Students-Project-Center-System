@@ -2,10 +2,11 @@ import { getToken } from "../../../util/httpsForUser/https";
 
 //
 const API_URL = "http://spcs.somee.com/api";
-const token = getToken();
+const token = localStorage.getItem("token");
 
 // Get profile data
 export async function getProfileinfo() {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/profile/user-info`, {
     headers: {
       "Content-Type": "application/json",

@@ -39,7 +39,7 @@ export async function addStudents({ students, projectId }) {
     body: JSON.stringify({ usersId: students }),
   });
   if (!response.ok) {
-    console.log(response)
+    console.log(response.message)
     throw new Error("Failed to add students");
   }
   return response.json();
@@ -56,6 +56,7 @@ export async function addAssistants({ assistants, projectId }) {
     body: JSON.stringify({ userId: assistants[0] }), // تحويل قائمة المساعدين إلى نص مفصول بفاصلة
   });
   if (!response.ok) {
+    console.log(response.json())
     throw new Error("Failed to add assistants");
   }
   return response.json(); // استرجاع النص العائد من الاستجابة

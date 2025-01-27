@@ -333,31 +333,6 @@ const addAuthToken = (headers = {}) => {
   return headers;
 };
 
-export const postContactUs = async (contactData) => {
-  try {
-    const response = await fetch('http://spcs.somee.com/api/contact-us/contact-us', {
-      method: 'POST',
-      headers: addAuthToken({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(contactData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Contact message sent:', data);
-    return data;
-  } catch (error) {
-    console.error('Error sending contact message:', error);
-    throw error;
-  }
-};
-
-
 export const fetchProjectSections = async ({ projectId }) => {
   const token = localStorage.getItem('token');
   if (!token) {

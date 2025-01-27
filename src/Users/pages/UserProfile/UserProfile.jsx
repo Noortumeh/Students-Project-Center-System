@@ -18,9 +18,13 @@ import { validateInputs } from './validateInputs';
 import { queryClient } from '../../../util/httpsForUser/https';
 
 export default function UserProfilePage() {
+    const { data: userData, isLoading } = useQuery({
+        queryKey: ['profile'],
+        queryFn: getProfileinfo,
+    });
+
     const navigate = useNavigate();
     const [editable, setEditable] = useState(false);
-
     const profileImage = JSON.parse(localStorage.getItem('userInfo')).user.profileImageUrl;
     const [profilePicture, setProfilePicture] = useState(null);
     const [errors, setErrors] = useState({});
@@ -33,11 +37,6 @@ export default function UserProfilePage() {
         phoneNumber: '',
         address: '',
         profilePicture: profileImage || '',
-    });
-
-    const { data: userData, isLoading } = useQuery({
-        queryKey: ['profile'],
-        queryFn: getProfileinfo,
     });
 
     useEffect(() => {
@@ -67,9 +66,9 @@ export default function UserProfilePage() {
 
     const { mutate: pictureMutation } = useMutation({
         mutationFn: updateProfilePicture,
-        onSuccess: () => { 
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            toast.success('Profile picture updated successfully!') 
+            toast.success('Profile picture updated successfully!')
         },
         onError: (error) => toast.error(error.message),
     });

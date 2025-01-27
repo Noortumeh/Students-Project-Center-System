@@ -8,12 +8,11 @@ import PaginationComponent from "../../components/PaginationComponent";
 export default function WorkgroupsHome() {
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(6);
-
+    
     const { data, isFetching, isError, error } = useQuery({
         queryKey: ["workgroups", pageNumber, pageSize],
         queryFn: () => getWorkgroups({ pageSize, pageNumber }),
         keepPreviousData: true,
-        staleTime: 10000,
     });
 
     const handlePageChange = (newPage) => {
