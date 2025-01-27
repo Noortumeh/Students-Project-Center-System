@@ -19,7 +19,7 @@ import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 export default function IndexCustomer() {
-  const [entriesToShow] = useState(20);
+  const [entriesToShow] = useState(6);  // يجب أن تكون القيمة الافتراضية 6 كما في الـ API
   const navigate = useNavigate();
 
   const { data: customers = [], isLoading, error } = useQuery({
@@ -99,4 +99,3 @@ export default function IndexCustomer() {
     </Dashboard>
   );
 }
-

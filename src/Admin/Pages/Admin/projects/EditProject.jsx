@@ -31,22 +31,16 @@ export default function EditProject() {
   const mutation = useMutation({
     mutationFn: updateProject,
     onSuccess: (data) => {
-      console.log('Project updated successfully:', data); // طباعة البيانات بعد التعديل
       Swal.fire({
         title: 'Updated!',
         text: 'Project data has been updated successfully.',
         icon: 'success',
         confirmButtonText: 'OK',
       }).then(() => {
-        refetch().then((refetchData) => {
-          console.log('Data refetched after update:', refetchData); // طباعة البيانات بعد إعادة الجلب
-          navigate(`/projects`);
-          console.log('Navigated to /projects'); // طباعة بعد الذهاب إلى صفحة المشاريع
-        });
+        refetch().then(() => navigate(`/projects`));
       });
     },
     onError: (error) => {
-      console.error('Error updating project:', error); // طباعة الخطأ إذا حدث
       toast.error(error.message || 'An error occurred while updating the project.');
     },
   });
@@ -69,8 +63,6 @@ export default function EditProject() {
         return;
       }
 
-      console.log('Form values before submission:', values); // طباعة القيم قبل الإرسال
-
       Swal.fire({
         title: 'Are you sure?',
         text: 'Do you want to save the changes?',
@@ -85,7 +77,7 @@ export default function EditProject() {
               name: values.projectName,
               supervisorId: values.supervisor?.value || null,
               customerId: values.customer?.value || null,
-              status: values.status,
+              status: values.status.value,
               changeOldSupervisorNotes: values.changeOldSupervisorNotes,
               changeOldCustomerNotes: values.changeOldCustomerNotes,
               changeStatusNotes: values.changeStatusNotes,
@@ -104,33 +96,37 @@ export default function EditProject() {
   }, [projectid, navigate]);
 
   useEffect(() => {
-    if (project && projectid) {
-      console.log('Project data fetched from API:', project); // طباعة البيانات بعد جلبها
-      const supervisor = { value: project.supervisorId, label: project.supervisorName };
-      const customer = { value: project.customerId, label: project.customerName };
-      const status = { value: project.status, label: project.status };
+    if (project) {
+      const supervisor = {
+        value: project.supervisorId,
+        label: project.supervisorName,
+      };
+      const customer = {
+        value: project.customerId,
+        label: project.customerName,
+      };
+      const status = {
+        value: project.status,
+        label: project.status,
+      };
 
       formik.setValues({
         projectName: project.name || '',
-        supervisor: supervisor,
-        customer: customer,
-        status: status,
+        supervisor,
+        customer,
+        status,
         changeOldSupervisorNotes: project.changeOldSupervisorNotes || '',
         changeOldCustomerNotes: project.changeOldCustomerNotes || '',
         changeStatusNotes: project.changeStatusNotes || '',
       });
-
-      console.log('Formik values after setting:', formik.values); // طباعة قيم Formik بعد التحديث
     }
   }, [project]);
 
   if (projectError) {
-    console.error('Error loading project data:', projectError.message);
     return <Typography color="error">Failed to load project data. Please try again later.</Typography>;
   }
 
   if (usersError) {
-    console.error('Error fetching users:', usersError);
     toast.error('Failed to fetch users.');
     return <Typography color="error">Failed to fetch users. Please try again later.</Typography>;
   }
@@ -139,8 +135,16 @@ export default function EditProject() {
     return <Typography>Loading data...</Typography>;
   }
 
-  const supervisorOptions = users?.filter((user) => user.isSupervisor).map((user) => ({ value: user.id, label: user.label }));
-  const customerOptions = users?.filter((user) => !user.isSupervisor).map((user) => ({ value: user.id, label: user.label }));
+  const supervisorOptions = users?.filter((user) => user.isSupervisor).map((user) => ({
+    value: user.id,
+    label: `${user.firstName} ${user.lastName}`,
+  }));
+
+  const customerOptions = users?.filter((user) => !user.isSupervisor).map((user) => ({
+    value: user.id,
+    label: `${user.firstName} ${user.lastName}`,
+  }));
+
   const statusOptions = [
     { value: 'active', label: 'Active' },
     { value: 'pending', label: 'Pending' },
@@ -161,37 +165,25 @@ export default function EditProject() {
             setProjectName={(value) => formik.setFieldValue('projectName', value)}
           />
           <Select
-            options={supervisorOptions || []}
+            options={supervisorOptions}
             value={formik.values.supervisor}
-            onChange={(value) => {
-              console.log('Supervisor selected:', value);
-              formik.setFieldValue('supervisor', value);
-            }}
+            onChange={(value) => formik.setFieldValue('supervisor', value)}
             placeholder="Select a Supervisor"
             isClearable
-            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <Select
-            options={customerOptions || []}
+            options={customerOptions}
             value={formik.values.customer}
-            onChange={(value) => {
-              console.log('Customer selected:', value);
-              formik.setFieldValue('customer', value);
-            }}
+            onChange={(value) => formik.setFieldValue('customer', value)}
             placeholder="Select a Customer"
             isClearable
-            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <Select
             options={statusOptions}
             value={formik.values.status}
-            onChange={(value) => {
-              console.log('Status selected:', value);
-              formik.setFieldValue('status', value);
-            }}
+            onChange={(value) => formik.setFieldValue('status', value)}
             placeholder="Select Status"
             isClearable
-            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
           />
           <textarea
             name="changeOldSupervisorNotes"

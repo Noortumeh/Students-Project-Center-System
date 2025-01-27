@@ -11,19 +11,40 @@ import {
   TableRow,
   IconButton,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TextField,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchRoleData } from '../../../../util/http for admin/http.js';
+import { fetchUsers, fetchRoles, assignRoleToUser, removeRoleFromUser } from '../../../../util/http for admin/http.js';
 import { Edit, Delete } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { assignRoleToUser, removeRoleFromUser } from '../../../../util/http for admin/http.js';
+import { useState } from 'react';
 
 export default function IndexUsers() {
   const queryClient = useQueryClient();
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
 
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['users'],
-    queryFn: () => fetchRoleData('customer'),
+    queryFn: fetchUsers,
+  });
+
+  const { data: allRoles = [] } = useQuery({
+    queryKey: ['roles'],
+    queryFn: fetchRoles,
   });
 
   const assignRoleMutation = useMutation({
@@ -31,10 +52,11 @@ export default function IndexUsers() {
     onSuccess: () => {
       queryClient.invalidateQueries(['users']);
       toast.success('Role assigned successfully');
+      setOpenEditDialog(false);
     },
     onError: () => {
       toast.error('Error assigning role');
-    }
+    },
   });
 
   const removeRoleMutation = useMutation({
@@ -42,10 +64,53 @@ export default function IndexUsers() {
     onSuccess: () => {
       queryClient.invalidateQueries(['users']);
       toast.success('Role removed successfully');
+      setOpenDeleteDialog(false);
     },
     onError: () => {
       toast.error('Error removing role');
+    },
+  });
+
+  const handleOpenEditDialog = (user) => {
+    setSelectedUser(user);
+    setSelectedRole('');
+    setOpenEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+    setSelectedUser(null);
+    setSelectedRole('');
+  };
+
+  const handleOpenDeleteDialog = (user) => {
+    setSelectedUser(user);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setSelectedUser(null);
+  };
+
+  const handleAssignRole = () => {
+    if (selectedUser && selectedRole) {
+      assignRoleMutation.mutate({ roleId: selectedRole, userId: selectedUser.id });
     }
+  };
+
+  const handleRemoveRole = (roleId) => {
+    if (selectedUser && roleId) {
+      removeRoleMutation.mutate({ roleId, userId: selectedUser.id });
+    }
+  };
+
+  // فلتر البيانات حسب الاسم والرول
+  const filteredUsers = users.filter((user) => {
+    const matchesName = user.firstName?.toLowerCase().includes(nameFilter.toLowerCase()) ||
+                        user.lastName?.toLowerCase().includes(nameFilter.toLowerCase());
+    const matchesRole = roleFilter ? user.roles?.includes(roleFilter) : true;
+    return matchesName && matchesRole;
   });
 
   if (isLoading) {
@@ -64,14 +129,6 @@ export default function IndexUsers() {
     );
   }
 
-  const handleAssignRole = (roleId, userId) => {
-    assignRoleMutation.mutate({ roleId, userId });
-  };
-
-  const handleRemoveRole = (roleId, userId) => {
-    removeRoleMutation.mutate({ roleId, userId });
-  };
-
   const columns = [
     { id: 'firstName', label: 'First Name' },
     { id: 'lastName', label: 'Last Name' },
@@ -82,16 +139,10 @@ export default function IndexUsers() {
       label: 'Actions',
       render: (row) => (
         <Box display="flex" justifyContent="space-around">
-          <IconButton
-            color="primary"
-            onClick={() => handleAssignRole(1, row.id)} 
-          >
+          <IconButton color="primary" onClick={() => handleOpenEditDialog(row)}>
             <Edit />
           </IconButton>
-          <IconButton
-            color="secondary"
-            onClick={() => handleRemoveRole(1, row.id)} 
-          >
+          <IconButton color="secondary" onClick={() => handleOpenDeleteDialog(row)}>
             <Delete />
           </IconButton>
         </Box>
@@ -105,17 +156,46 @@ export default function IndexUsers() {
         <Typography variant="h4" gutterBottom>
           Users
         </Typography>
+
+        {/* حقول الفلتر */}
+        <Box mb={3} display="flex" gap={2}>
+          <TextField
+            label="Search by Name"
+            variant="outlined"
+            value={nameFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+            fullWidth
+          />
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Filter by Role</InputLabel>
+            <Select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              label="Filter by Role"
+            >
+              <MenuItem value="">All Roles</MenuItem>
+              {allRoles.map((role) => (
+                <MenuItem key={role.id} value={role.name}>
+                  {role.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
-                  <TableCell key={column.id} align="center">{column.label}</TableCell>
+                  <TableCell key={column.id} align="center">
+                    {column.label}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align="center">
@@ -128,6 +208,64 @@ export default function IndexUsers() {
           </Table>
         </TableContainer>
       </Box>
+
+      {/* Dialog لتعديل الرول */}
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Role for {selectedUser?.firstName} {selectedUser?.lastName}</DialogTitle>
+        <DialogContent>
+          <Box mt={2}>
+            <FormControl fullWidth>
+              <InputLabel>Select Role</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                label="Select Role"
+              >
+                {allRoles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAssignRole} color="primary">
+            Assign Role
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog لحذف الرول */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Remove Role from {selectedUser?.firstName} {selectedUser?.lastName}</DialogTitle>
+        <DialogContent>
+          <Box mt={2}>
+            {selectedUser?.roles
+              ?.filter((role) => !role.isPrimary)
+              .map((role) => (
+                <Box key={role.id} display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Typography>{role.name}</Typography>
+                  <Button
+                    color="secondary"
+                    onClick={() => handleRemoveRole(role.id)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="secondary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Dashboard>
   );
 }
