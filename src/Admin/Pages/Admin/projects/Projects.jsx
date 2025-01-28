@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Box,
@@ -16,7 +16,6 @@ import {
   IconButton,
   Chip,
   Paper,
-  Pagination,
 } from '@mui/material';
 import {
   Star as StarIcon,
@@ -28,7 +27,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
@@ -37,7 +36,11 @@ import PaginationComponent from '../../../../Users/components/PaginationComponen
 const ProjectPage = () => {
   const navigate = useNavigate();
 
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(() => {
+    const savedPageNumber = localStorage.getItem('pageNumber');
+    return savedPageNumber ? parseInt(savedPageNumber, 10) : 1;
+  });
+
   const [pageSize, setPageSize] = useState(6);
   const [filters, setFilters] = useState({
     filterType: 'all',
@@ -46,27 +49,37 @@ const ProjectPage = () => {
   });
   const [favoriteProjects, setFavoriteProjects] = useState({});
 
+  // استخدام useQuery لجلب البيانات
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['projects', pageNumber, pageSize],
-    queryFn: () => fetchProjects({ pageSize, pageNumber }),
+    queryKey: ['projects', pageNumber, pageSize, filters],
+    queryFn: () => fetchProjects({ pageSize, pageNumber, filters }), // إرسال الفلاتر إلى API
     keepPreviousData: true,
     staleTime: 10000,
   });
 
+  useEffect(() => {
+    localStorage.setItem('pageNumber', pageNumber);
+  }, [pageNumber]);
+
+  useEffect(() => {
+    console.log('Current pageNumber:', pageNumber);
+    console.log('Current pageSize:', pageSize);
+    console.log('Filters:', filters);
+  }, [pageNumber, pageSize, filters]);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setPageNumber(1);
+    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الفلتر
   };
 
   const handlePageChange = (newPage) => {
     setPageNumber(newPage);
-    refetch();
   };
 
   const handlePageSizeChange = (newPageSize) => {
     setPageSize(newPageSize);
-    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير الحجم
+    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير حجم الصفحة
   };
 
   const toggleFavorite = async (id, projectName, isFavorite) => {
@@ -107,36 +120,20 @@ const ProjectPage = () => {
   const statusColors = {
     active: 'success',
     pending: 'warning',
-    'in progress': 'info',
+    inprogress: 'info',
     complete: 'primary',
-    archive: 'default', // Added archive status color
+    archive: 'default',
   };
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
 
-  // التحقق من البيانات المرسلة من الـ API
-  if (!data || !data.result || !Array.isArray(data.result.projects)) {
+  if (!data || !data.isSuccess) {
     return <Typography color="error">Invalid data format received from API.</Typography>;
   }
 
-  const filteredProjects = data.result.projects.filter((project) => {
-    const matchesFilterType =
-      filters.filterType === 'all' ||
-      (filters.filterType === 'projectName' &&
-        project.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
-      (filters.filterType === 'supervisorName' &&
-        project.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
-
-    const matchesStatus =
-      filters.projectStatus === 'all' || project.status === filters.projectStatus;
-
-    return matchesFilterType && matchesStatus;
-  });
-
-  const startIndex = (pageNumber - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
+  // البيانات التي يعيدها الخادم تكون مجزأة بالفعل
+  const paginatedProjects = data.result.projects || [];
 
   return (
     <Dashboard>
@@ -165,7 +162,6 @@ const ProjectPage = () => {
           >
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="projectName">Project Name</MenuItem>
-            <MenuItem value="supervisorName">Supervisor Name</MenuItem>
           </Select>
           <TextField
             label="Search"
@@ -187,7 +183,7 @@ const ProjectPage = () => {
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="in progress">In Progress</MenuItem>
             <MenuItem value="complete">Complete</MenuItem>
-            <MenuItem value="archive">Archive</MenuItem> {/* Added Archive option */}
+            <MenuItem value="archive">Archive</MenuItem>
           </Select>
         </Box>
 
@@ -204,52 +200,60 @@ const ProjectPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedProjects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell>{project.name}</TableCell>
-                  <TableCell>{project.supervisorName}</TableCell>
-                  <TableCell>{project.customerName || 'N/A'}</TableCell>
-                  <TableCell>{project.workgroupName || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={project.status}
-                      color={statusColors[project.status] || 'default'}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
-                      <VisibilityIcon color="primary" />
-                    </IconButton>
-                    <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
-                      <EditIcon color="secondary" />
-                      </IconButton>
-
-
-                    <IconButton
-                      onClick={() =>
-                        toggleFavorite(
-                          project.id,
-                          project.name,
-                          favoriteProjects[project.id] || project.favorite
-                        )
-                      }
-                    >
-                      {favoriteProjects[project.id] || project.favorite ? (
-                        <StarIcon color="warning" />
-                      ) : (
-                        <StarBorderIcon />
-                      )}
-                    </IconButton>
+              {paginatedProjects.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    <Typography variant="h6" color="textSecondary">
+                      No projects found.
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                paginatedProjects.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell>{project.name}</TableCell>
+                    <TableCell>{project.supervisorName}</TableCell>
+                    <TableCell>{project.customerName || 'N/A'}</TableCell>
+                    <TableCell>{project.workgroupName || 'N/A'}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={project.status}
+                        color={statusColors[project.status] || 'default'}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => navigate(`/projects/${project.id}`)}>
+                        <VisibilityIcon color="primary" />
+                      </IconButton>
+                      <IconButton onClick={() => navigate(`/projects/EditProject/${project.id}`)}>
+                        <EditIcon color="secondary" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() =>
+                          toggleFavorite(
+                            project.id,
+                            project.name,
+                            favoriteProjects[project.id] || project.favorite
+                          )
+                        }
+                      >
+                        {favoriteProjects[project.id] || project.favorite ? (
+                          <StarIcon color="warning" />
+                        ) : (
+                          <StarBorderIcon />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
           <PaginationComponent
-            totalCount={data.result.total}
+            totalCount={data.result.totalCount} // إجمالي عدد العناصر من الخادم
             pageNumber={pageNumber}
             pageSize={pageSize}
             onPageChange={handlePageChange}

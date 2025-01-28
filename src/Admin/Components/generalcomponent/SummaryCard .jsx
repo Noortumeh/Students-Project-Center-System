@@ -21,7 +21,6 @@ function SummaryCard({ bgcolor = '#E0E0E0', icon, label, value }) {
 }
 
 
-const MemoizedSummaryCard = React.memo(SummaryCard);
-MemoizedSummaryCard.displayName = 'SummaryCard';
 
-export default MemoizedSummaryCard;
+
+export default SummaryCard;

@@ -16,11 +16,11 @@ import {
 } from '@mui/material';
 import { fetchCustomers } from '../../../../util/http for admin/http.js';
 import { Edit } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom'; // استيراد useNavigate
+import { useNavigate } from 'react-router-dom';
 
 export default function IndexCustomer() {
-  const [entriesToShow] = useState(20);
-  const navigate = useNavigate(); // تعريف useNavigate
+  const [entriesToShow] = useState(6);  // يجب أن تكون القيمة الافتراضية 6 كما في الـ API
+  const navigate = useNavigate();
 
   const { data: customers = [], isLoading, error } = useQuery({
     queryKey: ['customers', entriesToShow],
@@ -63,8 +63,7 @@ export default function IndexCustomer() {
         >
           <Edit />
         </IconButton>
-      )
-      
+      ),
     },
   ];
 
