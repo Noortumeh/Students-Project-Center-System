@@ -20,13 +20,18 @@ export default function IndexStudent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesToShow, setEntriesToShow] = useState(20);
 
+  console.log('Rendering IndexStudent component'); // جملة طباعة للتأكد من أن المكون يتم تصييره
+
   const { data: students = [], isLoading, error } = useQuery({
     queryKey: ['students', entriesToShow],
     queryFn: () => fetchStudents(entriesToShow, 1),
     onError: (err) => console.error('Error fetching students:', err),
   });
 
+  console.log('Students data from useQuery:', students); // جملة طباعة لعرض البيانات المستلمة
+
   if (isLoading) {
+    console.log('Loading students data...'); // جملة طباعة أثناء التحميل
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
@@ -35,12 +40,29 @@ export default function IndexStudent() {
   }
 
   if (error) {
+    console.error('Error loading students:', error.message); // جملة طباعة في حالة الخطأ
     return <div>Error loading students: {error.message}</div>;
   }
 
+  // إنشاء حقل fullName
+  const studentsWithFullName = students.map((student) => ({
+    ...student,
+    fullName: `${student.firstName} ${student.middleName} ${student.lastName}`,
+  }));
+
+  console.log('Students with fullName:', studentsWithFullName); // جملة طباعة لعرض البيانات مع الحقل الجديد
+
+  // فلترة البيانات
+  const filteredStudents = studentsWithFullName.filter((student) =>
+    student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  console.log('Filtered students:', filteredStudents); // جملة طباعة لعرض البيانات بعد الفلترة
+
   const columns = [
     { id: 'id', label: 'Student ID' },
-    { id: 'name', label: 'Student Name' },
+    { id: 'fullName', label: 'Student Name' },
     { id: 'projectName', label: 'Project Name' },
     { id: 'email', label: 'Email' },
     {
@@ -67,12 +89,6 @@ export default function IndexStudent() {
       ),
     },
   ];
-
-  const filteredStudents = Array.isArray(students)
-    ? students.filter((student) =>
-        student?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
 
   return (
     <Dashboard>
