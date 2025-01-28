@@ -29,7 +29,7 @@ export default function WorkgroupsTasks() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
             <h1 style={{ textAlign: "center" }}>Workgroups Tasks</h1>
-            <DataTable columns={columns} rows={data.result} title={"ALL Tasks"} />
+            <DataTable columns={columns} rows={data.result || []} title={"ALL Tasks"} />
         </Box>
     );
 }
