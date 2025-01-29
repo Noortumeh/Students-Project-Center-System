@@ -3,69 +3,41 @@ import {
   Container,
   Box,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Button,
-  Select,
-  MenuItem,
-  TextField,
   Paper,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
 import { fetchWorkgroups } from '../../../../util/http for admin/http.js';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import PaginationComponent from '../../../../Users/components/PaginationComponent.jsx';
+import { DataGrid } from '@mui/x-data-grid'; // استيراد DataGrid
 
 const WorkgroupPage = () => {
   const [workgroups, setWorkgroups] = useState([]);
-  const [filters, setFilters] = useState({
-    filterType: 'all',
-    filterValue: '',
-  });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [pageSize, setPageSize] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5); // عدد الصفوف في الصفحة
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     const loadWorkgroups = async () => {
       try {
-        const data = await fetchWorkgroups(pageSize, currentPage, filters.filterValue);
+        const data = await fetchWorkgroups();
         if (!data || !data.result || !data.result.workgroups) {
           console.error('Invalid data structure:', data);
           throw new Error('Failed to fetch workgroups. Invalid data structure.');
         }
         setWorkgroups(data.result.workgroups);
-        setTotalCount(data.result.total);
+        setTotalCount(data.result.total); // اجلب العدد الكلي للصفوف
       } catch (error) {
         console.error('Error fetching workgroups:', error);
       }
     };
     loadWorkgroups();
-  }, [currentPage, pageSize, filters]);
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
-
-  const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize);
-    setCurrentPage(1);
-  };
+  }, []);
 
   const handleTeamClick = (team) => {
     setSelectedTeam(team);
@@ -75,88 +47,60 @@ const WorkgroupPage = () => {
     setSelectedTeam(null);
   };
 
-  const filteredWorkgroups = workgroups.filter((workgroup) => {
-    const matchesFilterType =
-      filters.filterType === 'all' ||
-      (filters.filterType === 'workgroupName' &&
-        workgroup.name.toLowerCase().includes(filters.filterValue.toLowerCase())) ||
-      (filters.filterType === 'supervisorName' &&
-        workgroup.supervisorName.toLowerCase().includes(filters.filterValue.toLowerCase()));
+  const columns = [
+    { field: 'name', headerName: 'Workgroup Name', width: 180 },
+    { field: 'supervisorName', headerName: 'Supervisor Name', width: 180 },
+    { field: 'coSupervisorName', headerName: 'Co-Supervisor Name', width: 180 },
+    { field: 'customerName', headerName: 'Customer Name', width: 180 },
+    { field: 'company', headerName: 'Company', width: 180 },
+    {
+      field: 'team',
+      headerName: 'Team',
+      width: 120,
+      renderCell: (params) => (
+        <Button onClick={() => handleTeamClick(params.value)}>
+          View Team
+        </Button>
+      ),
+    },
+  ];
 
-    return matchesFilterType;
-  });
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // إعادة تعيين الصفحة إلى الأولى عند تغيير حجم الصفحة
+  };
 
   return (
     <Dashboard>
       <Container>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 6 }}>
           <Typography variant="h4" fontWeight="bold" color="primary">
             Workgroups
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-          <Select
-            name="filterType"
-            value={filters.filterType}
-            onChange={handleFilterChange}
-            sx={{ width: 200 }}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="workgroupName">Workgroup Name</MenuItem>
-            <MenuItem value="supervisorName">Supervisor Name</MenuItem>
-          </Select>
-          <TextField
-            label="Search"
-            name="filterValue"
-            value={filters.filterValue}
-            onChange={handleFilterChange}
-            variant="outlined"
-            sx={{ width: 200 }}
-            disabled={filters.filterType === 'all'}
+        <Paper elevation={3}>
+          <DataGrid
+            rows={workgroups || []}
+            columns={columns}
+            onRowClick={(params) => console.log('Row clicked:', params.row.id)} 
+            onRowSelectionModelChange={(ids) => {
+              setSelectedUsers(ids);
+            }} 
+            selectionModel={selectedUsers} 
+            pageSize={pageSize} 
+            page={currentPage - 1} 
+            rowCount={totalCount} 
+            onPageChange={(newPage) => handlePageChange(newPage + 1)} 
+            paginationMode="server" 
+            onPageSizeChange={handlePageSizeChange} 
+            rowsPerPageOptions={[5, 10, 20]} 
           />
-        </Box>
-
-        <TableContainer component={Paper} elevation={3}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Workgroup Name</TableCell>
-                <TableCell>Supervisor Name</TableCell>
-                <TableCell>Co-Supervisor Name</TableCell>
-                <TableCell>Customer Name</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Team</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredWorkgroups.map((workgroup) => (
-                <TableRow key={workgroup.id}>
-                  <TableCell>{workgroup.name}</TableCell>
-                  <TableCell>{workgroup.supervisorName}</TableCell>
-                  <TableCell>{workgroup.coSupervisorName || ''}</TableCell>
-                  <TableCell>{workgroup.customerName || ''}</TableCell>
-                  <TableCell>{workgroup.company || ''}</TableCell>
-                  <TableCell>
-                    <Button onClick={() => handleTeamClick(workgroup.team)}>
-                      View Team
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <PaginationComponent
-            totalCount={totalCount}
-            pageNumber={currentPage}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-          />
-        </Box>
+        </Paper>
 
         {/* Dialog to display the team */}
         <Dialog open={selectedTeam !== null} onClose={handleCloseDialog}>

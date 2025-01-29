@@ -1,30 +1,17 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import {
-  CircularProgress,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Typography,
-  Paper,
-} from '@mui/material';
+import { CircularProgress, Box, Typography } from '@mui/material';
+import { DataGrid } from "@mui/x-data-grid";
 import { fetchCustomers } from '../../../../util/http for admin/http.js';
-import { Edit } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 export default function IndexCustomer() {
-  const [entriesToShow] = useState(6);  // يجب أن تكون القيمة الافتراضية 6 كما في الـ API
-  const navigate = useNavigate();
+  const [page, setPage] = useState(0); 
+  const [pageSize, setPageSize] = useState(6); 
 
   const { data: customers = [], isLoading, error } = useQuery({
-    queryKey: ['customers', entriesToShow],
-    queryFn: () => fetchCustomers(entriesToShow, 1),
+    queryKey: ['customers', page, pageSize], 
+    queryFn: () => fetchCustomers(pageSize, page + 1), 
     onError: (err) => {
       console.error('Error fetching customers:', err);
     },
@@ -32,7 +19,7 @@ export default function IndexCustomer() {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box  display="flex" justifyContent="center" alignItems="center" height="100vh" >
         <CircularProgress />
       </Box>
     );
@@ -46,56 +33,43 @@ export default function IndexCustomer() {
     );
   }
 
+  // إنشاء حقل fullName
+  const customersWithFullName = customers.map((customer) => ({
+    ...customer,
+    id: customer.id, // id مطلوب لـ DataGrid
+    fullName: `${customer.firstName} ${customer.lastName}`,
+  }));
+
   const columns = [
-    { id: 'id', label: 'Customer ID' },
-    { id: 'firstName', label: 'First Name' },
-    { id: 'lastName', label: 'Last Name' },
-    { id: 'email', label: 'Email' },
-    { id: 'company', label: 'Company' },
-    { id: 'workgroupName', label: 'Workgroup' },
-    {
-      id: 'actions',
-      label: 'Actions',
-      render: (row) => (
-        <IconButton
-          color="primary"
-          onClick={() => navigate(`/users/customer/edit/${row.id}`)}
-        >
-          <Edit />
-        </IconButton>
-      ),
-    },
+    { field: 'fullName', headerName: 'Name', width: 200 },
+    { field: 'email', headerName: 'Email', width: 250 },
+    { field: 'company', headerName: 'Company', width: 200 },
+    { field: 'workgroupName', headerName: 'Workgroup', width: 200 },
   ];
+  
 
   return (
     <Dashboard>
-      <Box p={3}>
+      <Box p={3} sx={{ mt: 6 }}>
         <Typography variant="h4" gutterBottom>
           Customers
         </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell key={column.id}>{column.label}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {customers.map((customer) => (
-                <TableRow key={customer.id}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id}>
-                      {column.render ? column.render(customer) : customer[column.id] || '-'}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+  
+        <Box sx={{ height: 600 }}>
+          <DataGrid
+            rows={customersWithFullName || []}
+            columns={columns}
+            checkboxSelection={false}
+            pageSize={pageSize}
+            rowsPerPageOptions={[6, 20, 50]}
+            page={page}
+            onPageChange={(newPage) => setPage(newPage)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            pagination
+          />
+        </Box>
       </Box>
     </Dashboard>
   );
+  
 }
