@@ -2,8 +2,7 @@
 import { Card, CardContent, Typography } from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';
 import { useEffect, useRef } from 'react';
-import LoadingChart from '../generalcomponent/LoadingChart ';
-function ProjectStatusChart({ data, loading }) {
+function LoadingChart({ data, loading }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -25,4 +24,4 @@ function ProjectStatusChart({ data, loading }) {
     </Card>
   );
 }
-export default ProjectStatusChart;
+export default LoadingChart;

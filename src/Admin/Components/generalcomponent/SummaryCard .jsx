@@ -1,7 +1,5 @@
-import React from 'react';
 import { Card, CardContent, Box, Avatar, Typography } from '@mui/material';
 /* eslint-disable react/prop-types */
-
 function SummaryCard({ bgcolor = '#E0E0E0', icon, label, value }) {
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
@@ -19,8 +17,4 @@ function SummaryCard({ bgcolor = '#E0E0E0', icon, label, value }) {
     </Card>
   );
 }
-
-
-
-
 export default SummaryCard;

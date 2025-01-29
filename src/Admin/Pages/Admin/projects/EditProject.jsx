@@ -146,11 +146,10 @@ export default function EditProject() {
   }));
 
   const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Complete', label: 'Complete' },
-    { value: 'Archived', label: 'Archived' },
+    { value: 'active', label: 'active' },
+    { value: 'pending', label: 'pending' },
+    { value: 'completed', label: 'completed' },
+    { value: 'canceled', label: 'canceled' },
   ];
 
   return (
