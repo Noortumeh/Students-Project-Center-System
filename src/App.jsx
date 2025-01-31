@@ -17,7 +17,6 @@ import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
-import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
 
 import PageNotFound from './PageNotFound.jsx';
 
@@ -104,10 +103,6 @@ const router = createBrowserRouter([
   {
     path: '/projects/EditProject/:projectid',
     element: <EditProject />,
-  },
-  {
-    path: '/roles',
-    element: <Roles />,
   },
 
   {

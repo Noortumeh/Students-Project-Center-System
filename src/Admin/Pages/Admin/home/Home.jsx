@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { Box, Grid, Divider, CircularProgress, Typography, Paper } from '@mui/material';
+import { Box, Grid, Divider, CircularProgress, Typography } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group, People, School, SupervisorAccount } from '@mui/icons-material';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx'; 
