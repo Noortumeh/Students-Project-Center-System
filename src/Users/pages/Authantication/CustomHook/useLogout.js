@@ -10,7 +10,7 @@ export const useLogout = () =>{
             toast.success('Logout successfully!');
             await queryClient.cancelQueries();
             queryClient.clear();
-            queryClient.invalidateQueries();
+            queryClient.invalidateQueries({ queryKey: ['user'] });
             window.location.replace('/');
         },
         onError: ()=>{

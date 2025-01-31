@@ -18,9 +18,13 @@ import { validateInputs } from './validateInputs';
 import { queryClient } from '../../../util/httpsForUser/https';
 
 export default function UserProfilePage() {
+    const { data: userData, isLoading } = useQuery({
+        queryKey: ['profile'],
+        queryFn: getProfileinfo,
+    });
+
     const navigate = useNavigate();
     const [editable, setEditable] = useState(false);
-
     const profileImage = JSON.parse(localStorage.getItem('userInfo')).user.profileImageUrl;
     const [profilePicture, setProfilePicture] = useState(null);
     const [errors, setErrors] = useState({});
@@ -35,20 +39,15 @@ export default function UserProfilePage() {
         profilePicture: profileImage || '',
     });
 
-    const { data: userData, isLoading } = useQuery({
-        queryKey: ['profile'],
-        queryFn: getProfileinfo,
-    });
-
     useEffect(() => {
         if (userData) {
             setUserInfo({
-                firstName: userData.firstName,
-                middleName: userData.middleName,
-                lastName: userData.lastName,
-                email: userData.email,
-                phoneNumber: userData.phoneNumber,
-                address: userData.address,
+                firstName: userData.firstName || "",
+                middleName: userData.middleName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+                phoneNumber: userData.phoneNumber || "",
+                address: userData.address || "",
             });
         }
     }, [userData]);
@@ -67,16 +66,16 @@ export default function UserProfilePage() {
 
     const { mutate: pictureMutation } = useMutation({
         mutationFn: updateProfilePicture,
-        onSuccess: () => { 
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            toast.success('Profile picture updated successfully!') 
+            toast.success('Profile picture updated successfully!')
         },
         onError: (error) => toast.error(error.message),
     });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setUserInfo((prev) => ({ ...prev, [name]: value }));
+        setUserInfo((prev) => ({ ...prev, [name]: value || "" }));
     };
 
     const handleProfilePictureChange = (e) => {
@@ -122,6 +121,7 @@ export default function UserProfilePage() {
             </Box>
         );
     }
+    
     return (
         <Box
             sx={{

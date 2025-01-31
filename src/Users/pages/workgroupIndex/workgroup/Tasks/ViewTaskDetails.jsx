@@ -1,31 +1,29 @@
 import { useState } from 'react';
 import {
-    Box,
-    Container,
-    Typography,
-    Paper,
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Stack,
-    IconButton,
-    CircularProgress
+    Box, Container, Typography, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, Stack, IconButton, CircularProgress,
+    MenuItem
 } from '@mui/material';
 import { Download, CloudUpload, Delete } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import useTaskData from '../WorkgroupCustomHook/useTaskData';
 import { useMutation } from '@tanstack/react-query';
-import { queryClient, submitAnswer } from '../../../../../util/httpsForUser/https';
+import { changeTaskStatus, queryClient, submitAnswer } from '../../../../../util/httpsForUser/https';
 import { toast } from 'react-toastify';
+import { useWorkgroup } from '../WorkgroupCustomHook/useWorkgroup';
+import SelectedList from '../../../../components/SelectedList';
 
 export default function ViewTaskDetails() {
+    const queryParams = new URLSearchParams(window.location.search);
     const navigate = useNavigate();
+    //
     const { taskid } = useParams();
+    const workgroupId = useParams().workgroupId || queryParams.get('workgroupId');
+    //
     const { taskData: task, taskDataLoading: isLoading, taskDataErr: error } = useTaskData(taskid);
     const [openSubmitDialog, setOpenSubmitDialog] = useState(false);
     const [submitFiles, setSubmitFiles] = useState([]);
+    const { data: workgroupData } = useWorkgroup(workgroupId);
+
     // submit Task
     const { mutate, isLoading: submitting } = useMutation({
         mutationFn: submitAnswer,
@@ -34,8 +32,16 @@ export default function ViewTaskDetails() {
             toast.success('Submit successfully!')
         }
     })
+    // Change Task Status
+    const { mutate: mutateStatus } = useMutation({
+        mutationFn: changeTaskStatus,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['task', taskid] });
+            toast.success('Change Status successfully!')
+        }
+    })
 
-    if (isLoading) {
+    if (isLoading || !workgroupData) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <CircularProgress />
@@ -66,7 +72,6 @@ export default function ViewTaskDetails() {
         setOpenSubmitDialog(false);
         setSubmitFiles([]);
     };
-
     return (
         <Container maxWidth="md">
             <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
@@ -89,12 +94,20 @@ export default function ViewTaskDetails() {
                 <Typography
                     variant="h6"
                     sx={{
-                        color: task.status === 'completed' ? 'success.main' : 'info.main',
+                        color: task.status === 'completed' ? 'success.main' :
+                            (task.status === 'canceled' || task.status === 'rejected') ? "error.main" : 'info.main',
                         mb: 2
                     }}
                 >
                     Status: {task.status}
                 </Typography>
+                {(workgroupData.role === 'supervisor' || workgroupData.role === 'co-supervisor') &&
+                    <SelectedList name={'Change Status'} onChange={(status) => { mutateStatus({ taskid, status }) }}>
+                        <MenuItem value={'completed'}>Completed</MenuItem>
+                        <MenuItem value={'rejected'}>Rejected</MenuItem>
+                        <MenuItem value={'canceled'}>Canceled</MenuItem>
+                    </SelectedList>
+                }
 
                 {/* الوصف */}
                 <Typography variant="body1" sx={{ my: 3 }}>
@@ -126,13 +139,15 @@ export default function ViewTaskDetails() {
                     justifyContent: 'flex-end',
                     mt: 4
                 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpenSubmitDialog(true)}
-                    >
-                        Submit Task
-                    </Button>
+                    { workgroupData.role === 'student' &&
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setOpenSubmitDialog(true)}
+                        >
+                            Submit Task
+                        </Button>
+                    }
                     <Button
                         variant="contained"
                         color="primary"

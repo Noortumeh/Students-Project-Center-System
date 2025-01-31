@@ -36,10 +36,10 @@ export async function addStudents({ students, projectId }) {
       "Content-Type": "application/json", // تغيير Content-Type إلى text/plain
       ...(token && { Authorization: `Bearer ${token}`}),
     },
-    body: JSON.stringify({ usersId: students }),
+    body: JSON.stringify({ usersIds: students }),
   });
   if (!response.ok) {
-    console.log(response)
+    console.log(response.json())
     throw new Error("Failed to add students");
   }
   return response.json();
@@ -56,13 +56,14 @@ export async function addAssistants({ assistants, projectId }) {
     body: JSON.stringify({ userId: assistants[0] }), // تحويل قائمة المساعدين إلى نص مفصول بفاصلة
   });
   if (!response.ok) {
+    console.log(response.json())
     throw new Error("Failed to add assistants");
   }
   return response.json(); // استرجاع النص العائد من الاستجابة
 }
 //delete student
 export async function deleteStudent({studentId, projectId, notes}) {
-  const response = await fetch(`${API_URL}/user/projects/${projectId}/students?studentId=${studentId}`, {
+  const response = await fetch(`${API_URL}/user/projects/${projectId}/students/${studentId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +72,7 @@ export async function deleteStudent({studentId, projectId, notes}) {
     body: JSON.stringify({ notes: notes }),
   });
   if (!response.ok) {
-    throw new Error("Failed to add assistants");
+    throw new Error("Failed to add Student");
   }
   return response.json(); // استرجاع النص العائد من الاستجابة
 }

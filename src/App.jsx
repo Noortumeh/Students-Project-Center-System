@@ -53,28 +53,31 @@ import ResetPasswordPage from './Users/pages/Authantication/ResetPasswordPage.js
 import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
 import ResetPasswordProfile from './Users/pages/UserProfile/ResetPasswoedProfile.jsx';
 import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMembers/AddMembers.jsx';
+import ContactUsForm from './Users/pages/Home/Contact.jsx';
+import ProjectsRoot from './Users/pages/workgroupIndex/ProjectsRoot.jsx';
+import ProjectDetailsWork from './Users/pages/workgroupIndex/Projects/ProjectDetails.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
     path: '/admin',
     element: <Home />,
   },
-  
+
   {
     path: '/users/student',
     element: <IndexStudent />,
   },
-  
+
   {
     path: '/users/customer',
     element: <IndexCustomer />,
   },
-  
+
   {
     path: '/users/supervisor',
     element: <IndexSupervisor />,
   },
- 
+
   {
     path: '/users/users',
     element: <IndexUsers />,
@@ -83,7 +86,7 @@ const router = createBrowserRouter([
     path: '/termofservices',
     element: <TermOfServices />,
   },
-  
+
   {
     path: '/workgroup',
     element: <WorkGroup />,
@@ -118,15 +121,17 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: '/contact', element: <ContactUsForm /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'forgot-password', element: <ForgetPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'user-profile', element: <UserProfilePage /> },
+      // { path: 'user-profile', element: <UserProfilePage /> },
       { path: 'user-profile/reset-password', element: <ResetPasswordProfile /> },
 
       {
         element: <Authentication />, children: [
+          { path: 'user-profile', element: <UserProfilePage /> },
           {
             path: 'workgroups', element: <WorkGroupsPage />, children: [
               { index: true, element: <WorkgroupsHome /> },
@@ -142,7 +147,12 @@ const router = createBrowserRouter([
                   { path: 'calendar', element: <Calendar /> }
                 ]
               },
-              { path: 'projects', element: <WorkgroupsProjects /> },
+              {
+                path: 'projects', element: <ProjectsRoot />, children: [
+                  { index: true, element: <WorkgroupsProjects /> },
+                  { path: ':projectId', element: <ProjectDetailsWork /> },
+                ]
+              },
               { path: 'alltasks', element: <WorkgroupsTasks /> },
               { path: 'edittask/:taskid', element: <EditTask /> },
               { path: 'viewtask/:taskid', element: <ViewTaskDetails /> },
