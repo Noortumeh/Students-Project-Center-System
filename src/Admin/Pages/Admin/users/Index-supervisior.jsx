@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { CircularProgress, Box, Typography, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
+import { CircularProgress, Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
-import { fetchSupervisors } from '../../../../util/http for admin/http.js'; 
+import { fetchSupervisors } from '../../../../util/http for admin/http.js';
 
 export default function IndexSupervisor() {
-  const [page, setPage] = useState(0); 
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(6);
 
   const { data: supervisors = [], isLoading, error } = useQuery({
@@ -28,10 +27,6 @@ export default function IndexSupervisor() {
   const handleCloseDialog = () => {
     setSelectedSupervisor(null);
     setOpenDialog(false);
-  };
-
-  const handleEdit = (supervisor) => {
-    navigate(`/users/supervisor/edit/${supervisor.id}`);
   };
 
   if (isLoading) {
@@ -64,16 +59,6 @@ export default function IndexSupervisor() {
         );
       }
     },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
-      renderCell: (params) => (
-        <IconButton color="primary" onClick={() => handleEdit(params.row)}>
-          <Edit />
-        </IconButton>
-      ),
-    },
   ];
   
   const supervisorsWithFullName = supervisors.map((supervisor) => ({
@@ -85,7 +70,7 @@ export default function IndexSupervisor() {
   return (
     <Dashboard>
       <Box p={3} sx={{ mt: 6 }}>
-      <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Supervisors List
         </Typography>
 

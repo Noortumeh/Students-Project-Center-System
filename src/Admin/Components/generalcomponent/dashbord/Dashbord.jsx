@@ -39,7 +39,6 @@ function Dashboard({ children }) {
     if (currentPath.includes("/users/supervisor")) return "supervisors";
     if (currentPath.includes("/users/users")) return "users";
     if (currentPath.includes("/termofservices")) return "termOfServices";
-    if (currentPath.includes("/roles")) return "roles";
     return "home";
   }, [location]);
 
@@ -165,16 +164,7 @@ function Dashboard({ children }) {
             <ListItemText primary="Term of Services" />
           </ListItem>
 
-          <ListItem
-            component={Link}
-            to="/roles"
-            selected={activeLink === "roles"}
-          >
-            <ListItemIcon>
-              <RuleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Roles" />
-          </ListItem>
+     
         </List>
       </Drawer>
 
