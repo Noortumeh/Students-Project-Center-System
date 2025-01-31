@@ -37,7 +37,7 @@ export default function WorkgroupsHome() {
     }
     if (data) {
         content = (
-            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
+            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.workgroups.map((workgroup) => (
                     <Grid xs={12} sm={6} md={4} key={workgroup.id}>
                         <DescriptionCard

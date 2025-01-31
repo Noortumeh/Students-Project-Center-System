@@ -21,7 +21,7 @@ export function Authentication() {
             return;
         }
 
-        if (user.token === "EXPIRED") {
+        if (user && user.token === "EXPIRED") {
             handleLogout();
             return;
         }
@@ -35,7 +35,7 @@ export function Authentication() {
     }, [isAuth, user?.token]);
 
     if (isFetching) {
-        return <div>Loading...</div>;
+        return null;
     }
 
     if (!isAuth) {

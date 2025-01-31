@@ -1,7 +1,6 @@
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = 'http://spcs.somee.com/api';
-const token = localStorage.getItem('token');
+export const API_BASE_URL = 'http://spcs.somee.com/api';
 export const fetchUsers = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -36,13 +35,18 @@ export const fetchUsers = async () => {
     // تحويل البيانات إلى الشكل المطلوب
     if (data.result && Array.isArray(data.result)) {
       console.log('Processing data.result as an array...');
-      const formattedUsers = data.result.map((user) => ({
-        id: user.id,
-        firstName: user.fullName.split(' ')[0], // افترضنا أن الاسم الكامل يحتوي على الاسم الأول والأخير
-        lastName: user.fullName.split(' ')[1] || '', // إذا لم يكن هناك اسم أخير، نعطي قيمة فارغة
-        email: user.email,
-        role: user.role,
-      }));
+      const formattedUsers = data.result.map((user) => {
+        const names = user.fullName.split(' ');
+        const firstName = names[0];
+        const lastName = names.slice(1).join(' ');
+
+        return {
+          id: user.id,
+          fullName: `${firstName} ${lastName}`,
+          email: user.email,
+          role: user.role,
+        };
+      });
 
       console.log('Formatted users:', formattedUsers);
       return formattedUsers;
@@ -579,9 +583,14 @@ export const createProjectDetails = async (sectionId, detailsData) => {
   }
 };
 export const updateProjectDetails = async (detailId, detailsData) => {
-  if (!detailId || !detailsData || !detailsData.title || !detailsData.description || !detailsData.section) {
-    throw new Error('Detail ID, title, description, and section are required');
-  }
+  console.log("detailId",detailId)
+  console.log("detailsData",detailsData)
+  console.log("detailsData.title",detailsData.title)
+  console.log("detailsData.description",detailsData.description)
+  console.log("detailsData.section",detailsData.section)
+  // if (!detailId || !detailsData || !detailsData.title || !detailsData.description || !detailsData.section) {
+  //   throw new Error('Detail ID, title, description, and section are required');
+  // }
 
   try {
     const updatedData = {
@@ -616,39 +625,50 @@ export const updateProjectDetails = async (detailId, detailsData) => {
 };
 
 export const deleteProjectDetails = async (detailId) => {
-  if (!detailId) {
-    throw new Error('Detail ID is required');
+  if (!detailId || isNaN(detailId)) {
+    console.error("Invalid detail ID:", detailId);
+    throw new Error('Detail ID must be a valid number');
   }
 
   try {
-    console.log('Deleting detail with ID:', detailId); // تحقق من ID
-
-    const response = await fetch(`${API_BASE_URL}/project-details/${detailId}`, {
+    const response = await fetch(`http://spcs.somee.com/api/project-details/${detailId}`, {
       method: 'DELETE',
-      headers: addAuthToken({
-        'Accept': 'text/plain',
-      }),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer your-auth-token' // إذا كان هناك توثيق
+      },
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Failed to delete detail: ${response.status}`);
+      console.error('Error:', errorData);
+      throw new Error(errorData.message || 'Failed to delete detail');
     }
 
-    const textData = await response.text();
-    return textData;
+    const result = await response.json();
+    console.log('Deleted successfully:', result);
+    return result;
   } catch (error) {
-    console.error('Error deleting project details:', error);
+    console.error('Error:', error);
     throw error;
   }
 };
 
+
 export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
+  const token = localStorage.getItem('token'); // جلب التوكن من التخزين المحلي
+  if (!token) {
+    throw new Error('Token not found. Please log in.');
+  }
+
   try {
     const response = await fetch(
       `http://spcs.somee.com/api/users/customers/${pageSize}/${pageNumber}`,
       {
-        headers: addAuthToken(),
+        headers: {
+          'Content-Type': 'application/json', // لضمان أن نوع المحتوى JSON
+          Authorization: `Bearer ${token}`, // إضافة التوكن في الهيدر
+        },
       }
     );
 
@@ -661,12 +681,13 @@ export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
       throw new Error(data.message);
     }
 
-    return data.result?.customers || [];  // يجب أن تكون البيانات في `data.result.customers`
+    return data.result?.customers || []; // يجب أن تكون البيانات في `data.result.customers`
   } catch (error) {
     console.error('Error fetching customers:', error);
     throw error;
   }
 };
+
 
 export const fetchStudents = async (pageSize, pageNumber) => {
   try {
@@ -692,13 +713,20 @@ export const fetchStudents = async (pageSize, pageNumber) => {
       throw new Error(data.message);
     }
 
-    console.log('Fetched students:', data.result.students); // جملة طباعة لعرض الطلاب المستلمين
-    return Array.isArray(data.result.students) ? data.result.students : [];
+    // إضافة حالة المشروع (ProjectStatus) إلى البيانات المستلمة
+    const studentsWithStatus = data.result.students.map(student => ({
+      ...student,
+      projectStatus: student.projectStatus || 'Not Started', // تأكد من وجود القيمة إذا كانت موجودة
+    }));
+
+    console.log('Fetched students:', studentsWithStatus); // جملة طباعة لعرض الطلاب المستلمين
+    return studentsWithStatus;
   } catch (error) {
     console.error('Error fetching students:', error); // جملة طباعة في حالة حدوث استثناء
     throw error;
   }
 };
+
 export const fetchSupervisors = async () => {
   try {
     const response = await fetch('http://spcs.somee.com/api/users/supervisors', {

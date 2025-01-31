@@ -108,8 +108,7 @@ const AboutSection = () => {
                 variant="h4"
                 sx={{
                     mb: 4,
-                    fontWeight: "bold",
-                    
+                    fontWeight: "bold", 
                     color: "#333",
                     position: "relative",
                     display: "inline-block",
@@ -168,7 +167,7 @@ const AboutSection = () => {
                             }}
                         >
                             <Typography variant="h4" sx={{
-                                fontWeight: "bold", mb: 2, fontFamily: "'Poppins', sans-serif", fontWeight: "bold",
+                                fontWeight: "bold", mb: 2, fontFamily: "'Poppins', sans-serif",
                                 color: "white",
                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
                             }}>

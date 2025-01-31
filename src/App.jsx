@@ -63,6 +63,8 @@ import UserProfilePage from './Users/pages/UserProfile/UserProfile.jsx';
 import ResetPasswordProfile from './Users/pages/UserProfile/ResetPasswoedProfile.jsx';
 import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMembers/AddMembers.jsx';
 import ContactUsForm from './Users/pages/Home/Contact.jsx';
+import ProjectsRoot from './Users/pages/workgroupIndex/ProjectsRoot.jsx';
+import ProjectDetailsWork from './Users/pages/workgroupIndex/Projects/ProjectDetails.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
   {
@@ -188,7 +190,10 @@ const router = createBrowserRouter([
                   { path: 'calendar', element: <Calendar /> }
                 ]
               },
-              { path: 'projects', element: <WorkgroupsProjects /> },
+              { path: 'projects', element: <ProjectsRoot />, children: [
+                { index: true, element: <WorkgroupsProjects /> },
+                { path:':projectId', element: <ProjectDetailsWork /> },
+              ]},
               { path: 'alltasks', element: <WorkgroupsTasks /> },
               { path: 'edittask/:taskid', element: <EditTask /> },
               { path: 'viewtask/:taskid', element: <ViewTaskDetails /> },

@@ -19,7 +19,6 @@ export default function Navbar() {
     const [navBackground, setNavBackground] = useState('rgba(248, 250, 251, 0.4)');
     const location = useLocation();
     const isHome = location.pathname === '/' || location.pathname === '/contact';
-
     
     // Handle Scroll
     const handleScroll = () => {
@@ -102,11 +101,9 @@ export default function Navbar() {
             </List>
         </Box>
     );
-
     if(isFetching){
-        return 'loading...';
+        return null;
     }
-
     return (
         <Box>
             <CssBaseline />

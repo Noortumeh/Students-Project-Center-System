@@ -135,7 +135,7 @@ const FeaturedProjectsSection = () => {
                                 </Typography>
 
                                 {/* زر المزيد */}
-                                <Button
+                                {/* <Button
                                     variant="contained"
                                     color="primary"
                                     sx={{
@@ -146,7 +146,7 @@ const FeaturedProjectsSection = () => {
                                     onClick={() => alert(`View details for ${project.name}`)}
                                 >
                                     More Details
-                                </Button>
+                                </Button> */}
                             </CardContent>
                         </Card>
                     </Grid2>

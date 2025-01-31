@@ -4,17 +4,17 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useQuery } from "@tanstack/react-query";
 import { getOurClients } from "./HttpHome";
 
-const clients = [
-    { name: "Palestine Technical uneversity Kadoori", logo: null },
-    { name: "Company Name Client", logo: null },
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-];
+// const clients = [
+//     { name: "Palestine Technical uneversity Kadoori", logo: null },
+//     { name: "Company Name Client", logo: null },
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+// ];
 
 export default function OurClientsSection() {
-    const { data, isLoading, error } = useQuery({
+    const { data: clients, isLoading, error } = useQuery({
         queryKey: ['ourClients'],
         queryFn: getOurClients,
         keepPreviousData: true,
@@ -38,7 +38,7 @@ export default function OurClientsSection() {
         );
     }
 
-    if (!data || data.length === 0) {
+    if (!clients || clients.length === 0) {
         content = (
             <Box sx={{ textAlign: "center", py:3 }}>
                 <Typography variant="h6" color="error">
@@ -51,7 +51,7 @@ export default function OurClientsSection() {
         );
     }
 
-    console.log(data);
+    console.log(clients);
 
     return (
         <Box

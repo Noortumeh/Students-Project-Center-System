@@ -42,12 +42,12 @@ export default function UserProfilePage() {
     useEffect(() => {
         if (userData) {
             setUserInfo({
-                firstName: userData.firstName,
-                middleName: userData.middleName,
-                lastName: userData.lastName,
-                email: userData.email,
-                phoneNumber: userData.phoneNumber,
-                address: userData.address,
+                firstName: userData.firstName || "",
+                middleName: userData.middleName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+                phoneNumber: userData.phoneNumber || "",
+                address: userData.address || "",
             });
         }
     }, [userData]);
@@ -75,7 +75,7 @@ export default function UserProfilePage() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setUserInfo((prev) => ({ ...prev, [name]: value }));
+        setUserInfo((prev) => ({ ...prev, [name]: value || "" }));
     };
 
     const handleProfilePictureChange = (e) => {
@@ -121,6 +121,8 @@ export default function UserProfilePage() {
             </Box>
         );
     }
+    console.log(userData)
+    console.log(userInfo)
     return (
         <Box
             sx={{
