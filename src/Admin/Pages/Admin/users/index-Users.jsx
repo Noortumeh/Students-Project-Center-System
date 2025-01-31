@@ -1,86 +1,116 @@
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import React, { useState } from 'react';
 import {
-  CircularProgress,
   Box,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
   Paper,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
-  TextField,
+  Select,
+  MenuItem,
+  IconButton,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchUsers, fetchRoles, assignRoleToUser, removeRoleFromUser } from '../../../../util/http for admin/http.js';
+import { DataGrid } from '@mui/x-data-grid';
 import { Edit, Delete } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import {
+  fetchUsers,
+  fetchRoles,
+  assignRoleToUser,
+  removeRoleFromUser,
+} from '../../../../util/http for admin/http.js';
 
 export default function IndexUsers() {
   const queryClient = useQueryClient();
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState('');
-  const [nameFilter, setNameFilter] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
+  const [selectedRole, setSelectedRole] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const { data: users = [], isLoading, error } = useQuery({
+  // استعلام للحصول على المستخدمين
+  const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryFn: async () => {
+      return await fetchUsers();
+    },
   });
 
-  const { data: allRoles = [] } = useQuery({
+  // استعلام للحصول على الأدوار
+  const { data: allRoles = [], isLoading, error, refetch: refetchRoles } = useQuery({
     queryKey: ['roles'],
-    queryFn: fetchRoles,
+    queryFn: async () => {
+      const roles = await fetchRoles();
+      console.log('Fetched roles:', roles);
+      return roles;
+    },
   });
 
+  // الميتود لتعيين الأدوار للمستخدم
   const assignRoleMutation = useMutation({
-    mutationFn: ({ roleId, userId }) => assignRoleToUser({ roleId, userId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['users']);
-      toast.success('Role assigned successfully');
-      setOpenEditDialog(false);
+    mutationFn: async ({ roleId, userId }) => {
+      console.log('Assigning role:', roleId, 'to user:', userId);
+      return await assignRoleToUser({ roleId, userId });
     },
-    onError: () => {
-      toast.error('Error assigning role');
+    onSuccess: (data) => {
+      console.log('Role assigned successfully. Invalidating users query...');
+      queryClient.invalidateQueries(['users']); // إعادة جلب البيانات
+      refetchUsers(); // إعادة جلب البيانات بشكل فوري
+      toast.success(data.message || 'Role assigned successfully');
+      setOpenEditDialog(false); // إغلاق الـ Dialog
+      setSelectedUser(null); // إعادة تعيين المستخدم المحدد
+      setSelectedRole([]); // إعادة تعيين الأدوار المحددة
+    },
+    onError: (error) => {
+      console.error('Error assigning role:', error);
+      toast.error(error.message || 'Error assigning role');
     },
   });
 
+  // الميتود لإزالة دور من المستخدم
   const removeRoleMutation = useMutation({
-    mutationFn: ({ roleId, userId }) => removeRoleFromUser({ roleId, userId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['users']);
-      toast.success('Role removed successfully');
-      setOpenDeleteDialog(false);
+    mutationFn: async ({ roleId, userId }) => {
+      console.log('Removing role:', roleId, 'from user:', userId);
+      return await removeRoleFromUser({ roleId, userId });
     },
-    onError: () => {
-      toast.error('Error removing role');
+    onSuccess: () => {
+      console.log('Role removed successfully. Invalidating users query...');
+      queryClient.invalidateQueries(['users']); // إعادة جلب البيانات
+      refetchUsers(); // إعادة جلب البيانات بشكل فوري
+      toast.success('Role removed successfully');
+      setOpenDeleteDialog(false); // إغلاق الـ Dialog
+      setSelectedUser(null); // إعادة تعيين المستخدم المحدد
+    },
+    onError: (error) => {
+      console.error('Error removing role:', error);
+      toast.error(error.message || 'Error removing role');
     },
   });
 
+  // فتح نافذة التعديل للأدوار
   const handleOpenEditDialog = (user) => {
+    console.log('User object:', user);
     setSelectedUser(user);
-    setSelectedRole('');
+
+    let currentRoles = [];
+  
+    currentRoles = [user.role.id || user.role];
+    
+    console.log('Extracted Roles:', currentRoles);
+    setSelectedRole(currentRoles);
     setOpenEditDialog(true);
   };
 
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
     setSelectedUser(null);
-    setSelectedRole('');
+    setSelectedRole([]);
   };
 
   const handleOpenDeleteDialog = (user) => {
@@ -94,144 +124,220 @@ export default function IndexUsers() {
   };
 
   const handleAssignRole = () => {
-    if (selectedUser && selectedRole) {
-      assignRoleMutation.mutate({ roleId: selectedRole, userId: selectedUser.id });
+    console.log('selectedRole:', selectedRole);
+    console.log('selectedUser:', selectedUser);
+
+    if (!selectedUser) {
+      toast.error('No user selected.');
+      return;
+    }
+
+    if (selectedRole.length === 0) {
+      toast.error('Please select at least one role before assigning.');
+      return;
+    }
+
+    // تحقق من أن المستخدم لا يملك الدور بالفعل
+    const userRoles = selectedUser.role.split(',').map(role => role.trim());
+    const roleToAssign = allRoles.find(role => role.id === selectedRole[0]);
+
+    if (userRoles.includes(roleToAssign.name)) {
+      toast.error('User already has this role.');
+      return;
+    }
+
+    // إرسال roleId كقيمة واحدة
+    assignRoleMutation.mutate({
+      roleId: selectedRole[0], // إرسال أول عنصر في المصفوفة
+      userId: selectedUser.id,
+    });
+  };
+
+  const handleRemoveRole = () => {
+    if (!selectedUser || !selectedUser.role) {
+      toast.error('No user or role selected.');
+      return;
+    }
+
+    // تحليل السلسلة النصية لفصل الأدوار
+    const roles = selectedUser.role.split(',').map(role => role.trim());
+
+    // تحديد الأدوار التي يمكن حذفها (ما عدا الأساسية)
+    const rolesToRemove = roles.filter(role => !['Supervisor', 'Admin', 'user'].includes(role));
+
+    if (rolesToRemove.length === 0) {
+      toast.error('No removable roles found.');
+      return;
+    }
+
+    if (!selectedRole || selectedRole.length === 0) {
+      toast.error('Please select a role to remove.');
+      return;
+    }
+
+    const roleToRemove = rolesToRemove.find(role => role === allRoles.find(r => r.id === selectedRole[0]).name);
+
+    if (roleToRemove) {
+      // حذف الدور المحدد فقط
+      const roleToRemoveObj = allRoles.find(r => r.name === roleToRemove);
+      if (roleToRemoveObj) {
+        removeRoleMutation.mutate({
+          roleId: roleToRemoveObj.id,
+          userId: selectedUser.id,
+        });
+      }
+    } else {
+      toast.error('Invalid role selected for removal.');
     }
   };
 
-  const handleRemoveRole = (roleId) => {
-    if (selectedUser && roleId) {
-      removeRoleMutation.mutate({ roleId, userId: selectedUser.id });
-    }
-  };
+  // تحضير البيانات لعرضها في الجدول
+  const formattedUsers = users.map((user, index) => {
+    const names = user.fullName.split(' ');
+    const firstName = names[0];
+    const lastName = names.slice(1).join(' ');
 
-  // فلتر البيانات حسب الاسم والرول
-  const filteredUsers = users.filter((user) => {
-    const matchesName = user.firstName?.toLowerCase().includes(nameFilter.toLowerCase()) ||
-                        user.lastName?.toLowerCase().includes(nameFilter.toLowerCase());
-    const matchesRole = roleFilter ? user.roles?.includes(roleFilter) : true;
-    return matchesName && matchesRole;
+    const roleNames = Array.isArray(user.role)
+      ? user.role.map((r) => (typeof r === 'string' ? r : r.name)).join(', ')
+      : user.role.name || '';
+
+    return {
+      id: user.id || index,
+      fullName: `${firstName} ${lastName}`,
+      email: user.email,
+      role: roleNames,
+    };
   });
 
-  if (isLoading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // دالة لتصفية الأدوار المعروضة في نافذة إزالة الدور
+  const getFilteredRolesForRemoval = () => {
+    if (!selectedUser || !allRoles.length) return [];
 
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Typography color="error">Error loading users: {error.message}</Typography>
-      </Box>
+    // الأدوار التي يمتلكها المستخدم
+    const userRoles = selectedUser.role || [];
+    const userRoleNames = typeof userRoles === 'string'
+      ? userRoles.split(',').map(role => role.trim())
+      : Array.isArray(userRoles)
+    ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
+    : [userRoles.name || userRoles];
+
+    // تصفية الأدوار التي يمكن حذفها (ما عدا الأدوار الأساسية مثل Supervisor, Admin, user)
+    return allRoles.filter((role) => 
+      userRoleNames.includes(role.name) && !['Supervisor', 'Admin', 'user'].includes(role.name)
     );
-  }
+  };
+
+  // دالة لتصفية الأدوار المعروضة في نافذة تعيين الدور
+  const getFilteredRolesForAssignment = () => {
+    if (!selectedUser || !allRoles.length) return allRoles;
+
+    // الأدوار التي يمتلكها المستخدم
+    const userRoles = selectedUser.role || [];
+    const userRoleNames = typeof userRoles === 'string'
+      ? userRoles.split(',').map(role => role.trim())
+      : Array.isArray(userRoles)
+    ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
+    : [userRoles.name || userRoles];
+
+    // تصفية الأدوار التي يمكن تعيينها (ما عدا الأدوار التي يمتلكها المستخدم بالفعل)
+    return allRoles.filter((role) => 
+      !userRoleNames.includes(role.name)
+    );
+  };
 
   const columns = [
-    { id: 'firstName', label: 'First Name' },
-    { id: 'lastName', label: 'Last Name' },
-    { id: 'email', label: 'Email' },
-    { id: 'role', label: 'Role' },
+    { field: 'fullName', headerName: 'Full Name', width: 250 },
+    { field: 'email', headerName: 'Email', width: 250 },
+    { field: 'role', headerName: 'Role', width: 180 },
     {
-      id: 'actions',
-      label: 'Actions',
-      render: (row) => (
+      field: 'actions',
+      headerName: 'Actions',
+      renderCell: (params) => (
         <Box display="flex" justifyContent="space-around">
-          <IconButton color="primary" onClick={() => handleOpenEditDialog(row)}>
+          <IconButton color="primary" onClick={() => handleOpenEditDialog(params.row)}>
             <Edit />
           </IconButton>
-          <IconButton color="secondary" onClick={() => handleOpenDeleteDialog(row)}>
+          <IconButton color="secondary" onClick={() => handleOpenDeleteDialog(params.row)}>
             <Delete />
           </IconButton>
         </Box>
       ),
+      width: 150,
     },
   ];
 
+  if (isLoading) {
+    return <Typography>Loading roles...</Typography>;
+  }
+
+  if (error) {
+    return (
+      <Box>
+        <Typography>Error loading roles</Typography>
+        <Button onClick={() => refetchRoles()}>Retry</Button>
+      </Box>
+    );
+  }
+
+  if (allRoles.length === 0) {
+    console.log('No roles available.');
+    return <Typography>No roles available.</Typography>;
+  }
+
   return (
     <Dashboard>
-      <Box p={3}>
+      <Box p={3} sx={{ mt: 6 }}>
         <Typography variant="h4" gutterBottom>
           Users
         </Typography>
 
-        {/* حقول الفلتر */}
-        <Box mb={3} display="flex" gap={2}>
-          <TextField
-            label="Search by Name"
-            variant="outlined"
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value)}
-            fullWidth
+        <Paper>
+          <DataGrid
+            autoHeight
+            rows={formattedUsers}
+            columns={columns}
+            pageSize={rowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
+            pagination
+            getRowId={(row) => row.id}
+            onPageSizeChange={(newPageSize) => setRowsPerPage(newPageSize)}
           />
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Filter by Role</InputLabel>
-            <Select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              label="Filter by Role"
-            >
-              <MenuItem value="">All Roles</MenuItem>
-              {allRoles.map((role) => (
-                <MenuItem key={role.id} value={role.name}>
-                  {role.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell key={column.id} align="center">
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} align="center">
-                      {column.render ? column.render(user) : user[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        </Paper>
       </Box>
 
       {/* Dialog لتعديل الرول */}
       <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Role for {selectedUser?.firstName} {selectedUser?.lastName}</DialogTitle>
+        <DialogTitle>Edit Role for {selectedUser?.fullName}</DialogTitle>
         <DialogContent>
           <Box mt={2}>
             <FormControl fullWidth>
               <InputLabel>Select Role</InputLabel>
               <Select
                 value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                label="Select Role"
+                onChange={(e) => {
+                  console.log('Selected roles:', e.target.value);
+                  setSelectedRole(e.target.value);
+                }}
               >
-                {allRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.name}
-                  </MenuItem>
-                ))}
+                {getFilteredRolesForAssignment().length > 0 ? (
+                  getFilteredRolesForAssignment().map((role) => (
+                    <MenuItem 
+                      key={role.id} 
+                      value={role.id}
+                      disabled={selectedUser?.role?.split(',').map(role => role.trim()).includes(role.name)}
+                    >
+                      {role.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No roles available</MenuItem>
+                )}
               </Select>
             </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="secondary">
+          <Button onClick={handleCloseEditDialog} color="primary">
             Cancel
           </Button>
           <Button onClick={handleAssignRole} color="primary">
@@ -242,27 +348,37 @@ export default function IndexUsers() {
 
       {/* Dialog لحذف الرول */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Remove Role from {selectedUser?.firstName} {selectedUser?.lastName}</DialogTitle>
+        <DialogTitle>Remove Role for {selectedUser?.fullName}</DialogTitle>
         <DialogContent>
           <Box mt={2}>
-            {selectedUser?.roles
-              ?.filter((role) => !role.isPrimary)
-              .map((role) => (
-                <Box key={role.id} display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Typography>{role.name}</Typography>
-                  <Button
-                    color="secondary"
-                    onClick={() => handleRemoveRole(role.id)}
-                  >
-                    Remove
-                  </Button>
-                </Box>
-              ))}
+            <FormControl fullWidth>
+              <InputLabel>Select Role to Remove</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => {
+                  console.log('Selected role to remove:', e.target.value);
+                  setSelectedRole(e.target.value);
+                }}
+              >
+                {getFilteredRolesForRemoval().length > 0 ? (
+                  getFilteredRolesForRemoval().map((role) => (
+                    <MenuItem key={role.id} value={role.id}>
+                      {role.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No removable roles</MenuItem>
+                )}
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
-            Close
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleRemoveRole} color="secondary">
+            Remove Role
           </Button>
         </DialogActions>
       </Dialog>
