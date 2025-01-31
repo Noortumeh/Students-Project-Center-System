@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "../../../../util/http for admin/http";
 import { getToken } from "../../../../util/httpsForUser/https";
 
 //
@@ -34,14 +33,14 @@ export const addSubSection = async (sectionData) => {
         const response = await fetch(`${API_URL}/project-details/${sectionData.sectionId}`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 ...(token && { Authorization: `Bearer ${token}` }),
             },
-            body: JSON.stringify(sectionData.subSectionData),
+            body: sectionData.subSectionData,
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
+            console.log(response)
         }
 
         const data = await response.json();
@@ -52,16 +51,14 @@ export const addSubSection = async (sectionData) => {
     }
 };
 // Edit Sub Section
-export const updateSubSection = async ({ id, title, description, iconData }) => {
-    console.log(iconData)
+export const updateSubSection = async (id, formData) => {
     try {
         const response = await fetch(`${API_URL}/project-details/${id}`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
                 ...(token && { Authorization: `Bearer ${token}` }),
             },
-            body: JSON.stringify({ title, description, iconData }),
+            body: formData,
         });
 
         if (!response.ok) {

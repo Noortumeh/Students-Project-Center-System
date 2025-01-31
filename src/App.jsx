@@ -17,11 +17,6 @@ import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
-<<<<<<< HEAD
-import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
-import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
-=======
->>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
 
 import PageNotFound from './PageNotFound.jsx';
 
@@ -67,33 +62,22 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <Home />,
   },
-<<<<<<< HEAD
-=======
-  
->>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
+
   {
     path: '/users/student',
     element: <IndexStudent />,
   },
-  
+
   {
     path: '/users/customer',
     element: <IndexCustomer />,
   },
-<<<<<<< HEAD
-  {
-    path: '/users/customer/edit/:id',
-    element: <EditCustomer />,
-  },
 
-=======
-  
->>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
   {
     path: '/users/supervisor',
     element: <IndexSupervisor />,
   },
- 
+
   {
     path: '/users/users',
     element: <IndexUsers />,
@@ -102,7 +86,7 @@ const router = createBrowserRouter([
     path: '/termofservices',
     element: <TermOfServices />,
   },
-  
+
   {
     path: '/workgroup',
     element: <WorkGroup />,
@@ -137,7 +121,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      {path: '/contact', element: <ContactUsForm />},
+      { path: '/contact', element: <ContactUsForm /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'forgot-password', element: <ForgetPasswordPage /> },
@@ -163,10 +147,12 @@ const router = createBrowserRouter([
                   { path: 'calendar', element: <Calendar /> }
                 ]
               },
-              { path: 'projects', element: <ProjectsRoot />, children: [
-                { index: true, element: <WorkgroupsProjects /> },
-                { path:':projectId', element: <ProjectDetailsWork /> },
-              ]},
+              {
+                path: 'projects', element: <ProjectsRoot />, children: [
+                  { index: true, element: <WorkgroupsProjects /> },
+                  { path: ':projectId', element: <ProjectDetailsWork /> },
+                ]
+              },
               { path: 'alltasks', element: <WorkgroupsTasks /> },
               { path: 'edittask/:taskid', element: <EditTask /> },
               { path: 'viewtask/:taskid', element: <ViewTaskDetails /> },

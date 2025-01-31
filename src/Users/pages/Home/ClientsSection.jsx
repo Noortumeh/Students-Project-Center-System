@@ -101,7 +101,7 @@ export default function OurClientsSection() {
             {content ? content :
                 <Grid2 container spacing={3} justifyContent="center">
                     {clients.map((client, index) => (
-                        <Grid2 xs={6} sm={4} md={3} key={index}>
+                        <Grid2 size={{xs: 6, sm: 4, md: 3}} key={index}>
                             <Box
                                 sx={{
                                     backgroundColor: "white",

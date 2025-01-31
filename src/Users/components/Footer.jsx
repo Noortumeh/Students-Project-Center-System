@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Link, IconButton } from '@mui/material';
+import { Box, Typography, Link, IconButton, Grid2 } from '@mui/material';
 import { Facebook, Twitter, Instagram, LinkedIn } from '@mui/icons-material';
 import { HashLink } from 'react-router-hash-link';
 
@@ -12,8 +12,7 @@ const Footer = () => {
   };
 
   return (
-    <Box
-      component="footer"
+    <Grid2 container spacing={3} justifyContent="center"
       sx={{
         backgroundColor: '#333', // لون خلفية داكن
         color: 'white',
@@ -49,7 +48,7 @@ const Footer = () => {
       </Typography>
 
       {/* Links */}
-      <Box sx={{ display: 'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <Grid2 container spacing={3} justifyContent="center">
         <HashLink scroll={scrollWithOffset} to={`/contact`} style={{ textDecoration: 'none', color: 'white' }}>
           <Typography variant="body2" sx={{ mr: 1, cursor: "pointer", "&:hover": { color: "#FF5733" } }}>
             Contact
@@ -65,8 +64,8 @@ const Footer = () => {
             About
           </Typography>
         </HashLink>
-      </Box>
-    </Box>
+      </Grid2>
+    </Grid2>
   );
 };
 

@@ -21,7 +21,7 @@ export default function FooterSection() {
         >
             <Grid2 container spacing={20} justifyContent="center">
                 {/* About Us */}
-                <Grid2 xs={12} sm={6} md={3}>
+                <Grid2>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#FF5733" }}>
                         About Us
                     </Typography>
@@ -31,7 +31,7 @@ export default function FooterSection() {
                 </Grid2>
 
                 {/* Quick Links */}
-                <Grid2 xs={12} sm={6} md={3}>
+                <Grid2>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#FF5733" }}>
                         Quick Links
                     </Typography>
@@ -53,7 +53,7 @@ export default function FooterSection() {
                 </Grid2>
 
                 {/* Additional Section */}
-                <Grid2 xs={12} sm={6} md={3}>
+                <Grid2>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#FF5733" }}>
                         Services
                     </Typography>
@@ -63,7 +63,7 @@ export default function FooterSection() {
                 </Grid2>
 
                 {/* Contact Information */}
-                <Grid2 xs={12} sm={6} md={3}>
+                <Grid2>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#FF5733" }}>
                         Contact Us
                     </Typography>

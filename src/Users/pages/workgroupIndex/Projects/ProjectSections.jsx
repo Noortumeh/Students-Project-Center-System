@@ -14,7 +14,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     const [newName, setNewName] = useState("");
     const [editingSub, setEditingSub] = useState(false);
     const [newDescription, setNewDescription] = useState("");
-    const [newIcon, setNewIcon] = useState("");
+    const [newIcon, setNewIcon] = useState(null);
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [newSubSection, setNewSubSection] = useState({ title: "", description: "" });
 
@@ -22,12 +22,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setNewIcon(reader.result.split(",")[1])
-            };
-            reader.readAsDataURL(file);
-            console.log(file)
+            setNewIcon(file)
         }
     };
 
@@ -107,8 +102,11 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
 
     const handleSaveEdit = () => {
         if (editingSub) {
-            console.log(editingSub)
-            mutationUpdateSubSection({ id: selectedSection.id, title: newName, description: newDescription, iconData: newIcon });
+            const formData = new FormData();
+            formData.append('title', newName);
+            formData.append('description', newDescription);
+            formData.append('image', newIcon);
+            mutationUpdateSubSection(selectedSection.id, formData);
         } else {
             mutationUpdateSection({ sectionId: selectedSection.sectionId, newName });
         }
@@ -121,15 +119,13 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     };
 
     const handleSaveSubSection = () => {
+        const formData = new FormData();
+        formData.append('title', newSubSection.title);
+        formData.append('description', newSubSection.description);
+        formData.append('image', newIcon);
         mutationAddSubSection({
             sectionId: selectedSection,
-            subSectionData: [
-                {
-                    title: newSubSection.title,
-                    description: newSubSection.description,
-                    icon: newIcon,
-                }
-            ]
+            subSectionData: formData,
         });
         setOpenSubDialog(false);
     };
