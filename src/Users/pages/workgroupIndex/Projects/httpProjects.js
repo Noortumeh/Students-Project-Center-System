@@ -53,7 +53,7 @@ export const addSubSection = async (sectionData) => {
 };
 // Edit Sub Section
 export const updateSubSection = async ({ id, title, description, iconData }) => {
-    console.log(id)
+    console.log(iconData)
     try {
         const response = await fetch(`${API_URL}/project-details/${id}`, {
             method: "PUT",

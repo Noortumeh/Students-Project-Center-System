@@ -94,15 +94,15 @@ export default function ViewTaskDetails() {
                 <Typography
                     variant="h6"
                     sx={{
-                        color: task.status === 'completed' ? 'success.main' : 
-                        (task.status === 'canceled' || task.status === 'rejected') ? "error.main" : 'info.main',
+                        color: task.status === 'completed' ? 'success.main' :
+                            (task.status === 'canceled' || task.status === 'rejected') ? "error.main" : 'info.main',
                         mb: 2
                     }}
                 >
                     Status: {task.status}
                 </Typography>
                 {(workgroupData.role === 'supervisor' || workgroupData.role === 'co-supervisor') &&
-                    <SelectedList name={'Change Status'} onChange={(status) => {mutateStatus({taskid, status})}}>
+                    <SelectedList name={'Change Status'} onChange={(status) => { mutateStatus({ taskid, status }) }}>
                         <MenuItem value={'completed'}>Completed</MenuItem>
                         <MenuItem value={'rejected'}>Rejected</MenuItem>
                         <MenuItem value={'canceled'}>Canceled</MenuItem>
@@ -139,13 +139,15 @@ export default function ViewTaskDetails() {
                     justifyContent: 'flex-end',
                     mt: 4
                 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpenSubmitDialog(true)}
-                    >
-                        Submit Task
-                    </Button>
+                    { workgroupData.role === 'student' &&
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setOpenSubmitDialog(true)}
+                        >
+                            Submit Task
+                        </Button>
+                    }
                     <Button
                         variant="contained"
                         color="primary"

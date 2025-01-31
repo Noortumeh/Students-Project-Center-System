@@ -1,32 +1,18 @@
 import React, { useState } from 'react';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import {
-  CircularProgress,
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-} from '@mui/material';
+import { CircularProgress, Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { fetchSupervisors } from '../../../../util/http for admin/http.js'; 
+import { DataGrid } from '@mui/x-data-grid';
+import { fetchSupervisors } from '../../../../util/http for admin/http.js';
 
 export default function IndexSupervisor() {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(6);
+
   const { data: supervisors = [], isLoading, error } = useQuery({
-    queryKey: ['supervisors'],
-    queryFn: fetchSupervisors,
+    queryKey: ['supervisors', page, pageSize],
+    queryFn: () => fetchSupervisors(pageSize, page + 1),
   });
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -41,10 +27,6 @@ export default function IndexSupervisor() {
   const handleCloseDialog = () => {
     setSelectedSupervisor(null);
     setOpenDialog(false);
-  };
-
-  const handleEdit = (supervisor) => {
-    navigate(`/users/supervisor/edit/${supervisor.id}`);
   };
 
   if (isLoading) {
@@ -63,55 +45,48 @@ export default function IndexSupervisor() {
     );
   }
 
+  const columns = [
+    { field: 'fullName', headerName: 'Name', width: 250 },
+    { field: 'email', headerName: 'Email', width: 250 },
+    { field: 'projectsName', headerName: 'Projects', width: 300, renderCell: (params) => {
+        const projects = params.value || [];
+        return projects.length > 3 ? (
+          <Button size="small" color="primary" onClick={() => handleOpenDialog(params.row)}>
+            View Projects
+          </Button>
+        ) : (
+          <Typography variant="body2">{projects.join(', ')}</Typography>
+        );
+      }
+    },
+  ];
+  
+  const supervisorsWithFullName = supervisors.map((supervisor) => ({
+    ...supervisor,
+    id: supervisor.id,
+    fullName: `${supervisor.firstName} ${supervisor.middleName} ${supervisor.lastName}`.trim(),
+  }));
+
   return (
     <Dashboard>
-      <Box p={3}>
+      <Box p={3} sx={{ mt: 6 }}>
         <Typography variant="h4" gutterBottom>
           Supervisors List
         </Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Projects</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {supervisors.map((supervisor) => (
-                <TableRow key={supervisor.id}>
-                  <TableCell>{`${supervisor.firstName} ${supervisor.middleName} ${supervisor.lastName}`.trim()}</TableCell>
-                  <TableCell>{supervisor.email}</TableCell>
-                  <TableCell>
-                    {supervisor.projectsName && supervisor.projectsName.length > 3 ? (
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpenDialog(supervisor)}
-                      >
-                        View Projects
-                      </Button>
-                    ) : (
-                      <Typography variant="body2">
-                        {supervisor.projectsName?.join(', ')}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEdit(supervisor)} 
-                    >
-                      <Edit />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+
+        <Box sx={{ height: 600 }}>
+          <DataGrid
+            rows={supervisorsWithFullName || []}
+            columns={columns}
+            checkboxSelection={false}
+            pageSize={pageSize}
+            rowsPerPageOptions={[6, 20, 50]}
+            page={page}
+            onPageChange={(newPage) => setPage(newPage)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            pagination
+          />
+        </Box>
       </Box>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>

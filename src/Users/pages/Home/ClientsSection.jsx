@@ -114,10 +114,10 @@ export default function OurClientsSection() {
                                 }}
                             >
                                 {/* شعار أو أيقونة بديلة */}
-                                {client.logo ? (
+                                {client.profileImageUrl ? (
                                     <img
-                                        src={client.logo}
-                                        alt={client.name}
+                                        src={client.profileImageUrl}
+                                        alt={client.firstName + " " + client.lastName}
                                         style={{
                                             width: "100%",
                                             height: "auto",
@@ -151,7 +151,18 @@ export default function OurClientsSection() {
                                         color: "#555",
                                     }}
                                 >
-                                    {client.name}
+                                    {client.firstName + " " + client.lastName}
+                                </Typography>
+                                {/* اسم الشركة */}
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        mt: 2,
+                                        fontWeight: "bold",
+                                        color: "#555",
+                                    }}
+                                >
+                                    {client.companyName}
                                 </Typography>
                             </Box>
                         </Grid2>

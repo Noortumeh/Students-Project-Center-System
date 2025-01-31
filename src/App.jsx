@@ -8,24 +8,20 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 // Admin Pages
 import Home from './Admin/Pages/Admin/home/Home.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
-import EditStudent from './Admin/Pages/Admin/users/EditStudent.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
-import EditCustomer from './Admin/Pages/Admin/users/EditCustomer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
-import EditSupervisor from './Admin/Pages/Admin/users/EditSupervisior.jsx';
 import IndexUsers from './Admin/Pages/Admin/users/Index-users.jsx';
 import TermOfServices from './Admin/Pages/Admin/termofservices/TermOfServices.jsx';
-import Reports from './Admin/Pages/Admin/report/Reports.jsx';
 import WorkGroup from './Admin/Pages/Admin/workgroup/WorkGroup.jsx';
-import EditWorkGroup from './Admin/Pages/Admin/workgroup/EditWorkGroup.jsx';
-import WorkGroupDetails from './Admin/Pages/Admin/workgroup/WorkGroupDetails.jsx';
-import OurCustomer from './Admin/Pages/Admin/ourpartner/OurPartner.jsx';
 import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
+<<<<<<< HEAD
 import ReportDetails from './Admin/Pages/Admin/report/ReportDetails.jsx';
 import Roles from './Admin/Pages/Admin/roles/Roles.jsx';
+=======
+>>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
 
 import PageNotFound from './PageNotFound.jsx';
 
@@ -71,32 +67,33 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <Home />,
   },
+<<<<<<< HEAD
+=======
+  
+>>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
   {
     path: '/users/student',
     element: <IndexStudent />,
   },
-  {
-    path: '/users/student/edit/:id',
-    element: <EditStudent />,
-  },
+  
   {
     path: '/users/customer',
     element: <IndexCustomer />,
   },
+<<<<<<< HEAD
   {
     path: '/users/customer/edit/:id',
     element: <EditCustomer />,
   },
 
+=======
+  
+>>>>>>> a268687a895fb92c01f82e7c724edae1605d5679
   {
     path: '/users/supervisor',
     element: <IndexSupervisor />,
   },
-  {
-    path: '/users/supervisor/edit/:id',
-    element: <EditSupervisor />,
-  },
-
+ 
   {
     path: '/users/users',
     element: <IndexUsers />,
@@ -105,30 +102,10 @@ const router = createBrowserRouter([
     path: '/termofservices',
     element: <TermOfServices />,
   },
-  {
-    path: '/report',
-    element: <Reports />,
-  },
-
-  {
-    path: '/report/details/:reportId',
-    element: <ReportDetails />,
-  },
+  
   {
     path: '/workgroup',
     element: <WorkGroup />,
-  },
-  {
-    path: '/workgroup/edit/:id',
-    element: <EditWorkGroup />,
-  },
-  {
-    path: '/workgroup/details/:id',
-    element: <WorkGroupDetails />,
-  },
-  {
-    path: '/ourcustomer',
-    element: <OurCustomer />,
   },
   {
     path: '/projects',
@@ -145,10 +122,6 @@ const router = createBrowserRouter([
   {
     path: '/projects/EditProject/:projectid',
     element: <EditProject />,
-  },
-  {
-    path: '/roles',
-    element: <Roles />,
   },
 
   {

@@ -188,7 +188,7 @@ termData:termData,
 
   return (
     <Dashboard>
-      <Box sx={{ mt: 5, mx: 'auto', maxWidth: 'lg' }}>
+      <Box sx={{ mt: 7, mx: 'auto', maxWidth: 'lg' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h4" sx={styles.title}>
             Terms Of Services

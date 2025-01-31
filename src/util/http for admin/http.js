@@ -1,15 +1,12 @@
 import { toast } from 'react-toastify';
 
-export const API_BASE_URL = 'http://spcs.somee.com/api';
+const API_BASE_URL = 'http://spcs.somee.com/api';
 export const fetchUsers = async () => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing. Please login to get a token.');
-      throw new Error('Token is missing. Please login to get a token.');
     }
-
-    console.log('Token found:', token);
 
     const response = await fetch('http://spcs.somee.com/api/users', {
       method: 'GET',
@@ -28,13 +25,10 @@ export const fetchUsers = async () => {
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unauthorized'}`);
     }
 
-    console.log('Parsing response data...');
     const data = await response.json();
-    console.log('API Response:', data); // تحقق من البيانات
 
     // تحويل البيانات إلى الشكل المطلوب
     if (data.result && Array.isArray(data.result)) {
-      console.log('Processing data.result as an array...');
       const formattedUsers = data.result.map((user) => {
         const names = user.fullName.split(' ');
         const firstName = names[0];
@@ -58,26 +52,14 @@ export const fetchUsers = async () => {
     throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
-export const fetchProjects = async ({ pageSize, pageNumber, filters }) => {
+export const fetchProjects = async ({ pageSize, pageNumber }) => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
 
-    let url = `http://spcs.somee.com/api/admin/projects/${pageSize}/${pageNumber}`;
-
-    const queryParams = [];
-    if (filters.filterType === 'projectName' && filters.filterValue) {
-      queryParams.push(`projectName=${encodeURIComponent(filters.filterValue)}`);
-    }
-    if (filters.projectStatus !== 'all') {
-      queryParams.push(`projectStatus=${encodeURIComponent(filters.projectStatus)}`);
-    }
-
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`;
-    }
+    const url = `http://spcs.somee.com/api/admin/projects/${pageSize}/${pageNumber}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -111,6 +93,7 @@ export const fetchProjects = async ({ pageSize, pageNumber, filters }) => {
     throw error;
   }
 };
+
 export const createProject = async (projectData) => {
   try {
     const token = localStorage.getItem('token'); 
@@ -752,10 +735,10 @@ export const fetchSupervisors = async () => {
 
 
 export const fetchRoles = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (!token) {
     toast.error('Authentication token not found. Please log in again.');
-    throw new Error('Token not found');
+    return [];
   }
 
   try {
@@ -767,121 +750,76 @@ export const fetchRoles = async () => {
     });
 
     if (!response.ok) {
-      console.error('Fetch error:', response.status, response.statusText);
-      throw new Error(`Error fetching roles: ${response.statusText}`);
+      throw new Error(`Error fetching roles: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('API Response:', data);
+    console.log('Roles API response:', data);
 
-    if (data.isSuccess && data.result) {
+    if (data?.result) {
       return Array.isArray(data.result) ? data.result : [data.result];
+    } else if (Array.isArray(data)) {
+      return data;
     } else {
-      throw new Error('Invalid response structure');
+      console.error('Unexpected API response structure:', data);
+      return [];
     }
   } catch (error) {
     console.error('Error in fetchRoles:', error);
-    throw error;
+    return [];
   }
-};
-export const updateRole = async ({ id, newRoleName }) => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    throw new Error('Token not found');
-  }
-
-  const response = await fetch(`http://spcs.somee.com/api/roles/${id}?newRoleName=${newRoleName}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Error updating role');
-  }
-
-  const data = await response.json();
-  return data.result || []; // تعديل بناءً على هيكل الاستجابة
-};
-
-export const createRole = async (roleName) => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    throw new Error('Token not found');
-  }
-
-  const response = await fetch(`http://spcs.somee.com/api/roles?roleName=${roleName}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Error creating role');
-  }
-
-  const data = await response.json();
-  return data.result || []; // تعديل بناءً على هيكل الاستجابة
-};
-
-export const deleteRole = async (id) => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    throw new Error('Token not found');
-  }
-
-  const response = await fetch(`http://spcs.somee.com/api/roles/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Error deleting role');
-  }
-
-  const data = await response.json();
-  return data.result || []; // تعديل بناءً على هيكل الاستجابة
 };
 
 export const assignRoleToUser = async ({ roleId, userId }) => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (!token) {
+    console.error('Authentication token not found.');
     throw new Error('Token not found');
   }
 
+  if (!roleId || !userId) {
+    console.error('Role ID or User ID is missing.');
+    throw new Error('Role ID or User ID is missing.');
+  }
+
   try {
-    const response = await fetch(`http://spcs.somee.com/api/roles/${roleId}/assign-to-user?userId=${userId}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(
+      `http://spcs.somee.com/api/roles/${roleId}/assign-to-user/${userId}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Error assigning role to user');
+      const data = await response.json();
+      const errorMessage = data.message || 'Failed to assign role to user';
+      throw new Error(errorMessage);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('Role assigned successfully:', data);
+    return data; // لا حاجة لـ toast هنا
   } catch (error) {
-    console.error('Error assigning role to user:', error);
+    console.error('Error assigning role:', error);
+    toast.error(error.message || 'Error assigning role');
     throw error;
   }
 };
+
 
 export const removeRoleFromUser = async ({ roleId, userId }) => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (!token) {
+    console.error('Authentication token not found.');
     throw new Error('Token not found');
   }
 
   try {
-    const response = await fetch(`http://spcs.somee.com/api/roles/${roleId}/remove-from-user?userId=${userId}`, {
+    const response = await fetch(`http://spcs.somee.com/api/roles/${roleId}/remove-from-user/${userId}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -890,16 +828,23 @@ export const removeRoleFromUser = async ({ roleId, userId }) => {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Error removing role from user');
+      const data = await response.json();
+      const errorMessage = data.message || 'Error removing role from user';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('Role removed successfully:', data);
+    return data;
   } catch (error) {
     console.error('Error removing role from user:', error);
+    toast.error(error.message || 'Error removing role from user');
     throw error;
   }
 };
+
+
 
 export const updateProject = async ({ projectid, updatedProject }) => {
   if (!projectid) {
@@ -962,4 +907,26 @@ export const fetchRoleData = async (role) => {
     }
     throw new Error('Error fetching role data');
   }
+};
+
+
+
+export const fetchArchivedUsers = async (projectId) => {
+  const token=localStorage.getItem('token');
+  const response = await fetch(
+    `http://spcs.somee.com/api/admin/projects/${projectId}/archive/users`,
+    {
+      method: 'GET',
+      headers: {
+        'accept': 'text/plain',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch archived users');
+  }
+
+  return response.json();
 };

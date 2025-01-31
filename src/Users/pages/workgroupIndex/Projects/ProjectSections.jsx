@@ -27,6 +27,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                 setNewIcon(reader.result.split(",")[1])
             };
             reader.readAsDataURL(file);
+            console.log(file)
         }
     };
 
@@ -34,7 +35,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
         setSelectedSection(section);
         setNewName(section.sectionName || section.title);
         setNewDescription(section.description || "");
-        setNewIcon(section.iconBase64 || "");
+        setNewIcon(section.imagePath || "");
         setEditingSub(isSub);
         setOpenDialog(true);
     };
@@ -132,7 +133,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
         });
         setOpenSubDialog(false);
     };
-    
+    console.log(data)
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Typography variant="h4" sx={{ mb: 3, color:'#3f51b5' }}>Existing Project Sections</Typography>
@@ -171,7 +172,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                                             <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
                                                 <Card>
                                                     <CardContent>
-                                                        {detail.iconBase64 && <img src={`data:image/png;base64,${detail.iconBase64}`} alt="icon" width={50} height={50} />}
+                                                        {detail.imagePath && <img src={detail.imagePath} alt="icon" width={50} height={50} />}
                                                         <Typography variant="h6">{detail.title}</Typography>
                                                         <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
                                                         <Box sx={{ mt: 2 }}>

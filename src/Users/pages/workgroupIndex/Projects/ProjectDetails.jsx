@@ -96,7 +96,7 @@ export default function ProjectDetailsWork() {
             </Box>
         );
     }
-
+    console.log(projectDetails)
     return (
         <Box>
             {/* Project Details Section */}

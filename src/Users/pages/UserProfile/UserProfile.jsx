@@ -121,8 +121,7 @@ export default function UserProfilePage() {
             </Box>
         );
     }
-    console.log(userData)
-    console.log(userInfo)
+    
     return (
         <Box
             sx={{
