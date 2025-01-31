@@ -35,7 +35,7 @@ export default function TasksPage() {
     return (
         <Container maxWidth="lg"
         >
-            {WorkgroupData.role === 'supervisor' && <CustomButton
+            {WorkgroupData.role === 'supervisor' || WorkgroupData.role === 'co-supervisor' && <CustomButton
                 onClick={() => { navigate('addtask') }}
                 sx={{ flex: 1 }}
             >Add Task</CustomButton>}
@@ -110,7 +110,7 @@ export default function TasksPage() {
                                         }
                                     }}
                                 >
-                                    {WorkgroupData.role === 'supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
+                                    {WorkgroupData.role === 'supervisor' || WorkgroupData.role === 'co-supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
                                 </TaskProgressCard>
                             </Grid>
                         ))

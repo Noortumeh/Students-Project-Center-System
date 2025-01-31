@@ -13,7 +13,6 @@ export default function WorkgroupsProjects() {
         queryKey: ["projects", pageNumber, pageSize],
         queryFn: () => getProjects({ pageSize, pageNumber }),
         keepPreviousData: true,
-        staleTime: 10000,
     });
 
     const handlePageChange = (newPage) => {
@@ -37,9 +36,8 @@ export default function WorkgroupsProjects() {
         );
     }
     if (data) {
-        console.log(data)
         content = (
-            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
+            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.projects.map((project) => (
                     <Grid xs={12} sm={6} md={4} key={project.id}>
                         <DescriptionCard
@@ -70,7 +68,7 @@ export default function WorkgroupsProjects() {
                 </Typography>
                 :
                 <>
-                    <Typography variant="h4" textAlign="center" gutterBottom>
+                    <Typography variant="h4" textAlign="center">
                         Your Projects Overview
                     </Typography>
                     {content}

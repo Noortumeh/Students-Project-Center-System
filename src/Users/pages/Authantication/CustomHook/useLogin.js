@@ -11,6 +11,7 @@ export const useLogin = () =>{
         mutationFn: login,
         onSuccess: () => {
             toast.success('Login successfully!')
+            window.location.reload();
             navigate('/');
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
