@@ -1,14 +1,14 @@
 import { QueryClient } from "@tanstack/react-query";
 //
 const API_URL = "http://spcs.somee.com/api";
-const token = getToken();
+const token = localStorage.getItem("token");
 // Query Client
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false, // منع إعادة المحاولة التلقائية
       refetchOnWindowFocus: false, // منع إعادة الجلب عند التركيز على النافذة
-      staleTime: 5 * 60 * 1000, // تعيين وقت التقادم (مثال: 5 دقائق)
+      staleTime: 1000,
     },
   },
 });
@@ -46,22 +46,63 @@ export async function login(formData) {
     throw error;
   }
   const data = await response.json();
+  // set token
   localStorage.setItem("token", data.token);
-
+  // set user info
   localStorage.setItem(
     "userInfo",
     JSON.stringify({ user: data.user, role: data.role })
   );
+  // set expiration time
+  const expiration = new Date();
+  expiration.setHours(expiration.getHours() + 24);
+  // expiration.setSeconds(expiration.getSeconds() + 90);
+  localStorage.setItem("expiration", expiration.toISOString());
 }
 // user API
+//* get token durration
+export function getTokenDuration() {
+  const storedExpirationDate = localStorage.getItem("expiration");
+  const expirationDate = new Date(storedExpirationDate);
+  const now = new Date();
+  const duration = expirationDate.getTime() - now.getTime();
+  return duration;
+}
 //* get token
 export function getToken() {
-  return localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return null;
+  }
+
+  const tokenDuration = getTokenDuration();
+  if (tokenDuration < 0) {
+    localStorage.setItem("token", "EXPIRED");
+    return "EXPIRED";
+  }
+  return token;
+}
+//
+export function logout() {
+  if (localStorage.getItem("token") && localStorage.getItem("userInfo")) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("expiration");
+  } else {
+    const error = new Error("An error occurred while logout");
+    throw error;
+  }
 }
 //* get current user information
 export function getCurrentUser() {
   const userInfoStr = localStorage.getItem("userInfo");
   const token = localStorage.getItem("token");
+
+  if (token === "EXPIRED") {
+    logout();
+    return;
+  }
 
   if (!userInfoStr || !token) {
     return null;
@@ -71,21 +112,12 @@ export function getCurrentUser() {
     const userInfo = JSON.parse(userInfoStr);
     return { userInfo, token };
   } catch (error) {
-    return null;
-  }
-}
-
-export function logout() {
-  if (localStorage.getItem("token") && localStorage.getItem("userInfo")) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo");
-  } else {
-    const error = new Error("An error occurred while logout");
-    throw error;
+    return error;
   }
 }
 //* Projects APIs
 export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
+  const token = localStorage.getItem("token");
   const response = await fetch(
     `${API_URL}/user/projects/get-all-for-user/${pageSize}/${pageNumber}`,
     {
@@ -106,6 +138,7 @@ export async function getProjects({ pageSize = 6, pageNumber = 1 }) {
 }
 //* Supervisor Tasks
 export async function getSupervisorTasks() {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/tasks/all-supervisor-tasks`, {
     headers: {
       "Content-Type": "application/json",
@@ -125,6 +158,7 @@ export async function getSupervisorTasks() {
 }
 //* Workgroup APIs
 export async function getWorkgroups({ pageSize = 6, pageNumber = 1 }) {
+  const token = localStorage.getItem("token");
   const response = await fetch(
     `${API_URL}/workgroups/get-all-for-user/${pageSize}/${pageNumber}`,
     {
@@ -145,7 +179,6 @@ export async function getWorkgroups({ pageSize = 6, pageNumber = 1 }) {
 }
 // Fetch data for each Workgroup:
 export async function fetchWorkgroupData(id) {
-  const token = getToken();
   const response = await fetch(`${API_URL}/workgroups/${id}`, {
     "Content-Type": "application/json",
     headers: {
@@ -163,11 +196,10 @@ export async function fetchWorkgroupData(id) {
 }
 // Fetch Tasks for workgroup
 export async function fetchTasksForworkgroup(id) {
-  const token = getToken();
   const response = await fetch(`${API_URL}/tasks/all-workgroup-tasks/${id}`, {
     "Content-Type": "application/json",
     headers: {
-      ...(token && { Authorization: `Bearer ${token}`}),
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
   });
   if (!response.ok) {
@@ -257,6 +289,28 @@ export async function submitAnswer({ formData, taskid }) {
     throw error;
   }
 }
+// Change task Status
+export async function changeTaskStatus({ taskid, status }) {
+  console.log(taskid + status);
+  try {
+    const response = await fetch(`${API_URL}/tasks/${taskid}/change-status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(status),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating task:", error);
+    throw error;
+  }
+}
 // Delete Task
 export async function deleteTask(taskid) {
   try {
@@ -328,7 +382,7 @@ export async function updatedEvent(event) {
     },
     body: JSON.stringify(event), // JSON.stringify هنا مهم
   });
-  
+
   if (!response.ok) {
     const error = new Error("An error occurred while updating the Task");
     error.code = response.status;
@@ -380,16 +434,16 @@ export async function getMessages({ workgroupId }) {
 
 // POST /api/chat/send
 export async function sendMessageToChat({ message, workgroupId }) {
-  console.log(message +" "+ workgroupId)
+  console.log(message + " " + workgroupId);
   const response = await fetch(`${API_URL}/chat/send-message/${workgroupId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
-    body: JSON.stringify(message)
+    body: JSON.stringify(message),
   });
-  console.log(response)
+  console.log(response);
   if (!response.ok) {
     const error = new Error("An error occurred while sending a message");
     error.code = response.status;
@@ -403,8 +457,8 @@ export async function sendMessageToChat({ message, workgroupId }) {
 
 // POST /api/chat/join
 export async function joinChat({ workgroupId }) {
-  console.log(token)
-  console.log(workgroupId)
+  console.log(token);
+  console.log(workgroupId);
   const response = await fetch(`${API_URL}/chat/join-group/${workgroupId}`, {
     method: "POST",
     headers: {
@@ -426,7 +480,7 @@ export async function joinChat({ workgroupId }) {
 }
 
 // POST /api/chat/leave
-export async function leaveChat({workgroupId}) {
+export async function leaveChat({ workgroupId }) {
   const token = getToken();
   const response = await fetch(`${API_URL}/chat/${workgroupId}/leave`, {
     method: "POST",

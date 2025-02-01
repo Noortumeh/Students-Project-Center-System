@@ -1,25 +1,64 @@
 import React from "react";
-import { Box, Typography, Grid2, Avatar } from "@mui/material";
+import { Box, Typography, Grid2, Avatar, CircularProgress } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-// import client1 from "../../../assets/images/client1.png"; // شعار عميل إذا كان موجودًا
-// import client2 from "../../../assets/images/client2.png";
+import { useQuery } from "@tanstack/react-query";
+import { getOurClients } from "./HttpHome";
 
-const clients = [
-    { name: "Palestine Technical uneversity Kadoori", logo: null },
-    { name: "Company Name Client", logo: null },
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-    { name: "Company Name Client", logo: null }, // بدون شعار
-];
+// const clients = [
+//     { name: "Palestine Technical uneversity Kadoori", logo: null },
+//     { name: "Company Name Client", logo: null },
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+//     { name: "Company Name Client", logo: null }, // بدون شعار
+// ];
 
-export default function OurClientsSection(){
+export default function OurClientsSection() {
+    const { data: clients, isLoading, error } = useQuery({
+        queryKey: ['ourClients'],
+        queryFn: getOurClients,
+        keepPreviousData: true,
+        staleTime: 5000,
+    })
+    let content = null;
+    if (isLoading) {
+        content = (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+    if (error) {
+        content = (
+            <Box sx={{ textAlign: "center", py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <Typography variant="h5" color="error">
+                    Oops! Something went wrong. Please try again later.
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (!clients || clients.length === 0) {
+        content = (
+            <Box sx={{ textAlign: "center", py:3 }}>
+                <Typography variant="h6" color="error">
+                    No Clients available at the moment.
+                </Typography>
+                <Typography variant="h5" sx={{fontWeight: "bold", color: "#333"}}>
+                    We are excited to start a new journey.
+                </Typography>
+            </Box>
+        );
+    }
+
+    console.log(clients);
+
     return (
         <Box
             sx={{
                 py: 5,
                 px: 3,
-                backgroundColor: "#f5f5f5",
+                background: "linear-gradient(135deg, #ffffff, #fff5f0)",
                 textAlign: "center",
             }}
         >
@@ -59,64 +98,77 @@ export default function OurClientsSection(){
             </Typography>
 
             {/* شبكة العملاء */}
-            <Grid2 container spacing={3} justifyContent="center">
-                {clients.map((client, index) => (
-                    <Grid2 xs={6} sm={4} md={3} key={index}>
-                        <Box
-                            sx={{
-                                backgroundColor: "white",
-                                p: 2,
-                                borderRadius: "8px",
-                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                                "&:hover": {
-                                    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
-                                },
-                            }}
-                        >
-                            {/* شعار أو أيقونة بديلة */}
-                            {client.logo ? (
-                                <img
-                                    src={client.logo}
-                                    alt={client.name}
-                                    style={{
-                                        width: "100%",
-                                        height: "auto",
-                                        maxHeight: "80px",
-                                        objectFit: "contain",
-                                    }}
-                                />
-                            ) : (
-                                <Avatar
-                                    sx={{
-                                        width: 60,
-                                        height: 60,
-                                        margin: "0 auto",
-                                        backgroundColor: "#FFEBEE",
-                                        color: "#FF5722",
-                                        transition: "transform 0.3s ease-in-out",
-                                        "&:hover": {
-                                            transform: "scale(1.2)",
-                                        },
-                                    }}
-                                >
-                                    <AccountCircleIcon fontSize="large" />
-                                </Avatar>
-                            )}
-                            {/* اسم العميل */}
-                            <Typography
-                                variant="subtitle1"
+            {content ? content :
+                <Grid2 container spacing={3} justifyContent="center">
+                    {clients.map((client, index) => (
+                        <Grid2 size={{xs: 6, sm: 4, md: 3}} key={index}>
+                            <Box
                                 sx={{
-                                    mt: 2,
-                                    fontWeight: "bold",
-                                    color: "#555",
+                                    backgroundColor: "white",
+                                    p: 2,
+                                    borderRadius: "8px",
+                                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                    "&:hover": {
+                                        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
+                                    },
                                 }}
                             >
-                                {client.name}
-                            </Typography>
-                        </Box>
-                    </Grid2>
-                ))}
-            </Grid2>
+                                {/* شعار أو أيقونة بديلة */}
+                                {client.profileImageUrl ? (
+                                    <img
+                                        src={client.profileImageUrl}
+                                        alt={client.firstName + " " + client.lastName}
+                                        style={{
+                                            width: "100%",
+                                            height: "auto",
+                                            maxHeight: "80px",
+                                            objectFit: "contain",
+                                        }}
+                                    />
+                                ) : (
+                                    <Avatar
+                                        sx={{
+                                            width: 60,
+                                            height: 60,
+                                            margin: "0 auto",
+                                            backgroundColor: "#FFEBEE",
+                                            color: "#FF5722",
+                                            transition: "transform 0.3s ease-in-out",
+                                            "&:hover": {
+                                                transform: "scale(1.2)",
+                                            },
+                                        }}
+                                    >
+                                        <AccountCircleIcon fontSize="large" />
+                                    </Avatar>
+                                )}
+                                {/* اسم العميل */}
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        mt: 2,
+                                        fontWeight: "bold",
+                                        color: "#555",
+                                    }}
+                                >
+                                    {client.firstName + " " + client.lastName}
+                                </Typography>
+                                {/* اسم الشركة */}
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        mt: 2,
+                                        fontWeight: "bold",
+                                        color: "#555",
+                                    }}
+                                >
+                                    {client.companyName}
+                                </Typography>
+                            </Box>
+                        </Grid2>
+                    ))}
+                </Grid2>
+            }
         </Box>
     );
 };

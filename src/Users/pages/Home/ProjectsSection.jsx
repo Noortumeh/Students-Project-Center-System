@@ -1,14 +1,46 @@
 import React from "react";
-import { Box, Grid2, Typography, Card, CardContent, Button } from "@mui/material";
+import { Box, Grid2, Typography, Card, CardContent, Button, CircularProgress } from "@mui/material";
 import { AccountTree } from "@mui/icons-material"; // أيقونات Material UI
-
-const projects = [
-    { name: "TraffiSense", description: "A smart traffic management system.", number: 1 },
-    { name: "Smart City App", description: "A mobile app for smart city services.", number: 2 },
-    { name: "AI-based Dashboard", description: "An AI-powered analytics dashboard.", number: 3 },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getFavoritesProjects } from "./HttpHome";
 
 const FeaturedProjectsSection = () => {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['favoriteProjects'],
+        queryFn: getFavoritesProjects,
+        keepPreviousData: true,
+        staleTime: 10000,
+    })
+    let content = null;
+    if (isLoading) {
+        content = (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+    
+    if (error) {
+        content = (
+            <Box sx={{ textAlign: "center", py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <Typography variant="h5" color="error">
+                    Oops! Something went wrong. Please try again later.
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (!data || data.length === 0) {
+        content = (
+            <Box sx={{ textAlign: "center", py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)" }}>
+                <Typography variant="h5" color="error">
+                    No projects available at the moment.
+                </Typography>
+            </Box>
+        );
+    }
+
+    console.log(data)
     return (
         <Box sx={{ py: 5, background: "linear-gradient(135deg, #ffffff, #fff5f0)", textAlign: "center" }}>
             {/* العنوان */}
@@ -35,11 +67,11 @@ const FeaturedProjectsSection = () => {
             >
                 Featured Projects
             </Typography>
-
             {/* البطاقات */}
+            {content !== null ? content : 
             <Grid2 container spacing={4} justifyContent="center">
-                {projects.map((project, index) => (
-                    <Grid2 xs={12} sm={6} md={4} key={index}>
+                {data.map((project, index) => (
+                    <Grid2 size={{xs: 12, sm: 6, md: 4}} key={project.id}>
                         <Card
                             sx={{
                                 boxShadow: 3,
@@ -89,7 +121,7 @@ const FeaturedProjectsSection = () => {
                                         border: "2px solid #FF5733",
                                     }}
                                 >
-                                    {project.number} {/* رقم المشروع */}
+                                    {index + 1} {/* رقم المشروع */}
                                 </Box>
                             </Box>
 
@@ -99,11 +131,11 @@ const FeaturedProjectsSection = () => {
                                     {project.name}
                                 </Typography>
                                 <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
-                                    {project.description}
+                                    {project.overview}
                                 </Typography>
 
                                 {/* زر المزيد */}
-                                <Button
+                                {/* <Button
                                     variant="contained"
                                     color="primary"
                                     sx={{
@@ -114,13 +146,13 @@ const FeaturedProjectsSection = () => {
                                     onClick={() => alert(`View details for ${project.name}`)}
                                 >
                                     More Details
-                                </Button>
+                                </Button> */}
                             </CardContent>
                         </Card>
                     </Grid2>
                 ))}
-            </Grid2>
-        </Box>
+            </Grid2>}
+        </Box >
     );
 };
 

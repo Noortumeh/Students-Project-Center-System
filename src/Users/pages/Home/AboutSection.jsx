@@ -6,7 +6,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import image1 from "../../../assets/images/AboutSection-slide1.jpeg";
 import image2 from "../../../assets/images/AboutSection-slide2.jpeg";
 import image3 from "../../../assets/images/AboutSection-slide3.jpeg";
-// @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -109,8 +108,7 @@ const AboutSection = () => {
                 variant="h4"
                 sx={{
                     mb: 4,
-                    fontWeight: "bold",
-                    
+                    fontWeight: "bold", 
                     color: "#333",
                     position: "relative",
                     display: "inline-block",
@@ -169,7 +167,7 @@ const AboutSection = () => {
                             }}
                         >
                             <Typography variant="h4" sx={{
-                                fontWeight: "bold", mb: 2, fontFamily: "'Poppins', sans-serif", fontWeight: "bold",
+                                fontWeight: "bold", mb: 2, fontFamily: "'Poppins', sans-serif",
                                 color: "white",
                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
                             }}>

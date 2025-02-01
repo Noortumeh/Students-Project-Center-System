@@ -29,7 +29,7 @@ export default function WorkgroupRoot() {
                     <ButtonLink name="Scheduling Meeting" link="calendar" icon={<CalendarMonthIcon />} open={isMobile ? false : open} />
                     {/* <ButtonLink name="Files" link="tasks" icon={<TaskIcon />} open={isMobile ? false : open} /> */}
                     {/* <ButtonLink name="Evaluation Report" link="tasks" icon={<SummarizeIcon />} open={isMobile ? false : open} /> */}
-                    <ButtonLink name="Chat" link="chat" icon={<ChatIcon />} open={isMobile ? false : open} />
+                    {/* <ButtonLink name="Chat" link="chat" icon={<ChatIcon />} open={isMobile ? false : open} /> */}
                 </List>
             </Sidebar>
             <Box sx={{ pt: '50px', pl: `${!isMobile && open ? '250px' : '50px'}`, zIndex: 0, transition: '0.3s' }}>

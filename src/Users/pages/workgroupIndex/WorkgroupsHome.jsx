@@ -8,12 +8,11 @@ import PaginationComponent from "../../components/PaginationComponent";
 export default function WorkgroupsHome() {
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(6);
-
+    
     const { data, isFetching, isError, error } = useQuery({
         queryKey: ["workgroups", pageNumber, pageSize],
         queryFn: () => getWorkgroups({ pageSize, pageNumber }),
         keepPreviousData: true,
-        staleTime: 10000,
     });
 
     const handlePageChange = (newPage) => {
@@ -38,7 +37,7 @@ export default function WorkgroupsHome() {
     }
     if (data) {
         content = (
-            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} spacing={3} columns={12}>
+            <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.workgroups.map((workgroup) => (
                     <Grid xs={12} sm={6} md={4} key={workgroup.id}>
                         <DescriptionCard
