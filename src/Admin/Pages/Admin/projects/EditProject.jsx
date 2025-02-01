@@ -135,12 +135,13 @@ export default function EditProject() {
     return <Typography>Loading data...</Typography>;
   }
 
-  const supervisorOptions = users?.filter((user) => user.isSupervisor).map((user) => ({
+  // تصفية المستخدمين بناءً على الأدوار
+  const supervisorOptions = users?.filter((user) => user.role.includes('supervisor')).map((user) => ({
     value: user.id,
     label: `${user.firstName} ${user.lastName}`,
   }));
 
-  const customerOptions = users?.filter((user) => !user.isSupervisor).map((user) => ({
+  const customerOptions = users?.filter((user) => !user.role.includes('supervisor')).map((user) => ({
     value: user.id,
     label: `${user.firstName} ${user.lastName}`,
   }));
@@ -169,13 +170,15 @@ export default function EditProject() {
             onChange={(value) => formik.setFieldValue('supervisor', value)}
             placeholder="Select a Supervisor"
             isClearable
+            sx={{ mb: 3 }} // إضافة margin-bottom بقيمة 24px
           />
-          <Select
+          <Select sx={{ mt: 5 }}
             options={customerOptions}
             value={formik.values.customer}
             onChange={(value) => formik.setFieldValue('customer', value)}
             placeholder="Select a Customer"
             isClearable
+             // إضافة margin-bottom بقيمة 24px
           />
           <Select
             options={statusOptions}
@@ -183,6 +186,7 @@ export default function EditProject() {
             onChange={(value) => formik.setFieldValue('status', value)}
             placeholder="Select Status"
             isClearable
+            sx={{ mb: 3 }} // إضافة margin-bottom بقيمة 24px
           />
           <textarea
             name="changeOldSupervisorNotes"

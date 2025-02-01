@@ -36,6 +36,8 @@ export const fetchUsers = async () => {
 
         return {
           id: user.id,
+          firstName,
+          lastName,
           fullName: `${firstName} ${lastName}`,
           email: user.email,
           role: user.role,
@@ -927,6 +929,7 @@ export const fetchArchivedUsers = async (projectId) => {
   if (!response.ok) {
     throw new Error('Failed to fetch archived users');
   }
-
-  return response.json();
+  const data = await response.json();
+    console.log("Fetched Archived:", data); 
+    return data.result; 
 };
