@@ -17,7 +17,6 @@ import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
-
 import PageNotFound from './PageNotFound.jsx';
 
 // User Pages
@@ -79,6 +78,7 @@ const router = createBrowserRouter([
     path: '/users/users',
     element: <IndexUsers />,
   },
+  
   {
     path: '/termofservices',
     element: <TermOfServices />,

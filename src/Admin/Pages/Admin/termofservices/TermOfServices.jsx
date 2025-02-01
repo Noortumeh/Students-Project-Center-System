@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import { fetchTerms, postTerm, deleteTerm ,putTerm} from '../../../../util/http for admin/http.js';
+import { fetchTerms, postTerm, deleteTerm, putTerm } from '../../../../util/http for admin/http.js';
 
 const styles = {
   title: {
@@ -100,7 +100,7 @@ export default function TermOfServices() {
   });
 
   const createOrUpdateMutation = useMutation({
-    mutationFn: isCreating ? postTerm : putTerm,  
+    mutationFn: isCreating ? postTerm : putTerm,
     onSuccess: () => {
       queryClient.invalidateQueries('terms');
       setSnackbarMessage('Your changes have been saved.');
@@ -154,15 +154,12 @@ export default function TermOfServices() {
     } else {
       const existingTermId = termsData?.result?.[0]?.id;
       if (existingTermId) {
-        console.log(JSON.stringify(termData) + "123");
-const term ={
-id:existingTermId,
-termData:termData,
-};
+        const term = {
+          id: existingTermId,
+          termData: termData,
+        };
 
-        createOrUpdateMutation.mutate(term); 
-        console.log(JSON.stringify(termData) + "1545456");
-
+        createOrUpdateMutation.mutate(term);
       } else {
         setSnackbarMessage('Term not found for update.');
         setOpenSnackbar(true);
@@ -206,9 +203,10 @@ termData:termData,
               {hasTerms ? termsData?.result[0]?.title : 'No title available.'}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary" align="center">
-              Last updated: {termsData?.result?.[0]?.lastUpdatedAt || 'N/A'}
+              Last updated: {termsData?.result?.[0]?.lastUpdatedAt ? new Date(termsData?.result[0]?.lastUpdatedAt).toLocaleString() : 'N/A'}
             </Typography>
             <Divider sx={styles.divider} />
+
             {isLoading ? (
               <Box sx={styles.loader}>
                 <CircularProgress />
@@ -216,10 +214,28 @@ termData:termData,
             ) : error ? (
               <Typography color="error">Failed to load terms: {error.message}</Typography>
             ) : (
-              <Typography variant="body1" component="pre" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-                {termsData?.result?.[0]?.description || 'No terms available.'}
-              </Typography>
+              <>
+                <Typography variant="body1" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
+                  {termsData?.result?.[0]?.description || 'No terms available.'}
+                </Typography>
+
+                {/* عرض تاريخ الإنشاء */}
+                <Typography variant="body2" color="textSecondary">
+                  Created By: {termsData?.result[0]?.createdBy || 'N/A'}
+                </Typography>
+
+                {/* عرض تاريخ الإنشاء */}
+                <Typography variant="body2" color="textSecondary" mt={1}>
+                  Created At: {termsData?.result[0]?.createdAt ? new Date(termsData?.result[0]?.createdAt).toLocaleString() : 'N/A'}
+                </Typography>
+
+                {/* عرض من قام بالتحديث */}
+                <Typography variant="body2" color="textSecondary" mt={1}>
+                  Updated By: {termsData?.result[0]?.updatedBy || 'N/A'}
+                </Typography>
+              </>
             )}
+
             {hasTerms && (
               <Box display="flex" justifyContent="center" mt={4}>
                 <Button variant="contained" sx={styles.button} onClick={handleEdit}>

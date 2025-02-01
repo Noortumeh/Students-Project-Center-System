@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DataGrid } from '@mui/x-data-grid';
 import { Edit, Delete } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import {
   fetchUsers,
@@ -287,9 +288,19 @@ export default function IndexUsers() {
   return (
     <Dashboard>
       <Box p={3} sx={{ mt: 6 }}>
-        <Typography variant="h4" gutterBottom>
-          Users
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h4" gutterBottom>
+            Users
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/users/CreateUser"
+          >
+            Create User
+          </Button>
+        </Box>
 
         <Paper>
           <DataGrid
