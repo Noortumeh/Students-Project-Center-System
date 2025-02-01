@@ -87,11 +87,11 @@ export default function ProjectDetailsWork() {
     };
 
     if (detailsLoading) {
-        return <Box sx={{ textAlign: 'center', mt: 5 }}><CircularProgress /></Box>;
+        return <Box sx={{ textAlign: 'center', mt: 7 }}><CircularProgress /></Box>;
     }
     if (detailsError) {
         return (
-            <Box sx={{ textAlign: "center" }}>
+            <Box sx={{ textAlign: "center", mt: 7 }}>
                 <Typography color="error">{detailsError.message}</Typography>
             </Box>
         );
