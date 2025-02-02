@@ -15,7 +15,7 @@ export default function Home() {
   if (statisticsLoading) {
     return (
       <Dashboard>
-        <Grid container justifyContent="center">
+        <Grid container justifyContent="center" sx={{ mt: 15 }}>
           <CircularProgress />
         </Grid>
       </Dashboard>
