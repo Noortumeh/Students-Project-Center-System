@@ -136,56 +136,56 @@ const ProjectPage = () => {
   ];
 
   return (
-    <Dashboard>
+    
+    <Container sx={{ marginTop:'5rem' }}>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <Container>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 6 }}>
-          <Typography variant="h4" fontWeight="bold" color="primary">
-            Projects
-          </Typography>
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/projects/CreateProject')}
-          >
-            Create Project
-          </Button>
-        </Box>
 
-        <Box sx={{ height: 600 }}>
-          <DataGrid
-            rows={projects}
-            columns={columns}
-            pageSize={6}
-            rowsPerPageOptions={[6, 20, 50]}
-            disableSelectionOnClick
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: '10px' }}>
+        <Typography variant="h4" fontWeight="bold" color="primary">
+          Projects
+        </Typography>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/admin/projects/CreateProject')}
+        >
+          Create Project
+        </Button>
+      </Box>
+
+      <Box sx={{ height: 600 }}>
+        <DataGrid
+          rows={projects}
+          columns={columns}
+          pageSize={6}
+          rowsPerPageOptions={[6, 20, 50]}
+          disableSelectionOnClick
+          sx={{
+            '& .MuiDataGrid-root': {
+              border: 'none',
+            },
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: '#2c3e50',
+              color: '#ffffff',
+              fontWeight: 'bold',
+            },
+            '& .MuiDataGrid-cell': {
+              padding: '10px',
+              borderBottom: '1px solid #e0e0e0',
+            },
+            '& .MuiDataGrid-row': {
+              '&:nth-of-type(odd)': {
+                backgroundColor: '#f9f9f9',
               },
-              '& .MuiDataGrid-columnHeader': {
-                backgroundColor: '#2c3e50',
-                color: '#ffffff',
-                fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#e0f7fa',
               },
-              '& .MuiDataGrid-cell': {
-                padding: '10px',
-                borderBottom: '1px solid #e0e0e0',
-              },
-              '& .MuiDataGrid-row': {
-                '&:nth-of-type(odd)': {
-                  backgroundColor: '#f9f9f9',
-                },
-                '&:hover': {
-                  backgroundColor: '#e0f7fa',
-                },
-              },
-            }}
-          />
-        </Box>
-      </Container>
-    </Dashboard>
+            },
+          }}
+        />
+      </Box>
+    </Container>
   );
 };
 

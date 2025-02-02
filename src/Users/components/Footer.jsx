@@ -54,7 +54,7 @@ const Footer = () => {
             Contact
           </Typography>
         </HashLink>
-        <HashLink scroll={scrollWithOffset} to={`/`} style={{ textDecoration: 'none', color: 'white' }}>
+        <HashLink scroll={scrollWithOffset} to={`term`} style={{ textDecoration: 'none', color: 'white' }}>
           <Typography variant="body2" sx={{ mr: 1, cursor: "pointer", "&:hover": { color: "#FF5733" } }}>
             Terms of Service
           </Typography>

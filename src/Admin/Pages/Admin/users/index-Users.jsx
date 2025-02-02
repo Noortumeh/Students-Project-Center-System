@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DataGrid } from '@mui/x-data-grid';
@@ -101,9 +102,9 @@ export default function IndexUsers() {
     setSelectedUser(user);
 
     let currentRoles = [];
-  
+
     currentRoles = [user.role.id || user.role];
-    
+
     console.log('Extracted Roles:', currentRoles);
     setSelectedRole(currentRoles);
     setOpenEditDialog(true);
@@ -225,11 +226,11 @@ export default function IndexUsers() {
     const userRoleNames = typeof userRoles === 'string'
       ? userRoles.split(',').map(role => role.trim())
       : Array.isArray(userRoles)
-    ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
-    : [userRoles.name || userRoles];
+        ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
+        : [userRoles.name || userRoles];
 
     // تصفية الأدوار التي يمكن حذفها (ما عدا الأدوار الأساسية مثل Supervisor, Admin, user)
-    return allRoles.filter((role) => 
+    return allRoles.filter((role) =>
       userRoleNames.includes(role.name) && !['Supervisor', 'Admin', 'user'].includes(role.name)
     );
   };
@@ -243,19 +244,19 @@ export default function IndexUsers() {
     const userRoleNames = typeof userRoles === 'string'
       ? userRoles.split(',').map(role => role.trim())
       : Array.isArray(userRoles)
-    ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
-    : [userRoles.name || userRoles];
+        ? userRoles.map((r) => (typeof r === 'string' ? r : r.name))
+        : [userRoles.name || userRoles];
 
     // تصفية الأدوار التي يمكن تعيينها (ما عدا الأدوار التي يمتلكها المستخدم بالفعل)
-    return allRoles.filter((role) => 
+    return allRoles.filter((role) =>
       !userRoleNames.includes(role.name)
     );
   };
 
   const columns = [
-    { field: 'fullName', headerName: 'Full Name', width: 250, headerClassName: 'header-color' },
-    { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header-color' },
-    { field: 'address', headerName: 'Address', width: 250, headerClassName: 'header-color' },
+    { field: 'fullName', headerName: 'Full Name', width: 240, headerClassName: 'header-color' },
+    { field: 'email', headerName: 'Email', width: 245, headerClassName: 'header-color' },
+    { field: 'address', headerName: 'Address', width: 200, headerClassName: 'header-color' },
     { field: 'phone', headerName: 'Phone', width: 180, headerClassName: 'header-color' },
     { field: 'role', headerName: 'Role', width: 180, headerClassName: 'header-color' },
     {
@@ -266,14 +267,13 @@ export default function IndexUsers() {
           <IconButton
             color="primary"
             onClick={() => handleOpenEditDialog(params.row)}
-           
           >
             <Edit />
           </IconButton>
           <IconButton
             color="secondary"
             onClick={() => handleOpenDeleteDialog(params.row)}
-           
+
           >
             <Delete />
           </IconButton>
@@ -285,14 +285,15 @@ export default function IndexUsers() {
 
   // تحقق من حالة التحميل أو الخطأ
   if (isLoading) {
-    return <Typography>Loading roles...</Typography>;
+    return <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <CircularProgress />
+    </Box>
   }
 
   if (error) {
     return (
       <Box>
         <Typography color="error">Error loading roles</Typography>
-        
       </Box>
     );
   }
@@ -302,105 +303,103 @@ export default function IndexUsers() {
   }
 
   return (
-    <Dashboard>
       <Container>
-      <Box p={3} sx={{ mt: 6 ,width:"100%", Height:"100vh"}}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
-          Users
-        </Typography>
+        <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh" }}>
+          <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+            Users
+          </Typography>
 
-        <Paper sx={{width:"80rem", Height:"100vh"}}>
-        <DataGrid
-            autoHeight
-            rows={formattedUsers}
-            columns={columns}
-            
-            getRowId={(row) => row.id}
-           
-          />
-        </Paper>
-      </Box>
+          <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '75rem' }, Height: "100vh" }}>
+            <DataGrid
+              autoHeight
+              rows={formattedUsers}
+              columns={columns}
 
-      {/* Dialog لتعديل الرول */}
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle sx={{ backgroundColor: '#2c3e50', color: '#fff' }}>
-          Edit Role for {selectedUser?.fullName}
-        </DialogTitle>
-        <DialogContent>
-          <Box mt={2}>
-            <FormControl fullWidth>
-              <InputLabel>Select Role</InputLabel>
-              <Select
-                value={selectedRole}
-                onChange={(e) => {
-                  console.log('Selected roles:', e.target.value);
-                  setSelectedRole(e.target.value);
-                }}
-               
-              >
-                {getFilteredRolesForAssignment().length > 0 ? (
-                  getFilteredRolesForAssignment().map((role) => (
-                    <MenuItem
-                      key={role.id}
-                      value={role.id}
-                      disabled={selectedUser?.role?.split(',').map((role) => role.trim()).includes(role.name)}
-                    >
-                      {role.name}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem disabled>No roles available</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleAssignRole} color="primary">
-            Assign Role
-          </Button>
-        </DialogActions>
-      </Dialog>
+              getRowId={(row) => row.id}
 
-      {/* Dialog لحذف الدور */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle >
-          Remove Role from {selectedUser?.fullName}
-        </DialogTitle>
-        <DialogContent>
-          <Box mt={2}>
-            <FormControl fullWidth>
-              <InputLabel>Select Role</InputLabel>
-              <Select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              >
-                {getFilteredRolesForRemoval().length > 0 ? (
-                  getFilteredRolesForRemoval().map((role) => (
-                    <MenuItem key={role.id} value={role.id}>
-                      {role.name}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem disabled>No roles available</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleRemoveRole} color="primary">
-            Remove Role
-          </Button>
-        </DialogActions>
-      </Dialog>
+            />
+          </Paper>
+        </Box>
+
+        {/* Dialog لتعديل الرول */}
+        <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+          <DialogTitle sx={{ backgroundColor: '#2c3e50', color: '#fff' }}>
+            Edit Role for {selectedUser?.fullName}
+          </DialogTitle>
+          <DialogContent>
+            <Box mt={2}>
+              <FormControl fullWidth>
+                <InputLabel>Select Role</InputLabel>
+                <Select
+                  value={selectedRole}
+                  onChange={(e) => {
+                    console.log('Selected roles:', e.target.value);
+                    setSelectedRole(e.target.value);
+                  }}
+
+                >
+                  {getFilteredRolesForAssignment().length > 0 ? (
+                    getFilteredRolesForAssignment().map((role) => (
+                      <MenuItem
+                        key={role.id}
+                        value={role.id}
+                        disabled={selectedUser?.role?.split(',').map((role) => role.trim()).includes(role.name)}
+                      >
+                        {role.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>No roles available</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEditDialog} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleAssignRole} color="primary">
+              Assign Role
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Dialog لحذف الدور */}
+        <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+          <DialogTitle >
+            Remove Role from {selectedUser?.fullName}
+          </DialogTitle>
+          <DialogContent>
+            <Box mt={2}>
+              <FormControl fullWidth>
+                <InputLabel>Select Role</InputLabel>
+                <Select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                >
+                  {getFilteredRolesForRemoval().length > 0 ? (
+                    getFilteredRolesForRemoval().map((role) => (
+                      <MenuItem key={role.id} value={role.id}>
+                        {role.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>No roles available</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDeleteDialog} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleRemoveRole} color="primary">
+              Remove Role
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
-    </Dashboard>
   );
 }

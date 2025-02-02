@@ -78,9 +78,8 @@ const WorkgroupPage = () => {
   ];
 
   return (
-    <Dashboard>
       <Container>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 6 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 10 }}>
           <Typography variant="h4" fontWeight="bold" color="primary">
             Workgroups
           </Typography>
@@ -121,7 +120,6 @@ const WorkgroupPage = () => {
           </DialogActions>
         </Dialog>
       </Container>
-    </Dashboard>
   );
 };
 

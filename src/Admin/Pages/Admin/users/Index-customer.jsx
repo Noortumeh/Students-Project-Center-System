@@ -53,13 +53,12 @@ export default function IndexCustomer() {
   ];
 
   return (
-    <Dashboard>
       <Box p={3} sx={{ mt: 6 }}>
         <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
           Customers
         </Typography>
   
-        <Box sx={{ height: 600,width:"80rem", }}>
+        <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '72rem' } }}>
           <DataGrid
             rows={customersWithFullName || []}
             columns={columns}
@@ -69,6 +68,5 @@ export default function IndexCustomer() {
           />
         </Box>
       </Box>
-    </Dashboard>
   );
 }

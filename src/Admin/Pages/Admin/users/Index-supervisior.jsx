@@ -48,10 +48,10 @@ export default function IndexSupervisor() {
   const columns = [
     { field: 'fullName', headerName: 'Name', width: 250, headerClassName: 'header' },
     { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header' },
-    { 
-      field: 'projectsName', 
-      headerName: 'Projects', 
-      width: 300, 
+    {
+      field: 'projectsName',
+      headerName: 'Projects',
+      width: 300,
       renderCell: (params) => {
         const projects = params.value || [];
         return projects.length > 3 ? (
@@ -72,27 +72,26 @@ export default function IndexSupervisor() {
   }));
 
   return (
-    <Dashboard>
-      <Box p={3} sx={{ mt: 6 }}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
-          Supervisors
-        </Typography>
+    <Box p={3} sx={{ mt: 6 }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+        Supervisors
+      </Typography>
 
-        <Box sx={{ height: 600,width:"80rem", }}>
-          <DataGrid
-            rows={supervisorsWithFullName || []}
-            columns={columns}
-            checkboxSelection={false}
-            pageSize={pageSize}
-            rowsPerPageOptions={[6, 20, 50]}
-            page={page}
-            onPageChange={(newPage) => setPage(newPage)}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            pagination
-            
-          />
-        </Box>
+      <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '72rem' } }}>
+        <DataGrid
+          rows={supervisorsWithFullName || []}
+          columns={columns}
+          checkboxSelection={false}
+          pageSize={pageSize}
+          rowsPerPageOptions={[6, 20, 50]}
+          page={page}
+          onPageChange={(newPage) => setPage(newPage)}
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          pagination
+
+        />
       </Box>
+
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Projects of {selectedSupervisor?.firstName} {selectedSupervisor?.lastName}</DialogTitle>
@@ -114,6 +113,6 @@ export default function IndexSupervisor() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Dashboard>
+    </Box>
   );
 }

@@ -35,7 +35,7 @@ export default function WorkgroupsProjects() {
             </Box>
         );
     }
-    if (data) {
+    if (data && data.total > 0) {
         content = (
             <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.projects.map((project) => (
@@ -51,7 +51,7 @@ export default function WorkgroupsProjects() {
             </Grid>
         );
     }
-
+    
     return (
         <Box
             sx={{

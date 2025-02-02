@@ -112,8 +112,7 @@ const CreateProject = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <ToastContainer />
+    <Container maxWidth="md" sx={{ mt: { xs: 5, sm: 15, md: 12, lg: 20 }, width: { xs: '90%', sm: '90%', md: '100%' }, ml:{ xs: 1, sm: 5, md: 14, lg: 25 } }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
           Create New Project

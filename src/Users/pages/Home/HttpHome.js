@@ -66,3 +66,24 @@ export const getOurClients = async () => {
         throw error;
     }
 };
+//
+export const fetchTermsOfService = async () => {
+    try {
+        const response = await fetch(`${API_URL}/terms`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.result[0];
+    } catch (error) {
+        console.error('Error sending contact message:', error);
+        throw error;
+    }
+};
