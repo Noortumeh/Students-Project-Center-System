@@ -15,23 +15,22 @@ import {
   ListItemAvatar,
   ListItemText,
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { fetchProjectDetails } from '../../../../util/http for admin/http.js';
-import { fetchArchivedUsers } from '../../../../util/http for admin/http.js'; // Import the function for archived users
+import { fetchProjectDetails, fetchArchivedUsers } from '../../../../util/http for admin/http.js';
 import Swal from 'sweetalert2';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-// Create a custom theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3f51b5', // Primary color
+      main: '#3f51b5',
     },
     secondary: {
-      main: '#f50057', // Secondary color
+      main: '#f50057',
     },
   },
 });
@@ -39,6 +38,7 @@ const theme = createTheme({
 const ProjectDetails = () => {
   const { projectId } = useParams();
   const [sectionDetails, setSectionDetails] = useState({});
+
   const { data: projectDetails, isLoading, error } = useQuery({
     queryKey: ['projectDetails', projectId],
     queryFn: () => fetchProjectDetails(projectId),
@@ -65,19 +65,34 @@ const ProjectDetails = () => {
     },
   });
 
+  const handleRowClick = (id) => {
+    console.log('Row clicked:', id);
+  };
+
+  const columns = [
+    { field: 'username', headerName: 'Username', width: 250 },
+    { field: 'roleInProject', headerName: 'Role in Project', width: 200 },
+    { field: 'joinAt', headerName: 'Join Date', width: 200, 
+      renderCell: (params) => new Date(params.value).toLocaleString() 
+    },
+    { field: 'deletedNotes', headerName: 'Deleted Notes', width: 250 },
+    { field: 'deletededAt', headerName: 'Deleted At', width: 200, 
+      renderCell: (params) => new Date(params.value).toLocaleString() 
+    },
+  ];
+
   if (isLoading || isLoadingArchived) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error?.message}</div>;
+    return <div>Error Loading Details: {error?.message}</div>;
   }
 
   if (archivedError) {
-    return <div>Error: {archivedError?.message}</div>;
+    return <div>Error Loading Archived: {archivedError?.message}</div>;
   }
 
-  // Extract data from projectDetails
   const {
     name,
     customerName,
@@ -93,8 +108,9 @@ const ProjectDetails = () => {
     favorite,
     overview,
     projectDetails: sections,
-    supervisorJoinAt, // supervisor join time
+    supervisorJoinAt,
   } = projectDetails || {};
+
 
   return (
     <Dashboard>
@@ -227,34 +243,38 @@ const ProjectDetails = () => {
             </Box>
           )}
 
+         {/* Favorite Status */}
+<Box sx={{ mb: 4 }}>
+  <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+    Favorite Status
+  </Typography>
+  <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784' }}>
+    <CardContent>
+      
+      <Typography variant="body1" color="text.primary">
+        {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
+      </Typography>
+    </CardContent>
+  </Card>
+</Box>
           {/* Team Members */}
           {team && team.length > 0 && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
                 Team Members
               </Typography>
-              <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: '5px solid #4caf50' }}>
-                <CardContent>
-                  <List>
-                    {team.map((member, index) => (
-                      <ListItem key={index}>
-                        <ListItemAvatar>
-                          <Avatar>{member.name?.[0] || 'A'}</Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={member.name}
-                          secondary={
-                            <>
-                              
-                              
-                            </>
-                          }
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-              </Card>
+              <List>
+                {team.map((member, index) => (
+                  <Card key={index} sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Joined At: {new Date(member.joinAt).toLocaleString()}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </List>
             </Box>
           )}
 
@@ -279,17 +299,20 @@ const ProjectDetails = () => {
                         </Box>
                         <Divider sx={{ my: 2 }} />
                         <Collapse in={sectionDetails[section.sectionId]}>
-                          {section.details.map((detail) => (
-                            <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
-                              <Card>
-                                <CardContent>
-                                  {detail.imagePath && <img src={detail.imagePath} alt="icon" width={50} height={50} />}
+                          <Typography variant="body1">{section.sectionDescription}</Typography>
+                          {section.details && section.details.length > 0 && (
+                            <List>
+                              {section.details.map((detail, index) => (
+                                <Box key={index} sx={{ mt: 2 }}>
                                   <Typography variant="h6">{detail.title}</Typography>
-                                  <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
-                                </CardContent>
-                              </Card>
-                            </Box>
-                          ))}
+                                  <Typography variant="body1">{detail.description}</Typography>
+                                  {detail.imagePath && (
+                                    <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
+                                  )}
+                                </Box>
+                              ))}
+                            </List>
+                          )}
                         </Collapse>
                       </CardContent>
                     </Card>
@@ -297,32 +320,30 @@ const ProjectDetails = () => {
                 ))}
               </List>
             </Box>
-          ) : (
-            <Typography variant="body1">No sections found.</Typography>
-          )}
+          ) : null}
 
           {/* Archived Users */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
               Archived Users
             </Typography>
-            {archivedUsers?.result && archivedUsers.result.length > 0 ? (
-              <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800' }}>
-                <CardContent>
-                  <Typography variant="h6" color="primary">Archived Users List</Typography>
-                  <Typography variant="body1" color="text.primary">
-                    {archivedUsers.result.map((user, index) => (
-                      <div key={index}>{user.name}</div>
-                    ))}
-                  </Typography>
-                </CardContent>
-              </Card>
+            {archivedUsers?.result && Array.isArray(archivedUsers.result) && archivedUsers.result.length > 0 ? (
+              <DataGrid
+                rows={archivedUsers.result.map((user, index) => ({
+                  id: user.id || index,
+                  username: user.name || 'N/A',
+                  roleInProject: user.role || 'N/A',
+                  joinAt: user.joinAt ? new Date(user.joinAt).toLocaleString() : 'N/A',
+                  deletedNotes: user.deletedNotes || 'No notes',
+                  deletededAt: user.deletededAt ? new Date(user.deletededAt).toLocaleString() : 'N/A',
+                }))}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                onRowClick={({ id }) => handleRowClick(id)}
+              />
             ) : (
-              <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800' }}>
-                <CardContent>
-                  <Typography variant="body1" color="text.primary">No archived users found.</Typography>
-                </CardContent>
-              </Card>
+              <Typography variant="body1">No archived users found.</Typography>
             )}
           </Box>
         </Container>
