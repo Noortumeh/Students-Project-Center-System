@@ -137,9 +137,7 @@ export default function AddWorkgroupMembers() {
         { id: 'email', label: 'Email', minWidth: 170 },
         { id: 'role', label: 'Role', minWidth: 130 },
     ];
-    console.log(workgroupData)
-    // console.log(users)
-    // console.log(selectedUsers)
+    
     return (
         <Box sx={{ padding: 4 }}>
             <Typography variant="h4" gutterBottom>

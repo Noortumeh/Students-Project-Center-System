@@ -84,7 +84,7 @@ export default function Navbar() {
                     </ListItem>
                 ))}
                 {isAuth && <>
-                    <NavLink to={'workgroups'}>
+                    <NavLink to={'/workgroups'}>
                         <Button variant="contained" size='small' sx={{
                             mb: '5px', mt: '5px', backgroundColor: isHome && "#FF8A65",
                             "&:hover": isHome && { backgroundColor: "#FF7043" }
@@ -129,7 +129,7 @@ export default function Navbar() {
                     </Box>
                     <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                         {isAuth && <>
-                            <NavLink to={'workgroups'}>
+                            <NavLink to={'/workgroups'}>
                                 <Button variant="contained" size='small' sx={{
                                     marginRight: '3px', backgroundColor: isHome && "#FF8A65",
                                     "&:hover": isHome && { backgroundColor: "#FF7043" }

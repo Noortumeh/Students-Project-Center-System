@@ -9,6 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
+  Button,
 } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -83,7 +84,7 @@ function Dashboard({ children }) {
           </ListItem>
           <ListItem
             component={Link}
-            to="/workgroup"
+            to="/admin/workgroup"
             selected={activeLink === "workgroup"}
           >
             <ListItemIcon>
@@ -93,7 +94,7 @@ function Dashboard({ children }) {
           </ListItem>
           <ListItem
             component={Link}
-            to="/projects"
+            to="/admin/projects"
             selected={activeLink === "projects"}
           >
             <ListItemIcon>
@@ -113,7 +114,7 @@ function Dashboard({ children }) {
             <List component="div" disablePadding>
               <ListItem
                 component={Link}
-                to="/users/student"
+                to="/admin/users/student"
                 selected={activeLink === "students"}
               >
                 <ListItemIcon>
@@ -123,7 +124,7 @@ function Dashboard({ children }) {
               </ListItem>
               <ListItem
                 component={Link}
-                to="/users/customer"
+                to="/admin/users/customer"
                 selected={activeLink === "customers"}
               >
                 <ListItemIcon>
@@ -133,7 +134,7 @@ function Dashboard({ children }) {
               </ListItem>
               <ListItem
                 component={Link}
-                to="/users/supervisor"
+                to="/admin/users/supervisor"
                 selected={activeLink === "supervisors"}
               >
                 <ListItemIcon>
@@ -143,7 +144,7 @@ function Dashboard({ children }) {
               </ListItem>
               <ListItem
                 component={Link}
-                to="/users/users"
+                to="/admin/users/users"
                 selected={activeLink === "users"}
               >
                 <ListItemIcon>
@@ -155,7 +156,7 @@ function Dashboard({ children }) {
           </Collapse>
           <ListItem
             component={Link}
-            to="/termofservices"
+            to="/admin/termofservices"
             selected={activeLink === "termOfServices"}
           >
             <ListItemIcon>
@@ -172,8 +173,7 @@ function Dashboard({ children }) {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          p: 3,
+          p: 1,
         }}
       >
         {children}

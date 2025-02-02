@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { addSubSection, deleteSection, deleteSubSection, updateSection, updateSubSection } from "./httpProjects";
 import { queryClient } from "../../../../util/httpsForUser/https";
 
-export default function ProjectSections({ data, projectId, isSupervisor }) {
+export default function ProjectSections({ data, projectId, isSupervisor, isStudent }) {
     const [sectionDetails, setSectionDetails] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedSection, setSelectedSection] = useState(null);
@@ -17,7 +17,6 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     const [newIcon, setNewIcon] = useState(null);
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [newSubSection, setNewSubSection] = useState({ title: "", description: "" });
-
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -106,7 +105,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
             formData.append('title', newName);
             formData.append('description', newDescription);
             formData.append('image', newIcon);
-            mutationUpdateSubSection(selectedSection.id, formData);
+            mutationUpdateSubSection({ id: selectedSection.id, formData: formData });
         } else {
             mutationUpdateSection({ sectionId: selectedSection.sectionId, newName });
         }
@@ -132,7 +131,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     console.log(data)
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" sx={{ mb: 3, color:'#3f51b5' }}>Existing Project Sections</Typography>
+            <Typography variant="h4" sx={{ mb: 3, color: '#3f51b5' }}>Existing Project Sections</Typography>
             {data?.length > 0 ? (
                 <List>
                     {data.map((section) => (
@@ -152,9 +151,11 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                                                     </IconButton>
                                                 </>
                                             }
-                                            <IconButton color="primary" onClick={() => handleAddClick(section.sectionId)}>
-                                                <Add />
-                                            </IconButton>
+                                            {isStudent &&
+                                                <IconButton color="primary" onClick={() => handleAddClick(section.sectionId)}>
+                                                    <Add />
+                                                </IconButton>
+                                            }
                                             <IconButton onClick={() => {
                                                 setSectionDetails(prev => ({ ...prev, [section.sectionName]: !prev[section.sectionName] }))
                                             }}>
@@ -168,17 +169,23 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                                             <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
                                                 <Card>
                                                     <CardContent>
-                                                        {detail.imagePath && <img src={detail.imagePath} alt="icon" width={50} height={50} />}
-                                                        <Typography variant="h6">{detail.title}</Typography>
-                                                        <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
-                                                        <Box sx={{ mt: 2 }}>
-                                                            <IconButton color="primary" onClick={() => handleEditClick(detail, true)}>
-                                                                <Edit />
-                                                            </IconButton>
-                                                            <IconButton color="error" onClick={() => handleDeleteClick(detail, true)}>
-                                                                <Delete />
-                                                            </IconButton>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                                                            {detail.imagePath && <img src={detail.imagePath} alt="icon" width={200} height={200} />}
+                                                            <Box sx={{ ml: 3 }}>
+                                                                <Typography variant="h6">{detail.title}</Typography>
+                                                                <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
+                                                            </Box>
                                                         </Box>
+                                                        {isStudent &&
+                                                            <Box sx={{ mt: 2 }}>
+                                                                <IconButton color="primary" onClick={() => handleEditClick(detail, true)}>
+                                                                    <Edit />
+                                                                </IconButton>
+                                                                <IconButton color="error" onClick={() => handleDeleteClick(detail, true)}>
+                                                                    <Delete />
+                                                                </IconButton>
+                                                            </Box>
+                                                        }
                                                     </CardContent>
                                                 </Card>
                                             </Box>
@@ -199,7 +206,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                     <TextField autoFocus margin="dense" label="Name" fullWidth value={newName} onChange={(e) => setNewName(e.target.value)} />
                     {editingSub && (
                         <>
-                            <TextField margin="dense" label="Description" fullWidth value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
+                            <TextField multiline minRows={4} variant="outlined" margin="dense" label="Description" fullWidth value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
                             <input type="file" accept="image/*" onChange={handleFileChange} />
                         </>
                     )}
@@ -214,7 +221,7 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                 <DialogTitle>Add New Sub-Section</DialogTitle>
                 <DialogContent>
                     <TextField autoFocus margin="dense" label="Title" fullWidth value={newSubSection.title} onChange={(e) => setNewSubSection({ ...newSubSection, title: e.target.value })} />
-                    <TextField margin="dense" label="Description" fullWidth value={newSubSection.description} onChange={(e) => setNewSubSection({ ...newSubSection, description: e.target.value })} />
+                    <TextField multiline minRows={4} variant="outlined" margin="dense" label="Description" fullWidth value={newSubSection.description} onChange={(e) => setNewSubSection({ ...newSubSection, description: e.target.value })} />
                     <input type="file" accept="image/*" onChange={handleFileChange} />
                 </DialogContent>
                 <DialogActions>

@@ -92,7 +92,7 @@ export default function TasksPage() {
                 {filteredTasks && filteredTasks.length > 0 ? (
                     <Grid container alignItems="center" spacing={3} columns={12}>
                         {filteredTasks.map((task) => (
-                            <Grid xs={12} sm={6} md={4} key={task.id}>
+                            <Grid key={task.id}>
                                 <TaskProgressCard
                                     title={task.title}
                                     buttonName='Go to task ->'
