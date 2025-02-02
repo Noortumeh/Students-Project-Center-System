@@ -208,33 +208,34 @@ export default function TermOfServices() {
             <Divider sx={styles.divider} />
 
             {isLoading ? (
-              <Box sx={styles.loader}>
-                <CircularProgress />
-              </Box>
-            ) : error ? (
-              <Typography color="error">Failed to load terms: {error.message}</Typography>
-            ) : (
-              <>
-                <Typography variant="body1" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-                  {termsData?.result?.[0]?.description || 'No terms available.'}
-                </Typography>
+  <Box sx={styles.loader}>
+    <CircularProgress />
+  </Box>
+) : error ? (
+  <Typography color="error">Failed to load Terms of Services. Please try again later.</Typography>
+) : (
+  <>
+    <Typography variant="body1" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
+      {termsData?.result?.[0]?.description || 'No terms available.'}
+    </Typography>
 
-                {/* عرض تاريخ الإنشاء */}
-                <Typography variant="body2" color="textSecondary">
-                  Created By: {termsData?.result[0]?.createdBy || 'N/A'}
-                </Typography>
+    {/* عرض تاريخ الإنشاء */}
+    <Typography variant="body2" color="textSecondary">
+      Created By: {termsData?.result[0]?.createdBy || 'N/A'}
+    </Typography>
 
-                {/* عرض تاريخ الإنشاء */}
-                <Typography variant="body2" color="textSecondary" mt={1}>
-                  Created At: {termsData?.result[0]?.createdAt ? new Date(termsData?.result[0]?.createdAt).toLocaleString() : 'N/A'}
-                </Typography>
+    {/* عرض تاريخ الإنشاء */}
+    <Typography variant="body2" color="textSecondary" mt={1}>
+      Created At: {termsData?.result[0]?.createdAt ? new Date(termsData?.result[0]?.createdAt).toLocaleString() : 'N/A'}
+    </Typography>
 
-                {/* عرض من قام بالتحديث */}
-                <Typography variant="body2" color="textSecondary" mt={1}>
-                  Updated By: {termsData?.result[0]?.updatedBy || 'N/A'}
-                </Typography>
-              </>
-            )}
+    {/* عرض من قام بالتحديث */}
+    <Typography variant="body2" color="textSecondary" mt={1}>
+      Updated By: {termsData?.result[0]?.updatedBy || 'N/A'}
+    </Typography>
+  </>
+)}
+
 
             {hasTerms && (
               <Box display="flex" justifyContent="center" mt={4}>

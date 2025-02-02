@@ -106,7 +106,7 @@ function Dashboard({ children }) {
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Users" />
+            <ListItemText primary="AllUsers" />
             {isUsersOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
           <Collapse in={isUsersOpen} timeout="auto" unmountOnExit>

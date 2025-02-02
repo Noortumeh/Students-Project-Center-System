@@ -26,7 +26,7 @@ export const fetchUsers = async () => {
     }
 
     const data = await response.json();
-
+console.log("data",data)
     // تحويل البيانات إلى الشكل المطلوب
     if (data.result && Array.isArray(data.result)) {
       const formattedUsers = data.result.map((user) => {
@@ -54,14 +54,14 @@ export const fetchUsers = async () => {
     throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
-export const fetchProjects = async ({ pageSize, pageNumber }) => {
+export const fetchProjects = async () => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token is missing. Please login to get a token.');
     }
 
-    const url = `http://spcs.somee.com/api/admin/projects/${pageSize}/${pageNumber}`;
+    const url = `http://spcs.somee.com/api/admin/projects`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -159,7 +159,7 @@ export const setFavoriteProject = async (projectId) => {
 };
 
 
-export const fetchWorkgroups = async (pageSize = 6, pageNumber = 1, workgroupName = '') => {
+export const fetchWorkgroups = async () => {
   try {
     const token = localStorage.getItem('token'); // الحصول على التوكن
     if (!token) {
@@ -167,7 +167,7 @@ export const fetchWorkgroups = async (pageSize = 6, pageNumber = 1, workgroupNam
     }
 
     // بناء الرابط مع المعاملات
-    const url = `http://spcs.somee.com/api/workgroups/${pageSize}/${pageNumber}?workgroupName=${workgroupName}`;
+    const url = `http://spcs.somee.com/api/workgroups`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -386,8 +386,6 @@ export const postContactUs = async (contactData) => {
   }
 };
 
-
-
 export const fetchProjectSections = async ({ projectId }) => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -517,14 +515,19 @@ export const fetchProjectDetails = async (id) => {
     }
 
     const data = await response.json();
-    console.log("Fetched project details:", data); 
+    
+    // التحقق من أن البيانات تحتوي على جميع الحقول المطلوبة
+    if (!data.result) {
+      throw new Error('No result found in the response');
+    }
+
+    console.log("Fetched project details:", data.result); 
     return data.result; 
   } catch (error) {
     console.error("Error fetching project details:", error);
     throw error;
   }
 };
-
 
 export const createProjectDetails = async (sectionId, detailsData) => {
   console.log("sectionId:", sectionId); // طباعة sectionId للتحقق
@@ -640,74 +643,81 @@ export const deleteProjectDetails = async (detailId) => {
 };
 
 
-export const fetchCustomers = async (pageSize = 6, pageNumber = 1) => {
+export const fetchCustomers = async () => {
   const token = localStorage.getItem('token'); // جلب التوكن من التخزين المحلي
   if (!token) {
     throw new Error('Token not found. Please log in.');
   }
 
+  const response = await fetch(
+    `http://spcs.somee.com/api/users/customers`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // إضافة التوكن في الهيدر
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log("API Response:", data);
+
+  // التأكد من أن البيانات تأتي من result.customers
+  if (data.isSuccess && Array.isArray(data.result.customers)) {
+    return data.result.customers || [];  // استخدام customers من result
+  } else {
+    throw new Error(data.message);
+  }
+};
+
+export const fetchStudents = async () => {
   try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token not found. Please log in.');
+    }
+
     const response = await fetch(
-      `http://spcs.somee.com/api/users/customers/${pageSize}/${pageNumber}`,
+      `http://spcs.somee.com/api/users/students`,
       {
         headers: {
-          'Content-Type': 'application/json', // لضمان أن نوع المحتوى JSON
-          Authorization: `Bearer ${token}`, // إضافة التوكن في الهيدر
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       }
     );
 
     if (!response.ok) {
+      console.error('HTTP error! status:', response.status);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    if (!data.isSuccess) {
-      throw new Error(data.message);
+    console.log('API response data:', data); // طباعة الاستجابة كاملة
+    console.log('Data result:', data.result); // طباعة نتيجة الاستجابة
+
+    // التحقق من أن data.result.students هو مصفوفة
+    if (!data.result || !Array.isArray(data.result.students)) {
+      console.error('Unexpected data format:', data.result);
+      throw new Error('Unexpected data format from API');
     }
 
-    return data.result?.customers || []; // يجب أن تكون البيانات في `data.result.customers`
-  } catch (error) {
-    console.error('Error fetching customers:', error);
-    throw error;
-  }
-};
-
-
-export const fetchStudents = async (pageSize, pageNumber) => {
-  try {
-    console.log('Fetching students with pageSize:', pageSize, 'and pageNumber:', pageNumber); // جملة طباعة قبل الطلب
-
-    const response = await fetch(
-      `http://spcs.somee.com/api/users/students/${pageSize}/${pageNumber}`,
-      {
-        headers: addAuthToken(),
-      }
-    );
-
-    if (!response.ok) {
-      console.error('HTTP error! status:', response.status); // جملة طباعة في حالة الخطأ
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('API response data:', data); // جملة طباعة لعرض البيانات المستلمة من الخادم
-
-    if (!data.isSuccess) {
-      console.error('API error:', data.message); // جملة طباعة في حالة خطأ من الخادم
-      throw new Error(data.message);
-    }
-
-    // إضافة حالة المشروع (ProjectStatus) إلى البيانات المستلمة
-    const studentsWithStatus = data.result.students.map(student => ({
-      ...student,
-      projectStatus: student.projectStatus || 'Not Started', // تأكد من وجود القيمة إذا كانت موجودة
+    // تحويل بيانات الطلاب إلى الشكل المطلوب
+    const students = data.result.students.map(student => ({
+      id: student.id,
+      fullName: `${student.firstName} ${student.middleName || ''} ${student.lastName}`,
+      email: student.email,
+      projects: student.projects && student.projects.length > 0 ? student.projects : [],
     }));
 
-    console.log('Fetched students:', studentsWithStatus); // جملة طباعة لعرض الطلاب المستلمين
-    return studentsWithStatus;
+    console.log('Fetched students:', students);
+    return students;
   } catch (error) {
-    console.error('Error fetching students:', error); // جملة طباعة في حالة حدوث استثناء
+    console.error('Error fetching students:', error);
     throw error;
   }
 };
@@ -734,7 +744,6 @@ export const fetchSupervisors = async () => {
     return [];  
   }
 };
-
 
 export const fetchRoles = async () => {
   const token = localStorage.getItem('token');
@@ -846,8 +855,6 @@ export const removeRoleFromUser = async ({ roleId, userId }) => {
   }
 };
 
-
-
 export const updateProject = async ({ projectid, updatedProject }) => {
   if (!projectid) {
     throw new Error('Project ID is missing!');
@@ -911,10 +918,10 @@ export const fetchRoleData = async (role) => {
   }
 };
 
-
-
 export const fetchArchivedUsers = async (projectId) => {
-  const token=localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  console.log('Fetching archived users for project ID:', projectId);
+
   const response = await fetch(
     `http://spcs.somee.com/api/admin/projects/${projectId}/archive/users`,
     {
@@ -927,9 +934,11 @@ export const fetchArchivedUsers = async (projectId) => {
   );
 
   if (!response.ok) {
+    console.log('Failed to fetch data, status:', response.status);
     throw new Error('Failed to fetch archived users');
   }
+
   const data = await response.json();
-    console.log("Fetched Archived:", data); 
-    return data.result; 
+  console.log("Fetched Data:", data);  // تحقق من البيانات
+  return data;  
 };
