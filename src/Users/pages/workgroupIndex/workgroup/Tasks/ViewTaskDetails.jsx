@@ -11,6 +11,7 @@ import { changeTaskStatus, queryClient, submitAnswer } from '../../../../../util
 import { toast } from 'react-toastify';
 import { useWorkgroup } from '../WorkgroupCustomHook/useWorkgroup';
 import SelectedList from '../../../../components/SelectedList';
+import { formatDate } from '@fullcalendar/core/index.js';
 
 export default function ViewTaskDetails() {
     const queryParams = new URLSearchParams(window.location.search);
@@ -83,11 +84,20 @@ export default function ViewTaskDetails() {
                 {/* التواريخ */}
                 <Box sx={{ my: 3 }}>
                     <Typography variant="body1" color="text.secondary">
-                        Start Date: {task.start}
+                        Start Date: {formatDate(task.start, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                        End Date: {task.end}
+                        End Date: {formatDate(task.end, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </Typography>
+                    {task.lastUpdateBy && <>
+                        <Typography variant="body1" color="text.secondary">
+                            Last Updated By: {task.lastUpdateBy}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            Last Updated At: {formatDate(task.lastUpdatedAt, { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </Typography>
+                    </>
+                    }
                 </Box>
 
                 {/* الحالة */}
@@ -139,7 +149,7 @@ export default function ViewTaskDetails() {
                     justifyContent: 'flex-end',
                     mt: 4
                 }}>
-                    { workgroupData.role === 'student' &&
+                    {workgroupData.role === 'student' &&
                         <Button
                             variant="contained"
                             color="primary"
@@ -161,6 +171,15 @@ export default function ViewTaskDetails() {
             {task.answerFiles && task.answerFiles.length > 0 && (
                 <Stack spacing={1} sx={{ mb: 3 }}>
                     <Typography variant="subtitle1">Submitted Files:</Typography>
+                    <Box sx={{ display: 'flex' }}>
+                        <Typography variant="body1" color="text.secondary" sx={{ mr: '12px' }}>
+                            Submitted At: {formatDate(task.submittedAt, { year: 'numeric', month: 'short', day: 'numeric' })},
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            Submitted By: {task.submittedBy}
+                        </Typography>
+                    </Box>
+
                     {task.answerFiles.map((file, index) => (
                         <Button
                             key={index}

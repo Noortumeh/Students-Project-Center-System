@@ -19,7 +19,6 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const { isFetching, isAuth } = useUser();
 
-
   const { mutate, isPending, error, isError} = useMutation({
     mutationFn: signUp,
     onSuccess: () => {

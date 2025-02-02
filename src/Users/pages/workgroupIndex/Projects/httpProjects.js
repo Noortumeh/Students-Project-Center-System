@@ -51,7 +51,9 @@ export const addSubSection = async (sectionData) => {
     }
 };
 // Edit Sub Section
-export const updateSubSection = async (id, formData) => {
+export const updateSubSection = async ({id, formData}) => {
+    console.log(id)
+    console.log(formData)
     try {
         const response = await fetch(`${API_URL}/project-details/${id}`, {
             method: "PUT",

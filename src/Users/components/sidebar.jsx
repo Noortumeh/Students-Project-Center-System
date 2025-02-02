@@ -70,7 +70,7 @@ export default function Sidebar({ checkIsOpen, open, children }) {
         {children}
         <Divider />
         <List>
-          <ButtonLink name="Settings" link="settings" icon={<TuneIcon />} open={isMobile ? false : open} />
+          {/* <ButtonLink name="Settings" link="settings" icon={<TuneIcon />} open={isMobile ? false : open} /> */}
           <ButtonLink name="Help" link="help" icon={<HelpCenterIcon />} open={isMobile ? false : open} />
         </List>
       </Drawer>

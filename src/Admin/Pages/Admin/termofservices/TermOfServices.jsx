@@ -13,6 +13,7 @@ import {
   Snackbar,
   Divider,
   CircularProgress,
+  Container,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
@@ -20,6 +21,7 @@ import { fetchTerms, postTerm, deleteTerm, putTerm } from '../../../../util/http
 
 const styles = {
   title: {
+    mr: 10,
     fontFamily: "'Poppins', sans-serif",
     fontWeight: '700',
     color: '#1E88E5',
@@ -184,8 +186,8 @@ export default function TermOfServices() {
   const hasTerms = termsData?.result?.length > 0;
 
   return (
-    <Dashboard>
-      <Box sx={{ mt: 7, mx: 'auto', maxWidth: 'lg' }}>
+    <Container>
+      <Box sx={{ mt: 12, mx: 'auto', maxWidth: 'lg' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h4" sx={styles.title}>
             Terms Of Services
@@ -285,6 +287,6 @@ export default function TermOfServices() {
           message={snackbarMessage}
         />
       </Box>
-    </Dashboard>
+    </Container>
   );
 }

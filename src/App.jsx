@@ -54,64 +54,37 @@ import AddMemebersPage from './Users/pages/workgroupIndex/workgroup/WorkgroupMem
 import ContactUsForm from './Users/pages/Home/Contact.jsx';
 import ProjectsRoot from './Users/pages/workgroupIndex/ProjectsRoot.jsx';
 import ProjectDetailsWork from './Users/pages/workgroupIndex/Projects/ProjectDetails.jsx';
+import HelpPage from './Users/pages/workgroupIndex/HelpPage.jsx';
+import TermsOfServicePage from './Users/pages/Home/TermsOfServices.jsx';
+import AdminRoot from './Admin/AdminRoot.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
-  
-  {
-    path: '/admin',
-    element: <Home />,
-  },
 
   {
-    path: '/users/student',
-    element: <IndexStudent />,
+    path: 'admin', element: <AdminRoot />, children: [
+      {
+        element: <Authentication />, children: [
+          { index: true, element: <Home /> },
+          {
+            path: 'users', children: [
+              { path: 'student', element: <IndexStudent /> },
+              { path: 'customer', element: <IndexCustomer /> },
+              { path: 'supervisor', element: <IndexSupervisor /> },
+              { path: 'users', element: <IndexUsers /> },
+            ]
+          },
+          { path: 'termofservices', element: <TermOfServices /> },
+          { path: 'workgroup', element: <WorkGroup /> },
+          { path: 'projects', element: <Projects /> },
+          { path: 'projects/:projectId', element: <ProjectDetails /> },
+          { path: 'projects/CreateProject', element: <CreateProject /> },
+          { path: 'projects/EditProject/:projectid', element: <EditProject /> },
+        ]
+      },
+    ]
   },
-
-  {
-    path: '/users/customer',
-    element: <IndexCustomer />,
-  },
-
-  {
-    path: '/users/supervisor',
-    element: <IndexSupervisor />,
-  },
-
-  {
-    path: '/users/users',
-    element: <IndexUsers />,
-  },
-  
-  {
-    path: '/termofservices',
-    element: <TermOfServices />,
-  },
-
-  {
-    path: '/workgroup',
-    element: <WorkGroup />,
-  },
-  {
-    path: '/projects',
-    element: <Projects />,
-  },
-  {
-    path: '/projects/:projectId',
-    element: <ProjectDetails />,
-  },
-  {
-    path: '/projects/CreateProject',
-    element: <CreateProject />,
-  },
-  {
-    path: '/projects/EditProject/:projectid',
-    element: <EditProject />,
-  },
-
-  {
-    path: '*',
-    element: <PageNotFound />,
-  },
+  //! Erorr Page
+  { path: '*', element: <PageNotFound /> },
   //* Users Routes
   // confirm email path
   { path: 'confirm-email', element: (<ConfirmationComponent />) },
@@ -128,16 +101,18 @@ const router = createBrowserRouter([
       { path: 'reset-password', element: <ResetPasswordPage /> },
       // { path: 'user-profile', element: <UserProfilePage /> },
       { path: 'user-profile/reset-password', element: <ResetPasswordProfile /> },
-
+      { path: '/term', element: <TermsOfServicePage /> },
       {
         element: <Authentication />, children: [
           { path: 'user-profile', element: <UserProfilePage /> },
           {
             path: 'workgroups', element: <WorkGroupsPage />, children: [
               { index: true, element: <WorkgroupsHome /> },
+              { path: 'help', element: <HelpPage /> },
               {
                 path: ':workgroupId', element: <WorkgroupRoot />, children: [
                   { index: true, element: <WorkgroupHome /> },
+                  { path: 'help', element: <HelpPage /> },
                   { path: 'addmembers', element: <AddMemebersPage /> },
                   { path: 'tasks', element: <TasksPage /> },
                   { path: 'tasks/addtask', element: <AddTask /> },
