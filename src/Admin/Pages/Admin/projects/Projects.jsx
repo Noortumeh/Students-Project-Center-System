@@ -22,39 +22,18 @@ import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
 import { DataGrid } from '@mui/x-data-grid';
-import PaginationComponent from '../../../../Users/components/PaginationComponent.jsx';
 
 const ProjectPage = () => {
   const navigate = useNavigate();
-
-  const [pageNumber, setPageNumber] = useState(() => {
-    const savedPageNumber = localStorage.getItem('pageNumber');
-    return savedPageNumber ? parseInt(savedPageNumber, 10) : 1;
-  });
-
-  const [pageSize, setPageSize] = useState(6);
   const [favoriteProjects, setFavoriteProjects] = useState({});
 
   // استخدام useQuery لجلب البيانات
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['projects', pageNumber, pageSize],
-    queryFn: () => fetchProjects({ pageSize, pageNumber }), // إرسال الفلاتر إلى API
+    queryKey: ['projects'],
+    queryFn: fetchProjects, // إرسال الفلاتر إلى API
     keepPreviousData: true,
     staleTime: 10000,
   });
-
-  useEffect(() => {
-    localStorage.setItem('pageNumber', pageNumber);
-  }, [pageNumber]);
-
-  const handlePageChange = (newPage) => {
-    setPageNumber(newPage);
-  };
-
-  const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize);
-    setPageNumber(1); // العودة إلى الصفحة الأولى عند تغيير حجم الصفحة
-  };
 
   const toggleFavorite = async (id, projectName, isFavorite) => {
     const confirmationMessage = isFavorite
@@ -99,14 +78,14 @@ const ProjectPage = () => {
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <Typography color="error">Error fetching projects: {error.message}</Typography>;
+  if (error) return <Typography color="error">Error Loading projects: {error.message}</Typography>;
 
   if (!data || !data.isSuccess) {
     return <Typography color="error">Invalid data format received from API.</Typography>;
   }
 
   // البيانات التي يعيدها الخادم تكون مجزأة بالفعل
-  const paginatedProjects = data.result.projects || [];
+  const projects = data.result.projects || [];
 
   const columns = [
     { field: 'name', headerName: 'Project Name', width: 200 },
@@ -176,24 +155,33 @@ const ProjectPage = () => {
 
         <Box sx={{ height: 600 }}>
           <DataGrid
-            rows={paginatedProjects}
+            rows={projects}
             columns={columns}
-            pageSize={pageSize}
+            pageSize={6}
             rowsPerPageOptions={[6, 20, 50]}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            pagination
             disableSelectionOnClick
-          />
-        </Box>
-
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <PaginationComponent
-            totalCount={data.result.totalCount} // إجمالي عدد العناصر من الخادم
-            pageNumber={pageNumber}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
+            sx={{
+              '& .MuiDataGrid-root': {
+                border: 'none',
+              },
+              '& .MuiDataGrid-columnHeader': {
+                backgroundColor: '#2c3e50',
+                color: '#ffffff',
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-cell': {
+                padding: '10px',
+                borderBottom: '1px solid #e0e0e0',
+              },
+              '& .MuiDataGrid-row': {
+                '&:nth-of-type(odd)': {
+                  backgroundColor: '#f9f9f9',
+                },
+                '&:hover': {
+                  backgroundColor: '#e0f7fa',
+                },
+              },
+            }}
           />
         </Box>
       </Container>

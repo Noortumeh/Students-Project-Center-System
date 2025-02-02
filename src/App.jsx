@@ -17,7 +17,6 @@ import Projects from './Admin/Pages/Admin/projects/Projects.jsx';
 import ProjectDetails from './Admin/Pages/Admin/projects/ProjectDetails.jsx';
 import CreateProject from './Admin/Pages/Admin/projects/CreateProject.jsx';
 import EditProject from './Admin/Pages/Admin/projects/EditProject.jsx';
-
 import PageNotFound from './PageNotFound.jsx';
 
 // User Pages
@@ -40,7 +39,6 @@ import ViewTaskDetails from './Users/pages/workgroupIndex/workgroup/Tasks/ViewTa
 import ChatPage from './Users/pages/workgroupIndex/workgroup/Chat/Chat.jsx';
 import Calendar from './Users/pages/workgroupIndex/workgroup/ScheduleMeeting/ScheduleMeeting.jsx';
 // Loaders to fetch data before rendering components
-// import { fetchProjectDetails, fetchReportDetails, fetchWorkGroupDetails } from './Admin/Components/Loader.js';
 // Tanstack Query 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
@@ -58,6 +56,7 @@ import ProjectsRoot from './Users/pages/workgroupIndex/ProjectsRoot.jsx';
 import ProjectDetailsWork from './Users/pages/workgroupIndex/Projects/ProjectDetails.jsx';
 // Routes Configuration
 const router = createBrowserRouter([
+  
   {
     path: '/admin',
     element: <Home />,
@@ -82,6 +81,7 @@ const router = createBrowserRouter([
     path: '/users/users',
     element: <IndexUsers />,
   },
+  
   {
     path: '/termofservices',
     element: <TermOfServices />,
