@@ -195,23 +195,26 @@ export default function IndexUsers() {
 
   // تحضير البيانات لعرضها في الجدول
   const formattedUsers = users.map((user, index) => {
+    console.log("User data:", user);  // إضافة هذا السطر للتأكد من وجود رقم الهاتف
     const names = user.fullName.split(' ');
     const firstName = names[0];
     const lastName = names.slice(1).join(' ');
-
+  
     const roleNames = Array.isArray(user.role)
       ? user.role.map((r) => (typeof r === 'string' ? r : r.name)).join(', ')
       : user.role.name || '';
-
+  
     return {
       id: user.id || index,
       fullName: `${firstName} ${lastName}`,
       email: user.email,
-      address: user.address || 'No address', // إضافة الحقل address
-      phone: user.phone || 'No phone number', // إضافة الحقل phone
+      address: user.address || 'No address', 
+      phone: user.phoneNumber || 'No phone number', // تأكد من أن رقم الهاتف هنا
       role: roleNames,
     };
   });
+  
+  
 
   // دالة لتصفية الأدوار المعروضة في نافذة إزالة الدور
   const getFilteredRolesForRemoval = () => {

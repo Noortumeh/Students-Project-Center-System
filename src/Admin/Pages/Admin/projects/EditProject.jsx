@@ -14,13 +14,13 @@ export default function EditProject() {
   const { projectid } = useParams();
   const navigate = useNavigate();
 
-  // Fetch users (supervisors and customers)
+  // Fetch users (supervisors, customers, companies)
   const { data: users, error: usersError, isLoading: isUsersLoading } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
 
-  // Fetch project details for editing
+  // Fetch project details
   const { data: project, isLoading: isFetchingProject, error: projectError, refetch } = useQuery({
     queryKey: ['project', projectid],
     queryFn: () => fetchProjectDetails(projectid),
@@ -30,7 +30,7 @@ export default function EditProject() {
   // Mutation to update project
   const mutation = useMutation({
     mutationFn: updateProject,
-    onSuccess: (data) => {
+    onSuccess: () => {
       Swal.fire({
         title: 'Updated!',
         text: 'Project data has been updated successfully.',
@@ -51,6 +51,7 @@ export default function EditProject() {
       projectName: '',
       supervisor: {},
       customer: {},
+      company: {}, // إضافة company
       status: '',
       changeOldSupervisorNotes: '',
       changeOldCustomerNotes: '',
@@ -77,6 +78,7 @@ export default function EditProject() {
               name: values.projectName,
               supervisorId: values.supervisor?.value || null,
               customerId: values.customer?.value || null,
+              companyId: values.company?.value || null, // إضافة companyId
               status: values.status.value,
               changeOldSupervisorNotes: values.changeOldSupervisorNotes,
               changeOldCustomerNotes: values.changeOldCustomerNotes,
@@ -105,6 +107,10 @@ export default function EditProject() {
         value: project.customerId,
         label: project.customerName,
       };
+      const company = {
+        value: project.companyId,
+        label: project.companyName,
+      };
       const status = {
         value: project.status,
         label: project.status,
@@ -114,6 +120,7 @@ export default function EditProject() {
         projectName: project.name || '',
         supervisor,
         customer,
+        company,
         status,
         changeOldSupervisorNotes: project.changeOldSupervisorNotes || '',
         changeOldCustomerNotes: project.changeOldCustomerNotes || '',
@@ -146,6 +153,11 @@ export default function EditProject() {
     label: `${user.firstName} ${user.lastName}`,
   }));
 
+  const companyOptions = users?.filter((user) => user.role.includes('company')).map((user) => ({
+    value: user.id,
+    label: user.companyName,
+  }));
+
   const statusOptions = [
     { value: 'active', label: 'active' },
     { value: 'pending', label: 'pending' },
@@ -155,84 +167,66 @@ export default function EditProject() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-    <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
-        Edit Project
-      </Typography>
-      <form onSubmit={formik.handleSubmit}>
-        {/* Project Name Field */}
-        <ProjectNameField
-          projectName={formik.values.projectName}
-          setProjectName={(value) => formik.setFieldValue('projectName', value)}
-        />
-        
-        {/* Supervisor, Customer, and Status Fields */}
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Select
-              options={supervisorOptions}
-              value={formik.values.supervisor}
-              onChange={(value) => formik.setFieldValue('supervisor', value)}
-              placeholder="Select a Supervisor"
-              isClearable
-            />
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
+          Edit Project
+        </Typography>
+        <form onSubmit={formik.handleSubmit}>
+          {/* Project Name Field */}
+          <ProjectNameField
+            projectName={formik.values.projectName}
+            setProjectName={(value) => formik.setFieldValue('projectName', value)}
+          />
+          
+          {/* Supervisor, Customer, Company, and Status Fields */}
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Select
+                options={supervisorOptions}
+                value={formik.values.supervisor}
+                onChange={(value) => formik.setFieldValue('supervisor', value)}
+                placeholder="Select a Supervisor"
+                isClearable
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Select
+                options={customerOptions}
+                value={formik.values.customer}
+                onChange={(value) => formik.setFieldValue('customer', value)}
+                placeholder="Select a Customer"
+                isClearable
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Select
+                options={companyOptions}
+                value={formik.values.company}
+                onChange={(value) => formik.setFieldValue('company', value)}
+                placeholder="Select a Company"
+                isClearable
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Select
+                options={statusOptions}
+                value={formik.values.status}
+                onChange={(value) => formik.setFieldValue('status', value)}
+                placeholder="Select Status"
+                isClearable
+              />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <Select
-              options={customerOptions}
-              value={formik.values.customer}
-              onChange={(value) => formik.setFieldValue('customer', value)}
-              placeholder="Select a Customer"
-              isClearable
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Select
-              options={statusOptions}
-              value={formik.values.status}
-              onChange={(value) => formik.setFieldValue('status', value)}
-              placeholder="Select Status"
-              isClearable
-            />
-          </Grid>
-        </Grid>
-
-        {/* Notes Fields */}
-        <Box sx={{ mt: 2 }}>
-          <textarea
-            name="changeOldSupervisorNotes"
-            value={formik.values.changeOldSupervisorNotes}
-            onChange={(e) => formik.setFieldValue('changeOldSupervisorNotes', e.target.value)}
-            placeholder="Enter notes for supervisor change"
-            rows="3"
-            style={{ width: '100%', marginBottom: '16px' }}
-          />
-          <textarea
-            name="changeOldCustomerNotes"
-            value={formik.values.changeOldCustomerNotes}
-            onChange={(e) => formik.setFieldValue('changeOldCustomerNotes', e.target.value)}
-            placeholder="Enter notes for customer change"
-            rows="3"
-            style={{ width: '100%', marginBottom: '16px' }}
-          />
-          <textarea
-            name="changeStatusNotes"
-            value={formik.values.changeStatusNotes}
-            onChange={(e) => formik.setFieldValue('changeStatusNotes', e.target.value)}
-            placeholder="Enter notes for status change"
-            rows="3"
-            style={{ width: '100%' }}
-          />
-        </Box>
-
-        {/* Save Button */}
-        <LoadingButton type="submit" loading={mutation.isLoading} fullWidth sx={{ mt: 3 }}>
-          Save Changes
-        </LoadingButton>
-      </form>
-    </Paper>
-  </Container>
+          {/* Save Button */}
+          <LoadingButton type="submit" loading={mutation.isLoading} fullWidth sx={{ mt: 3 }}>
+            Save Changes
+          </LoadingButton>
+        </form>
+      </Paper>
+    </Container>
   );
 }
