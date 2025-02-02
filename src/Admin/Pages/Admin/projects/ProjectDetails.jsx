@@ -7,30 +7,38 @@ import {
   createTheme,
   Box,
   Divider,
+  IconButton,
+  Collapse,
+  List,
+  Avatar,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { fetchProjectDetails } from '../../../../util/http for admin/http.js';
-import { fetchArchivedUsers } from '../../../../util/http for admin/http.js'; // Import the function for archived users
+import { useState } from 'react';
+import { fetchProjectDetails, fetchArchivedUsers } from '../../../../util/http for admin/http.js';
 import Swal from 'sweetalert2';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-// Create a custom theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3f51b5', // Primary color
+      main: '#3f51b5',
     },
     secondary: {
-      main: '#f50057', // Secondary color
+      main: '#f50057',
     },
   },
 });
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
+  const [sectionDetails, setSectionDetails] = useState({});
 
-  // Fetch project details
   const { data: projectDetails, isLoading, error } = useQuery({
     queryKey: ['projectDetails', projectId],
     queryFn: () => fetchProjectDetails(projectId),
@@ -44,7 +52,6 @@ const ProjectDetails = () => {
     },
   });
 
-  // Fetch archived users
   const { data: archivedUsers, isLoading: isLoadingArchived, error: archivedError } = useQuery({
     queryKey: ['archivedUsers', projectId],
     queryFn: () => fetchArchivedUsers(projectId),
@@ -58,29 +65,74 @@ const ProjectDetails = () => {
     },
   });
 
+  const handleRowClick = (id) => {
+    console.log('Row clicked:', id);
+  };
+
+  const columns = [
+    { field: 'username', headerName: 'Username', width: 250 },
+    { field: 'roleInProject', headerName: 'Role in Project', width: 200 },
+    { field: 'joinAt', headerName: 'Join Date', width: 200, 
+      renderCell: (params) => new Date(params.value).toLocaleString() 
+    },
+    { field: 'deletedNotes', headerName: 'Deleted Notes', width: 250 },
+    { field: 'deletededAt', headerName: 'Deleted At', width: 200, 
+      renderCell: (params) => new Date(params.value).toLocaleString() 
+    },
+  ];
+
   if (isLoading || isLoadingArchived) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error?.message}</div>;
+    return <div>Error Loading Details: {error?.message}</div>;
   }
 
   if (archivedError) {
-    return <div>Error: {archivedError?.message}</div>;
+    return <div>Error Loading Archived: {archivedError?.message}</div>;
   }
 
-  // Extract data from projectDetails
-  const { name, customerName, supervisorName, startDate, status, team, coSupervisors, changeCustomerNote, changeStatusNotes, changeSupervisorNote, endDate } = projectDetails || {};
+  const {
+    name,
+    customerName,
+    supervisorName,
+    startDate,
+    status,
+    team,
+    coSupervisors,
+    changeStatusAt,
+    changeStatusNotes,
+    company,
+    endDate,
+    favorite,
+    overview,
+    projectDetails: sections,
+    supervisorJoinAt,
+  } = projectDetails || {};
+
 
   return (
-    <Dashboard> 
+    <Dashboard>
       <ThemeProvider theme={theme}>
-        <Container maxWidth="lg" sx={{ py: 4 ,mt:5}}>
+        <Container maxWidth="lg" sx={{ py: 4, mt: 5 }}>
           <Typography variant="h3" sx={{ mb: 4, color: theme.palette.primary.main }}>
-            {name} 
+            {name}
           </Typography>
 
+          {/* Project Overview */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Project Overview
+            </Typography>
+            <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3' }}>
+              <CardContent>
+                <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Project Dates and Status */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
               Project Dates and Status
@@ -110,85 +162,193 @@ const ProjectDetails = () => {
             <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2 }}>
               <CardContent>
                 <Typography variant="h6" color="primary">Status Change Notes</Typography>
-                <Typography variant="body1" color="text.primary">{changeStatusNotes || 'Not change'}</Typography>
+                <Typography variant="body1" color="text.primary">{changeStatusNotes || 'No change notes.'}</Typography>
               </CardContent>
             </Card>
-          </Box>
-
-          <Divider sx={{ my: 4 }} />
-
-          {/* Section 3: Project Parties */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Project Parties
-            </Typography>
-            <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: `5px solid ${theme.palette.secondary.main}` }}>
+            <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mt: 2 }}>
               <CardContent>
-                <Typography variant="h6" color="primary">Supervisor</Typography>
-                <Typography variant="body1" color="text.primary">{supervisorName || 'Not Available'}</Typography>
-                <Typography variant="h6" color="primary">Supervisor Change Notes</Typography>
-                <Typography variant="body1" color="text.primary">{changeSupervisorNote || 'Not change'}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: '5px solid #43a047', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Customer</Typography>
-                <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
-                <Typography variant="h6" color="primary">Customer Change Notes</Typography>
-                <Typography variant="body1" color="text.primary">{changeCustomerNote || 'Not change'}</Typography>
-              </CardContent>
-            </Card>
-
-            {/* Co-Supervisors */}
-            {coSupervisors?.map((coSupervisor, index) => (
-              <Card key={index} sx={{ backgroundColor: '#c8e6c9', borderLeft: '5px solid #4caf50', mt: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" color="primary">Co-Supervisor {index + 1}</Typography>
-                  <Typography variant="body1" color="text.primary"><strong>Name:</strong> {coSupervisor.coSupervisorName || 'Not Available'}</Typography>
-                  <Typography variant="body1" color="text.primary"><strong>Joined on:</strong> {coSupervisor.coSupervisorJoinAt ? new Date(coSupervisor.coSupervisorJoinAt).toLocaleDateString() : 'Not Available'}</Typography>
-                </CardContent>
-              </Card>
-            ))}
-
-            {/* Team Members */}
-            <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #8e24aa', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Team Members</Typography>
+                <Typography variant="h6" color="primary">Last Status Change At</Typography>
                 <Typography variant="body1" color="text.primary">
-                  {team?.length > 0 ? team.map(member => member.name).join(', ') : 'No Team Members Available'}
+                  {changeStatusAt ? new Date(changeStatusAt).toLocaleString() : 'Not Available'}
                 </Typography>
               </CardContent>
             </Card>
           </Box>
 
-          {/* Section for Archived Users */}
+          {/* Company and Customer Details */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Company and Customer Details
+            </Typography>
+            <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">Company</Typography>
+                <Typography variant="body1" color="text.primary">{company || 'Not Available'}</Typography>
+              </CardContent>
+            </Card>
+            <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mt: 2 }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">Customer Name</Typography>
+                <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Supervisor and Co-Supervisors */}
+          {coSupervisors && coSupervisors.length > 0 && (
+            <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2 }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">Co-Supervisors</Typography>
+                <List>
+                  {coSupervisors.map((coSupervisor, index) => (
+                    <ListItem key={index}>
+                      <ListItemAvatar>
+                        <Avatar>{coSupervisor.coSupervisorName?.[0] || 'A'}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={coSupervisor.coSupervisorName}
+                        secondary={
+                          <>
+                            <Typography variant="body2" color="text.secondary">
+                              Joined At: {new Date(coSupervisor.coSupervisorJoinAt).toLocaleString()}
+                            </Typography>
+                          </>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Supervisor Details */}
+          {supervisorName && supervisorJoinAt && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Supervisor Details
+              </Typography>
+              <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373' }}>
+                <CardContent>
+                  <Typography variant="h6" color="primary">Supervisor Name</Typography>
+                  <Typography variant="body1" color="text.primary">{supervisorName}</Typography>
+                  <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                    Joined At
+                  </Typography>
+                  <Typography variant="body1" color="text.primary">
+                    {new Date(supervisorJoinAt).toLocaleString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          )}
+
+         {/* Favorite Status */}
 <Box sx={{ mb: 4 }}>
   <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-    Archived Users
+    Favorite Status
   </Typography>
-  {archivedUsers?.result && archivedUsers.result.length > 0 ? (
-    <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800' }}>
-      <CardContent>
-        <Typography variant="h6" color="primary">Archived Users List</Typography>
-        <Typography variant="body1" color="text.primary">
-          {archivedUsers.result.map((user, index) => (
-            <div key={index}>{user.name}</div> // عرض أسماء المستخدمين المؤرشفين
-          ))}
-        </Typography>
-      </CardContent>
-    </Card>
-  ) : (
-    <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800' }}>
-      <CardContent>
-        <Typography variant="body1" color="text.primary">No archived users found.</Typography>
-      </CardContent>
-    </Card>
-  )}
+  <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784' }}>
+    <CardContent>
+      
+      <Typography variant="body1" color="text.primary">
+        {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
+      </Typography>
+    </CardContent>
+  </Card>
 </Box>
+          {/* Team Members */}
+          {team && team.length > 0 && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Team Members
+              </Typography>
+              <List>
+                {team.map((member, index) => (
+                  <Card key={index} sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Joined At: {new Date(member.joinAt).toLocaleString()}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </List>
+            </Box>
+          )}
 
+          {/* Project Details Sections */}
+          {sections && sections.length > 0 ? (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Project Details
+              </Typography>
+              <List>
+                {sections.map((section) => (
+                  <Box key={section.sectionId} sx={{ mb: 3 }}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="h6">{section.sectionName}</Typography>
+                          <IconButton onClick={() => {
+                            setSectionDetails(prev => ({ ...prev, [section.sectionId]: !prev[section.sectionId] }));
+                          }}>
+                            {sectionDetails[section.sectionId] ? <ExpandLess /> : <ExpandMore />}
+                          </IconButton>
+                        </Box>
+                        <Divider sx={{ my: 2 }} />
+                        <Collapse in={sectionDetails[section.sectionId]}>
+                          <Typography variant="body1">{section.sectionDescription}</Typography>
+                          {section.details && section.details.length > 0 && (
+                            <List>
+                              {section.details.map((detail, index) => (
+                                <Box key={index} sx={{ mt: 2 }}>
+                                  <Typography variant="h6">{detail.title}</Typography>
+                                  <Typography variant="body1">{detail.description}</Typography>
+                                  {detail.imagePath && (
+                                    <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
+                                  )}
+                                </Box>
+                              ))}
+                            </List>
+                          )}
+                        </Collapse>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
+              </List>
+            </Box>
+          ) : null}
+
+          {/* Archived Users */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Archived Users
+            </Typography>
+            {archivedUsers?.result && Array.isArray(archivedUsers.result) && archivedUsers.result.length > 0 ? (
+              <DataGrid
+                rows={archivedUsers.result.map((user, index) => ({
+                  id: user.id || index,
+                  username: user.name || 'N/A',
+                  roleInProject: user.role || 'N/A',
+                  joinAt: user.joinAt ? new Date(user.joinAt).toLocaleString() : 'N/A',
+                  deletedNotes: user.deletedNotes || 'No notes',
+                  deletededAt: user.deletededAt ? new Date(user.deletededAt).toLocaleString() : 'N/A',
+                }))}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                onRowClick={({ id }) => handleRowClick(id)}
+              />
+            ) : (
+              <Typography variant="body1">No archived users found.</Typography>
+            )}
+          </Box>
         </Container>
       </ThemeProvider>
-    </Dashboard> 
+    </Dashboard>
   );
 };
 

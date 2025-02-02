@@ -46,21 +46,25 @@ export default function IndexSupervisor() {
   }
 
   const columns = [
-    { field: 'fullName', headerName: 'Name', width: 250 },
-    { field: 'email', headerName: 'Email', width: 250 },
-    { field: 'projectsName', headerName: 'Projects', width: 300, renderCell: (params) => {
+    { field: 'fullName', headerName: 'Name', width: 250, headerClassName: 'header' },
+    { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header' },
+    { 
+      field: 'projectsName', 
+      headerName: 'Projects', 
+      width: 300, 
+      renderCell: (params) => {
         const projects = params.value || [];
         return projects.length > 3 ? (
           <Button size="small" color="primary" onClick={() => handleOpenDialog(params.row)}>
             View Projects
           </Button>
         ) : (
-          <Typography variant="body2">{projects.join(', ')}</Typography>
+          <Typography variant="body2" sx={{ color: '#000000' }}>{projects.join(', ')}</Typography>
         );
       }
     },
   ];
-  
+
   const supervisorsWithFullName = supervisors.map((supervisor) => ({
     ...supervisor,
     id: supervisor.id,
@@ -70,11 +74,11 @@ export default function IndexSupervisor() {
   return (
     <Dashboard>
       <Box p={3} sx={{ mt: 6 }}>
-        <Typography variant="h4" gutterBottom>
-          Supervisors List
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+          Supervisors
         </Typography>
 
-        <Box sx={{ height: 600 }}>
+        <Box sx={{ height: 600,width:"80rem", }}>
           <DataGrid
             rows={supervisorsWithFullName || []}
             columns={columns}
@@ -85,6 +89,7 @@ export default function IndexSupervisor() {
             onPageChange={(newPage) => setPage(newPage)}
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             pagination
+            
           />
         </Box>
       </Box>
@@ -95,7 +100,7 @@ export default function IndexSupervisor() {
           <Box>
             {selectedSupervisor?.projectsName?.map((project, index) => (
               <Box key={index}>
-                <Typography variant="body1" sx={{ paddingBottom: '8px' }}>
+                <Typography variant="body1" sx={{ paddingBottom: '8px', color: '#000000' }}>
                   {project}
                 </Typography>
                 {index < selectedSupervisor.projectsName.length - 1 && <Divider />}

@@ -38,7 +38,7 @@ export default function Home() {
       
       <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh', borderRadius: 2, mt:5 }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: '#3f51b5', textAlign: 'center' }}>
-          Dashboard Overview
+        Home Overview
         </Typography>
 
        

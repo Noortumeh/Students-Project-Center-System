@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { Container, Paper, Typography } from '@mui/material';
+import { Box, Container, Paper, Typography, Grid } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import Select from 'react-select';
@@ -135,12 +135,13 @@ export default function EditProject() {
     return <Typography>Loading data...</Typography>;
   }
 
-  const supervisorOptions = users?.filter((user) => user.isSupervisor).map((user) => ({
+  // تصفية المستخدمين بناءً على الأدوار
+  const supervisorOptions = users?.filter((user) => user.role.includes('supervisor')).map((user) => ({
     value: user.id,
     label: `${user.firstName} ${user.lastName}`,
   }));
 
-  const customerOptions = users?.filter((user) => !user.isSupervisor).map((user) => ({
+  const customerOptions = users?.filter((user) => !user.role.includes('supervisor')).map((user) => ({
     value: user.id,
     label: `${user.firstName} ${user.lastName}`,
   }));
@@ -154,43 +155,59 @@ export default function EditProject() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
-          Edit Project
-        </Typography>
-        <form onSubmit={formik.handleSubmit}>
-          <ProjectNameField
-            projectName={formik.values.projectName}
-            setProjectName={(value) => formik.setFieldValue('projectName', value)}
-          />
-          <Select
-            options={supervisorOptions}
-            value={formik.values.supervisor}
-            onChange={(value) => formik.setFieldValue('supervisor', value)}
-            placeholder="Select a Supervisor"
-            isClearable
-          />
-          <Select
-            options={customerOptions}
-            value={formik.values.customer}
-            onChange={(value) => formik.setFieldValue('customer', value)}
-            placeholder="Select a Customer"
-            isClearable
-          />
-          <Select
-            options={statusOptions}
-            value={formik.values.status}
-            onChange={(value) => formik.setFieldValue('status', value)}
-            placeholder="Select Status"
-            isClearable
-          />
+    <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
+      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
+        Edit Project
+      </Typography>
+      <form onSubmit={formik.handleSubmit}>
+        {/* Project Name Field */}
+        <ProjectNameField
+          projectName={formik.values.projectName}
+          setProjectName={(value) => formik.setFieldValue('projectName', value)}
+        />
+        
+        {/* Supervisor, Customer, and Status Fields */}
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Select
+              options={supervisorOptions}
+              value={formik.values.supervisor}
+              onChange={(value) => formik.setFieldValue('supervisor', value)}
+              placeholder="Select a Supervisor"
+              isClearable
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Select
+              options={customerOptions}
+              value={formik.values.customer}
+              onChange={(value) => formik.setFieldValue('customer', value)}
+              placeholder="Select a Customer"
+              isClearable
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Select
+              options={statusOptions}
+              value={formik.values.status}
+              onChange={(value) => formik.setFieldValue('status', value)}
+              placeholder="Select Status"
+              isClearable
+            />
+          </Grid>
+        </Grid>
+
+        {/* Notes Fields */}
+        <Box sx={{ mt: 2 }}>
           <textarea
             name="changeOldSupervisorNotes"
             value={formik.values.changeOldSupervisorNotes}
             onChange={(e) => formik.setFieldValue('changeOldSupervisorNotes', e.target.value)}
             placeholder="Enter notes for supervisor change"
             rows="3"
-            style={{ width: '100%', marginTop: '16px' }}
+            style={{ width: '100%', marginBottom: '16px' }}
           />
           <textarea
             name="changeOldCustomerNotes"
@@ -198,7 +215,7 @@ export default function EditProject() {
             onChange={(e) => formik.setFieldValue('changeOldCustomerNotes', e.target.value)}
             placeholder="Enter notes for customer change"
             rows="3"
-            style={{ width: '100%', marginTop: '16px' }}
+            style={{ width: '100%', marginBottom: '16px' }}
           />
           <textarea
             name="changeStatusNotes"
@@ -206,13 +223,16 @@ export default function EditProject() {
             onChange={(e) => formik.setFieldValue('changeStatusNotes', e.target.value)}
             placeholder="Enter notes for status change"
             rows="3"
-            style={{ width: '100%', marginTop: '16px' }}
+            style={{ width: '100%' }}
           />
-          <LoadingButton type="submit" loading={mutation.isLoading} fullWidth sx={{ marginTop: '24px' }}>
-            Save Changes
-          </LoadingButton>
-        </form>
-      </Paper>
-    </Container>
+        </Box>
+
+        {/* Save Button */}
+        <LoadingButton type="submit" loading={mutation.isLoading} fullWidth sx={{ mt: 3 }}>
+          Save Changes
+        </LoadingButton>
+      </form>
+    </Paper>
+  </Container>
   );
 }
