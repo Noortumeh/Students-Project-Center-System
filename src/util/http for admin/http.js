@@ -6,6 +6,7 @@ export const fetchUsers = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing. Please login to get a token.');
+      return; // إضافة return للخروج إذا كان التوكن مفقودًا
     }
 
     const response = await fetch('http://spcs.somee.com/api/users', {
@@ -26,34 +27,22 @@ export const fetchUsers = async () => {
     }
 
     const data = await response.json();
-console.log("data",data)
-    // تحويل البيانات إلى الشكل المطلوب
+    console.log("data", data);
+
+    // إذا كانت البيانات موجودة وصحيحة، يتم إرجاعها كما هي
     if (data.result && Array.isArray(data.result)) {
-      const formattedUsers = data.result.map((user) => {
-        const names = user.fullName.split(' ');
-        const firstName = names[0];
-        const lastName = names.slice(1).join(' ');
-
-        return {
-          id: user.id,
-          firstName,
-          lastName,
-          fullName: `${firstName} ${lastName}`,
-          email: user.email,
-          role: user.role,
-        };
-      });
-
-      console.log('Formatted users:', formattedUsers);
-      return formattedUsers;
+      console.log('Users data:', data.result);
+      return data.result;
+    } else {
+      throw new Error('No valid result data found.');
     }
 
-    return [];
   } catch (error) {
     console.error('Error fetching users:', error.message);
     throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
+
 export const fetchProjects = async () => {
   try {
     const token = localStorage.getItem('token');
