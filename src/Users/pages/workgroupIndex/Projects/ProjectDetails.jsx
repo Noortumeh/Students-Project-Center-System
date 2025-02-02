@@ -16,6 +16,7 @@ export default function ProjectDetailsWork() {
     const [newSection, setNewSection] = useState({ name: '' });
     const [overviewText, setOverviewText] = useState('');
     const isSupervisor = JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
+    const isStudent = JSON.parse(localStorage.getItem('userInfo')).role.includes('student');
 
     // Project Details
     const { data: projectDetails, isLoading: detailsLoading, error: detailsError } = useQuery({
@@ -104,7 +105,7 @@ export default function ProjectDetailsWork() {
 
             {/* Overview Section */}
             <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="h4" sx={{ mb: 2, color:'#3f51b5' }}>Overview</Typography>
+                <Typography variant="h4" sx={{ mb: 2, color: '#3f51b5' }}>Overview</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Box component="img" src={OverviewSectionImage} alt="Project Overview" sx={{ width: 400, height: 300 }} />
                     <Box sx={{ flex: 1 }}>
@@ -116,17 +117,18 @@ export default function ProjectDetailsWork() {
                             minRows={4}
                             value={overviewText}
                             onChange={(e) => setOverviewText(e.target.value)}
-                            disabled={updateOverviewMutation.isLoading}
+                            disabled={updateOverviewMutation.isLoading || !isStudent}
                             sx={{ mb: 2 }}
                         />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSaveOverview}
-                            disabled={updateOverviewMutation.isLoading}
-                        >
-                            {updateOverviewMutation.isLoading ? <CircularProgress size={24} /> : 'Save Overview'}
-                        </Button>
+                        {isStudent &&
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSaveOverview}
+                                disabled={updateOverviewMutation.isLoading}
+                            >
+                                {updateOverviewMutation.isLoading ? <CircularProgress size={24} /> : 'Save Overview'}
+                            </Button>}
                     </Box>
                 </Box>
             </Container>
@@ -135,7 +137,7 @@ export default function ProjectDetailsWork() {
             {isSupervisor &&
                 <Container maxWidth="lg" sx={{ py: 4 }}>
                     <Box sx={{ mt: 4, width: '60%' }}>
-                        <Typography variant="h4" sx={{ mb: 2, color:'#3f51b5' }}>Add Project Section</Typography>
+                        <Typography variant="h4" sx={{ mb: 2, color: '#3f51b5' }}>Add Project Section</Typography>
                         <TextField
                             label="Section Name"
                             variant="outlined"
@@ -152,7 +154,7 @@ export default function ProjectDetailsWork() {
             }
 
             {/* Project Sections */}
-            <ProjectSections projectId={projectId} data={projectDetails.projectDetails} isSupervisor={isSupervisor} />
+            <ProjectSections projectId={projectId} data={projectDetails.projectDetails} isSupervisor={isSupervisor} isStudent={isStudent} />
         </Box>
     );
 }

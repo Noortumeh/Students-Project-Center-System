@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { addSubSection, deleteSection, deleteSubSection, updateSection, updateSubSection } from "./httpProjects";
 import { queryClient } from "../../../../util/httpsForUser/https";
 
-export default function ProjectSections({ data, projectId, isSupervisor }) {
+export default function ProjectSections({ data, projectId, isSupervisor, isStudent }) {
     const [sectionDetails, setSectionDetails] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedSection, setSelectedSection] = useState(null);
@@ -17,7 +17,6 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
     const [newIcon, setNewIcon] = useState(null);
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [newSubSection, setNewSubSection] = useState({ title: "", description: "" });
-
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -152,9 +151,11 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                                                     </IconButton>
                                                 </>
                                             }
-                                            <IconButton color="primary" onClick={() => handleAddClick(section.sectionId)}>
-                                                <Add />
-                                            </IconButton>
+                                            {isStudent &&
+                                                <IconButton color="primary" onClick={() => handleAddClick(section.sectionId)}>
+                                                    <Add />
+                                                </IconButton>
+                                            }
                                             <IconButton onClick={() => {
                                                 setSectionDetails(prev => ({ ...prev, [section.sectionName]: !prev[section.sectionName] }))
                                             }}>
@@ -168,21 +169,23 @@ export default function ProjectSections({ data, projectId, isSupervisor }) {
                                             <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
                                                 <Card>
                                                     <CardContent>
-                                                        <Box sx={{display: 'flex', alignItems:'center', justifyContent: 'space-evenly'}}>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
                                                             {detail.imagePath && <img src={detail.imagePath} alt="icon" width={200} height={200} />}
-                                                            <Box sx={{ml: 3}}>
+                                                            <Box sx={{ ml: 3 }}>
                                                                 <Typography variant="h6">{detail.title}</Typography>
                                                                 <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
                                                             </Box>
                                                         </Box>
-                                                        <Box sx={{ mt: 2 }}>
-                                                            <IconButton color="primary" onClick={() => handleEditClick(detail, true)}>
-                                                                <Edit />
-                                                            </IconButton>
-                                                            <IconButton color="error" onClick={() => handleDeleteClick(detail, true)}>
-                                                                <Delete />
-                                                            </IconButton>
-                                                        </Box>
+                                                        {isStudent &&
+                                                            <Box sx={{ mt: 2 }}>
+                                                                <IconButton color="primary" onClick={() => handleEditClick(detail, true)}>
+                                                                    <Edit />
+                                                                </IconButton>
+                                                                <IconButton color="error" onClick={() => handleDeleteClick(detail, true)}>
+                                                                    <Delete />
+                                                                </IconButton>
+                                                            </Box>
+                                                        }
                                                     </CardContent>
                                                 </Card>
                                             </Box>
