@@ -13,7 +13,7 @@ export default function IndexStudent() {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", height:'100vh'}}>
         <CircularProgress />
       </Box>
     );
@@ -29,7 +29,7 @@ export default function IndexStudent() {
     {
       field: 'projects',
       headerName: 'Projects',
-      width: 450,
+      width: 400,
       headerClassName: 'header',
       renderCell: (params) => {
         if (params.row.projects && Array.isArray(params.row.projects)) {
@@ -54,7 +54,7 @@ export default function IndexStudent() {
         }
       },
     },
-    { field: 'email', headerName: 'Email', width: 350, headerClassName: 'header' },
+    { field: 'email', headerName: 'Email', width: 300, headerClassName: 'header' },
   ];
 
   // تحديد الألوان الخاصة بالحالات
@@ -66,13 +66,12 @@ export default function IndexStudent() {
   };
 
   return (
-    <Dashboard>
-      <Box sx={{ padding: 3, mt: 6 }}>
+      <Box sx={{ padding: 3, mt: 6}}>
         <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
           Students
         </Typography>
-        <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#f5f5f5' ,height: 600,width:"80rem",}}>
-          <Box sx={{ height: 'auto' }}>
+        <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#f5f5f5' ,height: "100vh", width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '70rem' }}}>
+          <Box sx={{ height: { xs: 'auto', md: '100vh' }, width:'100%', overflowX: 'auto' }}>
             <DataGrid
               rows={students || []}
               columns={columns}
@@ -85,6 +84,5 @@ export default function IndexStudent() {
           </Box>
         </Paper>
       </Box>
-    </Dashboard>
   );
 }

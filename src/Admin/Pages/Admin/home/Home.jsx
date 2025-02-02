@@ -2,7 +2,7 @@
 import { Box, Grid, Divider, CircularProgress, Typography } from '@mui/material';
 import { Business, CheckCircle, HourglassEmpty, Group, People, School, SupervisorAccount } from '@mui/icons-material';
 import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
-import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx'; 
+import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx';
 import ProjectStatusChart from '../../../Components/home/ProjectStatusChart .jsx';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStatistics } from '../../../../util/http for admin/http.js';
@@ -33,15 +33,12 @@ export default function Home() {
   const result = statistics || {};
 
   return (
-    <Box mt='5'>
-    <Dashboard>
-      
-      <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh', borderRadius: 2, mt:5 }}>
+    <Box mt='4rem'>
+      <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh', borderRadius: 2, mt: 5 }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: '#3f51b5', textAlign: 'center' }}>
-        Home Overview
+          Home Overview
         </Typography>
 
-       
         <Grid container spacing={4}>
           {/* تم إعادة تنظيمها وتنظيم الألوان */}
           {[
@@ -74,99 +71,98 @@ export default function Home() {
         {/* الرسوم البيانية */}
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-           
-              <ProjectStatusChart
-                data={{
-                  labels: ['Completed', 'Active', 'Pending'],
-                  datasets: [
-                    {
-                      label: 'Projects',
-                      data: [
-                        result.projectsCompletedCount || 0,
-                        result.projectsActiveCount || 0,
-                        result.projectsPendingCount || 0,
-                      ],
-                      backgroundColor: ['#4caf50', '#2196f3', '#ff9800'],
-                    },
-                  ],
-                }}
-                loading={statisticsLoading}
-                title="Project Status"
-                chartType="doughnut"
-              />
-           
+
+            <ProjectStatusChart
+              data={{
+                labels: ['Completed', 'Active', 'Pending'],
+                datasets: [
+                  {
+                    label: 'Projects',
+                    data: [
+                      result.projectsCompletedCount || 0,
+                      result.projectsActiveCount || 0,
+                      result.projectsPendingCount || 0,
+                    ],
+                    backgroundColor: ['#4caf50', '#2196f3', '#ff9800'],
+                  },
+                ],
+              }}
+              loading={statisticsLoading}
+              title="Project Status"
+              chartType="doughnut"
+            />
+
           </Grid>
 
           <Grid item xs={12} md={6}>
-          
-              <ProjectStatusChart
-                data={{
-                  labels: ['Co-Supervisors', 'Customers', 'Supervisors', 'Students'],
-                  datasets: [
-                    {
-                      label: 'Users',
-                      data: [
-                        result.co_supervisorsActiveCount || 0,
-                        result.customersCount || 0,
-                        result.supervisorsCount || 0,
-                        result.studentsCount || 0,
-                      ],
-                      backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ff9800'],
-                    },
-                  ],
-                }}
-                loading={statisticsLoading}
-                title="User Distribution"
-                chartType="bar"
-              />
+
+            <ProjectStatusChart
+              data={{
+                labels: ['Co-Supervisors', 'Customers', 'Supervisors', 'Students'],
+                datasets: [
+                  {
+                    label: 'Users',
+                    data: [
+                      result.co_supervisorsActiveCount || 0,
+                      result.customersCount || 0,
+                      result.supervisorsCount || 0,
+                      result.studentsCount || 0,
+                    ],
+                    backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ff9800'],
+                  },
+                ],
+              }}
+              loading={statisticsLoading}
+              title="User Distribution"
+              chartType="bar"
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
-              <ProjectStatusChart
-                data={{
-                  labels: ['Total Projects', 'Canceled Projects'],
-                  datasets: [
-                    {
-                      label: 'Projects',
-                      data: [
-                        result.projectTotalCount || 0,
-                        result.projectsCanceledCount || 0,
-                      ],
-                      backgroundColor: ['#4caf50', '#e91e63'],
-                    },
-                  ],
-                }}
-                loading={statisticsLoading}
-                title="Project Completion Status"
-                chartType="pie"
-              />
+            <ProjectStatusChart
+              data={{
+                labels: ['Total Projects', 'Canceled Projects'],
+                datasets: [
+                  {
+                    label: 'Projects',
+                    data: [
+                      result.projectTotalCount || 0,
+                      result.projectsCanceledCount || 0,
+                    ],
+                    backgroundColor: ['#4caf50', '#e91e63'],
+                  },
+                ],
+              }}
+              loading={statisticsLoading}
+              title="Project Completion Status"
+              chartType="pie"
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
-              <ProjectStatusChart
-                data={{
-                  labels: ['Active Users', 'Inactive Users'],
-                  datasets: [
-                    {
-                      label: 'Users',
-                      data: [
-                        result.usersActiveCount || 0,
-                        (result.usersCount || 0) - (result.usersActiveCount || 0),
-                      ],
-                      backgroundColor: ['#4caf50', '#f44336'],
-                    },
-                  ],
-                }}
-                loading={statisticsLoading}
-                title="User Activity"
-                chartType="bar"
-              />
-           
-           </Grid>
+            <ProjectStatusChart
+              data={{
+                labels: ['Active Users', 'Inactive Users'],
+                datasets: [
+                  {
+                    label: 'Users',
+                    data: [
+                      result.usersActiveCount || 0,
+                      (result.usersCount || 0) - (result.usersActiveCount || 0),
+                    ],
+                    backgroundColor: ['#4caf50', '#f44336'],
+                  },
+                ],
+              }}
+              loading={statisticsLoading}
+              title="User Activity"
+              chartType="bar"
+            />
+
+          </Grid>
 
         </Grid>
       </Box>
-    </Dashboard>
     </Box>
   );
 }
