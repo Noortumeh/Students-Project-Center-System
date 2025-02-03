@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { CircularProgress, Box, Typography } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchCustomers } from '../../../../util/http for admin/http.js';
@@ -52,7 +51,7 @@ export default function IndexCustomer() {
   ];
   
   return (
-      <Box p={3} sx={{ mt:6,ml:10 }}>
+      <Box p={3} sx={{ mt:6, }}>
         <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center',mt:3 }}>
           Customers
         </Typography>

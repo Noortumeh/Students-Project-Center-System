@@ -79,32 +79,38 @@ const CreateProject = () => {
   return (
     <Container maxWidth="xl" sx={{ mt: 5 }}>
       <ToastContainer />
-      <Grid container spacing={6}>
+      <Grid container spacing={6} alignItems="center">
         {/* نصف الصفحة للـ Paper */}
         <Grid item xs={12} md={6}>
-          <Paper 
-            elevation={6} 
-            sx={{ 
-              borderRadius: 6, 
-              overflow: 'hidden', 
-              background: '#f5f5f5', 
-              p: 5, 
-              height: '100%', 
-              mt: 5
+          <Paper
+            elevation={6}
+            sx={{
+              borderRadius: 6,
+              overflow: "hidden",
+              background: "#f5f5f5",
+              p: 5,
+              height: "100%",
+              mt: { xs: 2, md: 5 }, // تقليل الهامش في الشاشات الصغيرة
             }}
           >
             <Typography
               variant="h3"
               gutterBottom
-              sx={{ textAlign: 'center', color: '#1976d2', fontWeight: 'bold', mb: 4 }}
+              sx={{
+                textAlign: "center",
+                color: "#1976d2",
+                fontWeight: "bold",
+                mb: 4,
+                fontSize: { xs: "2rem", md: "3rem" }, // تصغير العنوان في الشاشات الصغيرة
+              }}
             >
               Create New Project
             </Typography>
             <form>
-              <ProjectNameField 
-                projectName={projectName} 
-                setProjectName={setProjectName} 
-                sx={{ width: '100%' }} 
+              <ProjectNameField
+                projectName={projectName}
+                setProjectName={setProjectName}
+                sx={{ width: "100%" }}
               />
               <TextField
                 label="Company Name"
@@ -113,8 +119,8 @@ const CreateProject = () => {
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                sx={{ mt: 3, fontSize: '1.2rem' }}
-                InputProps={{ sx: { height: '60px', fontSize: '1.2rem' } }}
+                sx={{ mt: 3, fontSize: "1.2rem" }}
+                InputProps={{ sx: { height: "60px", fontSize: "1.2rem" } }}
               />
               <Select
                 options={supervisors}
@@ -122,8 +128,8 @@ const CreateProject = () => {
                 placeholder="Select a Supervisor"
                 isClearable
                 styles={{
-                  container: (base) => ({ ...base, marginTop: '24px', width: '100%' }),
-                  control: (base) => ({ ...base, height: '60px' }),
+                  container: (base) => ({ ...base, marginTop: "24px", width: "100%" }),
+                  control: (base) => ({ ...base, height: "60px" }),
                 }}
               />
               <Select
@@ -132,8 +138,8 @@ const CreateProject = () => {
                 placeholder="Select a Customer"
                 isClearable
                 styles={{
-                  container: (base) => ({ ...base, marginTop: '24px', width: '100%' }),
-                  control: (base) => ({ ...base, height: '60px' }),
+                  container: (base) => ({ ...base, marginTop: "24px", width: "100%" }),
+                  control: (base) => ({ ...base, height: "60px" }),
                 }}
               />
               <LoadingButton
@@ -142,36 +148,41 @@ const CreateProject = () => {
                 onClick={handleAddProject}
                 sx={{
                   mt: 5,
-                  width: '100%',
-                  height: '60px',
-                  fontSize: '1.2rem',
-                  backgroundColor: '#1976d2',
-                  '&:hover': {
-                    backgroundColor: '#115293',
+                  width: "100%",
+                  height: "60px",
+                  fontSize: "1.2rem",
+                  backgroundColor: "#1976d2",
+                  "&:hover": {
+                    backgroundColor: "#115293",
                   },
                 }}
               />
             </form>
           </Paper>
         </Grid>
-
+  
         {/* نصف الصفحة للصورة */}
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        >
           <Box
             sx={{
-              width: '45rem',
-              height: '600px',
+              width: { xs: "100%", sm: "30rem", md: "45rem" }, // تصغير الصورة على الشاشات الصغيرة
+              height: { xs: "300px", sm: "400px", md: "600px" }, // ضبط الطول
               backgroundImage: `url(${projectImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: '10px',
-              mt:7
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              borderRadius: "10px",
+              mt: { xs: 3, md: 7 }, // تقليل الهامش في الهواتف
             }}
           />
         </Grid>
       </Grid>
     </Container>
   );
-};
+}  
 
 export default CreateProject;
