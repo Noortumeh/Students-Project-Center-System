@@ -1,16 +1,20 @@
+// ProjectNameField.jsx
+import React from 'react';
 import { TextField } from '@mui/material';
-/* eslint-disable react/prop-types */
-const ProjectNameField = ({ label = "Project Name", value, setValue }) => {
+
+const ProjectNameField = ({ projectName, setProjectName, sx }) => {
   return (
     <TextField
-      label={label} // التأكد من أن `label` موجود
+      label="Project Name"
       variant="outlined"
       fullWidth
       required
-      value={value || ""} // التأكد من أن القيمة ليست undefined
-      onChange={(e) => setValue(e.target.value)}
-      sx={{ mb: 3 }}
+      value={projectName}
+      onChange={(e) => setProjectName(e.target.value)}
+      sx={sx}
+      InputProps={{ sx: { height: '60px', fontSize: '1.2rem' } }}
     />
   );
 };
+
 export default ProjectNameField;

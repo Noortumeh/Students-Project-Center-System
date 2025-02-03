@@ -187,7 +187,7 @@ export default function TermOfServices() {
 
   return (
     <Container>
-      <Box sx={{ mt: 12, mx: 'auto', maxWidth: 'lg' }}>
+      <Box sx={{ mt: 12, mx: 'auto', maxWidth: 'lg' ,width:"80rem" }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h4" sx={styles.title}>
             Terms Of Services

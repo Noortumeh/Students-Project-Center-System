@@ -165,6 +165,7 @@ const CreateProject = () => {
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               borderRadius: '10px',
+              mt:7
             }}
           />
         </Grid>
