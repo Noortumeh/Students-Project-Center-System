@@ -21,7 +21,6 @@ import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { fetchProjectDetails, fetchArchivedUsers } from '../../../../util/http for admin/http.js';
 import Swal from 'sweetalert2';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 const theme = createTheme({
@@ -113,243 +112,241 @@ const ProjectDetails = () => {
 
 
   return (
-    <Dashboard>
-      <ThemeProvider theme={theme}>
-        <Container maxWidth="lg" sx={{ py: 4, mt: 5 }}>
-          <Typography variant="h3" sx={{ mb: 4, color: theme.palette.primary.main }}>
-            {name}
+    <ThemeProvider theme={theme}>
+      <Container sx={{ py: 4, mt: 5, width: '100%' }}>
+        <Typography variant="h3" sx={{ mb: 4, color: theme.palette.primary.main }}>
+          {name}
+        </Typography>
+  
+        {/* Project Overview */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+            Project Overview
           </Typography>
-
-          {/* Project Overview */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Project Overview
-            </Typography>
-            <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3' }}>
-              <CardContent>
-                <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Project Dates and Status */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Project Dates and Status
-            </Typography>
-            <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: `5px solid ${theme.palette.primary.main}` }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Start Date</Typography>
-                <Typography variant="body1" color="text.primary">
-                  {startDate ? new Date(startDate).toLocaleDateString() : 'Not Available'}
-                </Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#f0f4c3', borderLeft: '5px solid #cddc39', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">End Date</Typography>
-                <Typography variant="body1" color="text.primary">
-                  {endDate ? new Date(endDate).toLocaleDateString() : 'Not Available'}
-                </Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Status</Typography>
-                <Typography variant="body1" color="text.primary">{status || 'Not Available'}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Status Change Notes</Typography>
-                <Typography variant="body1" color="text.primary">{changeStatusNotes || 'No change notes.'}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Last Status Change At</Typography>
-                <Typography variant="body1" color="text.primary">
-                  {changeStatusAt ? new Date(changeStatusAt).toLocaleString() : 'Not Available'}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Company and Customer Details */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Company and Customer Details
-            </Typography>
-            <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e' }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Company</Typography>
-                <Typography variant="body1" color="text.primary">{company || 'Not Available'}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Customer Name</Typography>
-                <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Supervisor and Co-Supervisors */}
-          {coSupervisors && coSupervisors.length > 0 && (
-            <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Co-Supervisors</Typography>
-                <List>
-                  {coSupervisors.map((coSupervisor, index) => (
-                    <ListItem key={index}>
-                      <ListItemAvatar>
-                        <Avatar>{coSupervisor.coSupervisorName?.[0] || 'A'}</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={coSupervisor.coSupervisorName}
-                        secondary={
-                          <>
-                            <Typography variant="body2" color="text.secondary">
-                              Joined At: {new Date(coSupervisor.coSupervisorJoinAt).toLocaleString()}
-                            </Typography>
-                          </>
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Supervisor Details */}
-          {supervisorName && supervisorJoinAt && (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-                Supervisor Details
+          <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3', width: '100%' }}>
+            <CardContent>
+              <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
+            </CardContent>
+          </Card>
+        </Box>
+  
+        {/* Project Dates and Status */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+            Project Dates and Status
+          </Typography>
+          <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: `5px solid ${theme.palette.primary.main}`, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Start Date</Typography>
+              <Typography variant="body1" color="text.primary">
+                {startDate ? new Date(startDate).toLocaleDateString() : 'Not Available'}
               </Typography>
-              <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373' }}>
-                <CardContent>
-                  <Typography variant="h6" color="primary">Supervisor Name</Typography>
-                  <Typography variant="body1" color="text.primary">{supervisorName}</Typography>
-                  <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                    Joined At
-                  </Typography>
-                  <Typography variant="body1" color="text.primary">
-                    {new Date(supervisorJoinAt).toLocaleString()}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Box>
-          )}
-
-         {/* Favorite Status */}
-<Box sx={{ mb: 4 }}>
-  <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-    Favorite Status
-  </Typography>
-  <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784' }}>
-    <CardContent>
-      
-      <Typography variant="body1" color="text.primary">
-        {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
-      </Typography>
-    </CardContent>
-  </Card>
-</Box>
-          {/* Team Members */}
-          {team && team.length > 0 && (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-                Team Members
+            </CardContent>
+          </Card>
+          <Card sx={{ backgroundColor: '#f0f4c3', borderLeft: '5px solid #cddc39', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">End Date</Typography>
+              <Typography variant="body1" color="text.primary">
+                {endDate ? new Date(endDate).toLocaleDateString() : 'Not Available'}
               </Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Status</Typography>
+              <Typography variant="body1" color="text.primary">{status || 'Not Available'}</Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Status Change Notes</Typography>
+              <Typography variant="body1" color="text.primary">{changeStatusNotes || 'No change notes.'}</Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Last Status Change At</Typography>
+              <Typography variant="body1" color="text.primary">
+                {changeStatusAt ? new Date(changeStatusAt).toLocaleString() : 'Not Available'}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+  
+        {/* Company and Customer Details */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+            Company and Customer Details
+          </Typography>
+          <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e', width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Company</Typography>
+              <Typography variant="body1" color="text.primary">{company || 'Not Available'}</Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Customer Name</Typography>
+              <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
+            </CardContent>
+          </Card>
+        </Box>
+  
+        {/* Supervisor and Co-Supervisors */}
+        {coSupervisors && coSupervisors.length > 0 && (
+          <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2, width: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Co-Supervisors</Typography>
               <List>
-                {team.map((member, index) => (
-                  <Card key={index} sx={{ mb: 2 }}>
+                {coSupervisors.map((coSupervisor, index) => (
+                  <ListItem key={index}>
+                    <ListItemAvatar>
+                      <Avatar>{coSupervisor.coSupervisorName?.[0] || 'A'}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={coSupervisor.coSupervisorName}
+                      secondary={
+                        <>
+                          <Typography variant="body2" color="text.secondary">
+                            Joined At: {new Date(coSupervisor.coSupervisorJoinAt).toLocaleString()}
+                          </Typography>
+                        </>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        )}
+  
+        {/* Supervisor Details */}
+        {supervisorName && supervisorJoinAt && (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Supervisor Details
+            </Typography>
+            <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', width: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">Supervisor Name</Typography>
+                <Typography variant="body1" color="text.primary">{supervisorName}</Typography>
+                <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                  Joined At
+                </Typography>
+                <Typography variant="body1" color="text.primary">
+                  {new Date(supervisorJoinAt).toLocaleString()}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
+  
+        {/* Favorite Status */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+            Favorite Status
+          </Typography>
+          <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784', width: '100%' }}>
+            <CardContent>
+              <Typography variant="body1" color="text.primary">
+                {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+  
+        {/* Team Members */}
+        {team && team.length > 0 && (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Team Members
+            </Typography>
+            <List>
+              {team.map((member, index) => (
+                <Card key={index} sx={{ mb: 2, width: '100%' }}>
+                  <CardContent>
+                    <Typography variant="h6">{member.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Joined At: {new Date(member.joinAt).toLocaleString()}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </List>
+          </Box>
+        )}
+  
+        {/* Project Details Sections */}
+        {sections && sections.length > 0 ? (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Project Details
+            </Typography>
+            <List>
+              {sections.map((section) => (
+                <Box key={section.sectionId} sx={{ mb: 3 }}>
+                  <Card sx={{ width: '100%' }}>
                     <CardContent>
-                      <Typography variant="h6">{member.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Joined At: {new Date(member.joinAt).toLocaleString()}
-                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h6">{section.sectionName}</Typography>
+                        <IconButton onClick={() => {
+                          setSectionDetails(prev => ({ ...prev, [section.sectionId]: !prev[section.sectionId] }));
+                        }}>
+                          {sectionDetails[section.sectionId] ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                      </Box>
+                      <Divider sx={{ my: 2 }} />
+                      <Collapse in={sectionDetails[section.sectionId]}>
+                        <Typography variant="body1">{section.sectionDescription}</Typography>
+                        {section.details && section.details.length > 0 && (
+                          <List>
+                            {section.details.map((detail, index) => (
+                              <Box key={index} sx={{ mt: 2 }}>
+                                <Typography variant="h6">{detail.title}</Typography>
+                                <Typography variant="body1">{detail.description}</Typography>
+                                {detail.imagePath && (
+                                  <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
+                                )}
+                              </Box>
+                            ))}
+                          </List>
+                        )}
+                      </Collapse>
                     </CardContent>
                   </Card>
-                ))}
-              </List>
-            </Box>
-          )}
-
-          {/* Project Details Sections */}
-          {sections && sections.length > 0 ? (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-                Project Details
-              </Typography>
-              <List>
-                {sections.map((section) => (
-                  <Box key={section.sectionId} sx={{ mb: 3 }}>
-                    <Card>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="h6">{section.sectionName}</Typography>
-                          <IconButton onClick={() => {
-                            setSectionDetails(prev => ({ ...prev, [section.sectionId]: !prev[section.sectionId] }));
-                          }}>
-                            {sectionDetails[section.sectionId] ? <ExpandLess /> : <ExpandMore />}
-                          </IconButton>
-                        </Box>
-                        <Divider sx={{ my: 2 }} />
-                        <Collapse in={sectionDetails[section.sectionId]}>
-                          <Typography variant="body1">{section.sectionDescription}</Typography>
-                          {section.details && section.details.length > 0 && (
-                            <List>
-                              {section.details.map((detail, index) => (
-                                <Box key={index} sx={{ mt: 2 }}>
-                                  <Typography variant="h6">{detail.title}</Typography>
-                                  <Typography variant="body1">{detail.description}</Typography>
-                                  {detail.imagePath && (
-                                    <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
-                                  )}
-                                </Box>
-                              ))}
-                            </List>
-                          )}
-                        </Collapse>
-                      </CardContent>
-                    </Card>
-                  </Box>
-                ))}
-              </List>
-            </Box>
-          ) : null}
-
-          {/* Archived Users */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Archived Users
-            </Typography>
-            {archivedUsers?.result && Array.isArray(archivedUsers.result) && archivedUsers.result.length > 0 ? (
-              <DataGrid
-                rows={archivedUsers.result.map((user, index) => ({
-                  id: user.id || index,
-                  username: user.name || 'N/A',
-                  roleInProject: user.role || 'N/A',
-                  joinAt: user.joinAt ? new Date(user.joinAt).toLocaleString() : 'N/A',
-                  deletedNotes: user.deletedNotes || 'No notes',
-                  deletededAt: user.deletededAt ? new Date(user.deletededAt).toLocaleString() : 'N/A',
-                }))}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                onRowClick={({ id }) => handleRowClick(id)}
-              />
-            ) : (
-              <Typography variant="body1">No archived users found.</Typography>
-            )}
+                </Box>
+              ))}
+            </List>
           </Box>
-        </Container>
-      </ThemeProvider>
-    </Dashboard>
+        ) : null}
+  
+        {/* Archived Users */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+            Archived Users
+          </Typography>
+          {archivedUsers?.result && Array.isArray(archivedUsers.result) && archivedUsers.result.length > 0 ? (
+            <DataGrid
+              rows={archivedUsers.result.map((user, index) => ({
+                id: user.id || index,
+                username: user.name || 'N/A',
+                roleInProject: user.role || 'N/A',
+                joinAt: user.joinAt ? new Date(user.joinAt).toLocaleString() : 'N/A',
+                deletedNotes: user.deletedNotes || 'No notes',
+                deletededAt: user.deletededAt ? new Date(user.deletededAt).toLocaleString() : 'N/A',
+              }))}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              onRowClick={({ id }) => handleRowClick(id)}
+              sx={{ width: '100%' }}
+            />
+          ) : (
+            <Typography variant="body1">No archived users found.</Typography>
+          )}
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
-};
-
+}
 export default ProjectDetails;

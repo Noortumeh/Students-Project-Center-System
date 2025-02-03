@@ -109,10 +109,10 @@ const ProjectPage = () => {
       width: 200,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => navigate(`/projects/${params.row.id}`)}>
+          <IconButton onClick={() => navigate(`${params.row.id}`)}>
             <VisibilityIcon color="primary" />
           </IconButton>
-          <IconButton onClick={() => navigate(`/projects/EditProject/${params.row.id}`)}>
+          <IconButton onClick={() => navigate(`EditProject/${params.row.id}`)}>
             <EditIcon color="secondary" />
           </IconButton>
           <IconButton
@@ -136,8 +136,7 @@ const ProjectPage = () => {
   ];
 
   return (
-    
-    <Container sx={{ marginTop:'5rem' }}>
+    <Container sx={{ marginTop: '5rem' }}>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: '10px' }}>

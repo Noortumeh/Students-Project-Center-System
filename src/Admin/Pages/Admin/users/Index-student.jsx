@@ -25,12 +25,14 @@ export default function IndexStudent() {
 
   // الأعمدة
   const columns = [
-    { field: 'fullName', headerName: 'Student Name', width: 300, headerClassName: 'header' },
+    { field: 'fullName', headerName: 'Student Name', width: 300, headerClassName: 'header', headerAlign: 'center', align: 'center' },
     {
       field: 'projects',
       headerName: 'Projects',
       width: 400,
       headerClassName: 'header',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => {
         if (params.row.projects && Array.isArray(params.row.projects)) {
           return (
@@ -54,8 +56,9 @@ export default function IndexStudent() {
         }
       },
     },
-    { field: 'email', headerName: 'Email', width: 300, headerClassName: 'header' },
+    { field: 'email', headerName: 'Email', width: 300, headerClassName: 'header', headerAlign: 'center', align: 'center' },
   ];
+  
 
   // تحديد الألوان الخاصة بالحالات
   const statusColors = {
@@ -67,7 +70,7 @@ export default function IndexStudent() {
 
   return (
       <Box sx={{ padding: 3, mt: 6}}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center' }}>
           Students
         </Typography>
         <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#f5f5f5' ,height: "100vh", width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '70rem' }}}>
