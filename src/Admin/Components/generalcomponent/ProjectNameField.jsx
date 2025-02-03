@@ -1,17 +1,16 @@
 import { TextField } from '@mui/material';
 /* eslint-disable react/prop-types */
-const ProjectNameField = ({ projectName, setProjectName }) => {
+const ProjectNameField = ({ label = "Project Name", value, setValue }) => {
   return (
     <TextField
-    label="Project Name"
-    variant="outlined"
-    fullWidth
-    required
-    value={projectName}
-    onChange={(e) => setProjectName(e.target.value)}
-    sx={{ mb: 3 }} // هذه المسافة بين حقل المشروع وبقية الحقول
-  />
-  
+      label={label} // التأكد من أن `label` موجود
+      variant="outlined"
+      fullWidth
+      required
+      value={value || ""} // التأكد من أن القيمة ليست undefined
+      onChange={(e) => setValue(e.target.value)}
+      sx={{ mb: 3 }}
+    />
   );
 };
 export default ProjectNameField;

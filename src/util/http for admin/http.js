@@ -725,7 +725,7 @@ export const fetchSupervisors = async () => {
     if (!data.isSuccess) {
       throw new Error(data.message);
     }
-
+console.log("data is",data)
     return data.result || [];  // يجب أن تكون البيانات في `data.result` وليس `data.supervisors`
 
   } catch (error) {

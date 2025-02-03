@@ -253,36 +253,31 @@ export default function IndexUsers() {
     );
   };
 
+  
   const columns = [
-    { field: 'fullName', headerName: 'Full Name', width: 240, headerClassName: 'header-color' },
-    { field: 'email', headerName: 'Email', width: 245, headerClassName: 'header-color' },
-    { field: 'address', headerName: 'Address', width: 200, headerClassName: 'header-color' },
-    { field: 'phone', headerName: 'Phone', width: 180, headerClassName: 'header-color' },
-    { field: 'role', headerName: 'Role', width: 180, headerClassName: 'header-color' },
+    { field: 'fullName', headerName: 'Full Name', width: 240, headerAlign: 'center', align: 'center' },
+    { field: 'email', headerName: 'Email', width: 245, headerAlign: 'center', align: 'center' },
+    { field: 'address', headerName: 'Address', width: 200, headerAlign: 'center', align: 'center' },
+    { field: 'phone', headerName: 'Phone', width: 180, headerAlign: 'center', align: 'center' },
+    { field: 'role', headerName: 'Role', width: 180, headerAlign: 'center', align: 'center' },
     {
       field: 'actions',
       headerName: 'Actions',
+      width: 150,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <Box display="flex" justifyContent="space-around">
-          <IconButton
-            color="primary"
-            onClick={() => handleOpenEditDialog(params.row)}
-          >
+          <IconButton color="primary" onClick={() => console.log('Edit', params.row)}>
             <Edit />
           </IconButton>
-          <IconButton
-            color="secondary"
-            onClick={() => handleOpenDeleteDialog(params.row)}
-
-          >
+          <IconButton color="secondary" onClick={() => console.log('Delete', params.row)}>
             <Delete />
           </IconButton>
         </Box>
       ),
-      width: 150,
     },
   ];
-
   // تحقق من حالة التحميل أو الخطأ
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -305,9 +300,9 @@ export default function IndexUsers() {
   return (
       <Container>
         <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh" }}>
-          <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
-            Users
-          </Typography>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center' }}>
+          Users
+        </Typography>
 
           <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '75rem' }, Height: "100vh" }}>
             <DataGrid
