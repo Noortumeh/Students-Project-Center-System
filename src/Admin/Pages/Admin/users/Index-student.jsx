@@ -69,8 +69,8 @@ export default function IndexStudent() {
   };
 
   return (
-      <Box sx={{ padding: 3, mt: 6}}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center' }}>
+      <Box sx={{ padding: 3, mt: 6,ml:10}}>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center',mt:3 }}>
           Students
         </Typography>
         <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#f5f5f5' ,height: "100vh", width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '70rem' }}}>

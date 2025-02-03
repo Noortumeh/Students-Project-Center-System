@@ -168,7 +168,8 @@ export default function EditProject() {
               overflow: 'hidden', 
               background: '#f5f5f5', 
               p: 5, 
-              height: '100%', 
+              height: '92%', 
+              mt:4
             }}
           >
 
@@ -309,12 +310,13 @@ export default function EditProject() {
         <Grid item xs={12} md={6}>
           <Box
             sx={{
-              width: '45rem',
+              width: '35rem',
               height: '600px',
               backgroundImage: `url(${projectImage})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               borderRadius: '10px',
+              ml:10
             }}
           />
         </Grid>

@@ -299,8 +299,8 @@ export default function IndexUsers() {
 
   return (
       <Container>
-        <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh" }}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center' }}>
+        <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh",ml:10 }}>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center',mt:3 }}>
           Users
         </Typography>
 
