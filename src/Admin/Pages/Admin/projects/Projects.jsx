@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Box,
@@ -19,18 +19,25 @@ import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { fetchProjects, setFavoriteProject } from '../../../../util/http for admin/http.js';
 import { DataGrid } from '@mui/x-data-grid';
+
+// إعادة استخدام ألوان الحالات
+const statusColors = {
+  active: 'success',
+  pending: 'warning',
+  completed: 'primary',
+  canceled: 'error',
+};
 
 const ProjectPage = () => {
   const navigate = useNavigate();
   const [favoriteProjects, setFavoriteProjects] = useState({});
 
-  // استخدام useQuery لجلب البيانات
+  // جلب البيانات
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ['projects'],
-    queryFn: fetchProjects, // إرسال الفلاتر إلى API
+    queryFn: fetchProjects,
     keepPreviousData: true,
     staleTime: 10000,
   });
@@ -70,50 +77,63 @@ const ProjectPage = () => {
     }
   };
 
-  const statusColors = {
-    active: 'success',
-    pending: 'warning',
-    completed: 'primary',
-    canceled: 'default',
-  };
-
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <Typography color="error">Error Loading projects: {error.message}</Typography>;
+  if (error) return <Typography color="error" textAlign="center">Error Loading projects: {error.message}</Typography>;
 
   if (!data || !data.isSuccess) {
     return <Typography color="error">Invalid data format received from API.</Typography>;
   }
 
-  // البيانات التي يعيدها الخادم تكون مجزأة بالفعل
   const projects = data.result.projects || [];
 
+  // تعريف الأعمدة
   const columns = [
-    { field: 'name', headerName: 'Project Name', width: 200 },
-    { field: 'supervisorName', headerName: 'Supervisor Name', width: 200 },
-    { field: 'customerName', headerName: 'Customer Name', width: 200 },
-    { field: 'workgroupName', headerName: 'Workgroup Name', width: 200 },
+    { field: 'name', headerName: 'Project Name', width: 250, headerAlign: 'center', align: 'center' },
+    { field: 'supervisorName', headerName: 'Supervisor Name', width: 250, headerAlign: 'center', align: 'center' },
+    { field: 'customerName', headerName: 'Customer Name', width: 250, headerAlign: 'center', align: 'center' },
+    { field: 'workgroupName', headerName: 'Workgroup Name', width: 250, headerAlign: 'center', align: 'center' },
     {
       field: 'status',
       headerName: 'Status',
       width: 150,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <Chip
           label={params.value}
           color={statusColors[params.value] || 'default'}
+          sx={{ 
+            minWidth: '90px', 
+            minHeight: '30px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            fontSize: '0.85rem',
+            textTransform: 'capitalize'
+          }}
         />
       ),
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 200,
+      width: 220,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
-        <>
-          <IconButton onClick={() => navigate(`${params.row.id}`)}>
-            <VisibilityIcon color="primary" />
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <IconButton 
+            onClick={() => navigate(`${params.row.id}`)}
+            sx={{ padding: '4px', margin: '4px' }}
+          >
+            <VisibilityIcon sx={{ fontSize: '1.5rem' }} color="primary" />
           </IconButton>
-          <IconButton onClick={() => navigate(`EditProject/${params.row.id}`)}>
-            <EditIcon color="secondary" />
+          <IconButton 
+            onClick={() => navigate(`EditProject/${params.row.id}`, { state: { companyName: params.row.companyName } })}
+            sx={{ padding: '4px', margin: '4px' }}
+          >
+            <EditIcon sx={{ fontSize: '1.5rem' }} color="secondary" />
           </IconButton>
           <IconButton
             onClick={() =>
@@ -123,37 +143,57 @@ const ProjectPage = () => {
                 favoriteProjects[params.row.id] || params.row.favorite
               )
             }
+            sx={{ padding: '4px', margin: '4px' }}
           >
             {favoriteProjects[params.row.id] || params.row.favorite ? (
-              <StarIcon color="warning" />
+              <StarIcon sx={{ fontSize: '1.5rem' }} color="warning" />
             ) : (
-              <StarBorderIcon />
+              <StarBorderIcon sx={{ fontSize: '1.5rem' }} />
             )}
           </IconButton>
-        </>
+        </Box>
       ),
-    },
+    }
   ];
 
   return (
-    <Container sx={{ marginTop: '5rem' }}>
+    <Container sx={{ marginTop: "5rem", px: { xs: 2, sm: 3, md: 4 } }}>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: '10px' }}>
-        <Typography variant="h4" fontWeight="bold" color="primary">
+      {/* Header Section */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "center",
+          alignItems: "center",
+          mb: 3,
+          mt: "10px",
+          gap: 2,
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          fontWeight="bold" 
+          color="primary" 
+          sx={{ fontSize: { xs: "1.8rem", md: "2.5rem" } }}
+        >
           Projects
         </Typography>
+
         <Button
           variant="contained"
           color="success"
           startIcon={<AddIcon />}
-          onClick={() => navigate('/admin/projects/CreateProject')}
+          onClick={() => navigate("/admin/projects/CreateProject")}
+          sx={{ width: { xs: "100%", sm: "auto" }, ml: 4 }}
         >
           Create Project
         </Button>
       </Box>
 
-      <Box sx={{ height: 600 }}>
+      {/* DataGrid Section */}
+      <Box sx={{ height: { xs: 450, sm: 500, md: 600 } }}>
         <DataGrid
           rows={projects}
           columns={columns}
@@ -161,25 +201,23 @@ const ProjectPage = () => {
           rowsPerPageOptions={[6, 20, 50]}
           disableSelectionOnClick
           sx={{
-            '& .MuiDataGrid-root': {
-              border: 'none',
+            "& .MuiDataGrid-root": { border: "none" },
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: "#2c3e50",
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: { xs: "0.9rem", sm: "1rem" },
+              textAlign: 'center'
             },
-            '& .MuiDataGrid-columnHeader': {
-              backgroundColor: '#2c3e50',
-              color: '#ffffff',
-              fontWeight: 'bold',
+            "& .MuiDataGrid-cell": {
+              padding: "10px",
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+              borderBottom: "1px solid #e0e0e0",
+              textAlign: 'center'
             },
-            '& .MuiDataGrid-cell': {
-              padding: '10px',
-              borderBottom: '1px solid #e0e0e0',
-            },
-            '& .MuiDataGrid-row': {
-              '&:nth-of-type(odd)': {
-                backgroundColor: '#f9f9f9',
-              },
-              '&:hover': {
-                backgroundColor: '#e0f7fa',
-              },
+            "& .MuiDataGrid-row": {
+              "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" },
+              "&:hover": { backgroundColor: "#e0f7fa" },
             },
           }}
         />

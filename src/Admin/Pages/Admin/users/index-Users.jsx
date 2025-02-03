@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
@@ -17,10 +17,8 @@ import {
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DataGrid } from '@mui/x-data-grid';
-import { Edit, Delete, Height } from '@mui/icons-material';
+import { Edit, Delete } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom'; // Import Link for navigation
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import {
   fetchUsers,
   fetchRoles,
@@ -35,7 +33,6 @@ export default function IndexUsers() {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   // استعلام للحصول على المستخدمين
   const { data: users = [], refetch: refetchUsers } = useQuery({
@@ -46,7 +43,7 @@ export default function IndexUsers() {
   });
 
   // استعلام للحصول على الأدوار
-  const { data: allRoles = [], isLoading, error, refetch: refetchRoles } = useQuery({
+  const { data: allRoles = [], isLoading, error } = useQuery({
     queryKey: ['roles'],
     queryFn: async () => {
       const roles = await fetchRoles();
@@ -200,22 +197,20 @@ export default function IndexUsers() {
     const names = user.fullName.split(' ');
     const firstName = names[0];
     const lastName = names.slice(1).join(' ');
-  
+
     const roleNames = Array.isArray(user.role)
       ? user.role.map((r) => (typeof r === 'string' ? r : r.name)).join(', ')
       : user.role.name || '';
-  
+
     return {
       id: user.id || index,
       fullName: `${firstName} ${lastName}`,
       email: user.email,
-      address: user.address || 'No address', 
+      address: user.address || 'No address',
       phone: user.phoneNumber || 'No phone number', // تأكد من أن رقم الهاتف هنا
       role: roleNames,
     };
   });
-  
-  
 
   // دالة لتصفية الأدوار المعروضة في نافذة إزالة الدور
   const getFilteredRolesForRemoval = () => {
@@ -253,7 +248,6 @@ export default function IndexUsers() {
     );
   };
 
-  
   const columns = [
     { field: 'fullName', headerName: 'Full Name', width: 240, headerAlign: 'center', align: 'center' },
     { field: 'email', headerName: 'Email', width: 245, headerAlign: 'center', align: 'center' },
@@ -268,16 +262,17 @@ export default function IndexUsers() {
       align: 'center',
       renderCell: (params) => (
         <Box display="flex" justifyContent="space-around">
-          <IconButton color="primary" onClick={() => console.log('Edit', params.row)}>
+          <IconButton color="primary" onClick={() => handleOpenEditDialog(params.row)}>
             <Edit />
           </IconButton>
-          <IconButton color="secondary" onClick={() => console.log('Delete', params.row)}>
+          <IconButton color="secondary" onClick={() => handleOpenDeleteDialog(params.row)}>
             <Delete />
           </IconButton>
         </Box>
       ),
     },
   ];
+
   // تحقق من حالة التحميل أو الخطأ
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -298,103 +293,100 @@ export default function IndexUsers() {
   }
 
   return (
-      <Container>
-        <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh",ml:10 }}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center',mt:3 }}>
+    <Container>
+      <Box p={3} sx={{ mt: 6, width: "100%", Height: "100vh" }}>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center', mt: 3 }}>
           Users
         </Typography>
 
-          <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '75rem' }, Height: "100vh" }}>
-            <DataGrid
-              autoHeight
-              rows={formattedUsers}
-              columns={columns}
+        <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '75rem' }, Height: "100vh" }}>
+          <DataGrid
+            autoHeight
+            rows={formattedUsers}
+            columns={columns}
+            getRowId={(row) => row.id}
+          />
+        </Paper>
+      </Box>
 
-              getRowId={(row) => row.id}
+      {/* Dialog لتعديل الرول */}
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+        <DialogTitle sx={{ backgroundColor: '#2c3e50', color: '#fff' }}>
+          Edit Role for {selectedUser?.fullName}
+        </DialogTitle>
+        <DialogContent>
+          <Box mt={2}>
+            <FormControl fullWidth>
+              <InputLabel>Select Role</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => {
+                  console.log('Selected roles:', e.target.value);
+                  setSelectedRole(e.target.value);
+                }}
+              >
+                {getFilteredRolesForAssignment().length > 0 ? (
+                  getFilteredRolesForAssignment().map((role) => (
+                    <MenuItem
+                      key={role.id}
+                      value={role.id}
+                      disabled={selectedUser?.role?.split(',').map((role) => role.trim()).includes(role.name)}
+                    >
+                      {role.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No roles available</MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAssignRole} color="primary">
+            Assign Role
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-            />
-          </Paper>
-        </Box>
-
-        {/* Dialog لتعديل الرول */}
-        <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-          <DialogTitle sx={{ backgroundColor: '#2c3e50', color: '#fff' }}>
-            Edit Role for {selectedUser?.fullName}
-          </DialogTitle>
-          <DialogContent>
-            <Box mt={2}>
-              <FormControl fullWidth>
-                <InputLabel>Select Role</InputLabel>
-                <Select
-                  value={selectedRole}
-                  onChange={(e) => {
-                    console.log('Selected roles:', e.target.value);
-                    setSelectedRole(e.target.value);
-                  }}
-
-                >
-                  {getFilteredRolesForAssignment().length > 0 ? (
-                    getFilteredRolesForAssignment().map((role) => (
-                      <MenuItem
-                        key={role.id}
-                        value={role.id}
-                        disabled={selectedUser?.role?.split(',').map((role) => role.trim()).includes(role.name)}
-                      >
-                        {role.name}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>No roles available</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseEditDialog} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleAssignRole} color="primary">
-              Assign Role
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Dialog لحذف الدور */}
-        <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-          <DialogTitle >
-            Remove Role from {selectedUser?.fullName}
-          </DialogTitle>
-          <DialogContent>
-            <Box mt={2}>
-              <FormControl fullWidth>
-                <InputLabel>Select Role</InputLabel>
-                <Select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                >
-                  {getFilteredRolesForRemoval().length > 0 ? (
-                    getFilteredRolesForRemoval().map((role) => (
-                      <MenuItem key={role.id} value={role.id}>
-                        {role.name}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>No roles available</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDeleteDialog} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleRemoveRole} color="primary">
-              Remove Role
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+      {/* Dialog لحذف الدور */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>
+          Remove Role from {selectedUser?.fullName}
+        </DialogTitle>
+        <DialogContent>
+          <Box mt={2}>
+            <FormControl fullWidth>
+              <InputLabel>Select Role</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              >
+                {getFilteredRolesForRemoval().length > 0 ? (
+                  getFilteredRolesForRemoval().map((role) => (
+                    <MenuItem key={role.id} value={role.id}>
+                      {role.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No roles available</MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleRemoveRole} color="primary">
+            Remove Role
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 }

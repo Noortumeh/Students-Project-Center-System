@@ -110,7 +110,6 @@ const ProjectDetails = () => {
     supervisorJoinAt,
   } = projectDetails || {};
 
-
   return (
     <ThemeProvider theme={theme}>
       <Container sx={{ py: 4, mt: 5, width: '100%' }}>
@@ -119,84 +118,76 @@ const ProjectDetails = () => {
         </Typography>
   
         {/* Project Overview */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-            Project Overview
-          </Typography>
-          <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3', width: '100%' }}>
-            <CardContent>
-              <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3', mb: 4 }}>
+          <CardContent>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Project Overview
+            </Typography>
+            <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
+          </CardContent>
+        </Card>
   
         {/* Project Dates and Status */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-            Project Dates and Status
-          </Typography>
-          <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: `5px solid ${theme.palette.primary.main}`, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Start Date</Typography>
-              <Typography variant="body1" color="text.primary">
-                {startDate ? new Date(startDate).toLocaleDateString() : 'Not Available'}
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#f0f4c3', borderLeft: '5px solid #cddc39', mt: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">End Date</Typography>
-              <Typography variant="body1" color="text.primary">
-                {endDate ? new Date(endDate).toLocaleDateString() : 'Not Available'}
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', mt: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Status</Typography>
-              <Typography variant="body1" color="text.primary">{status || 'Not Available'}</Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Status Change Notes</Typography>
-              <Typography variant="body1" color="text.primary">{changeStatusNotes || 'No change notes.'}</Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mt: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Last Status Change At</Typography>
-              <Typography variant="body1" color="text.primary">
-                {changeStatusAt ? new Date(changeStatusAt).toLocaleString() : 'Not Available'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: `5px solid ${theme.palette.primary.main}`, mb: 4 }}>
+          <CardContent>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Project Dates and Status
+            </Typography>
+            <Typography variant="h6" color="primary">Start Date</Typography>
+            <Typography variant="body1" color="text.primary">
+              {startDate ? new Date(startDate).toLocaleDateString() : 'Not Available'}
+            </Typography>
+            <Typography variant="h6" color="primary" sx={{ mt: 2 }}>End Date</Typography>
+            <Typography variant="body1" color="text.primary">
+              {endDate ? new Date(endDate).toLocaleDateString() : 'Not Available'}
+            </Typography>
+            <Typography variant="h6" color="primary" sx={{ mt: 2 }}>Status</Typography>
+            <Typography variant="body1" color="text.primary">{status || 'Not Available'}</Typography>
+            <Typography variant="h6" color="primary" sx={{ mt: 2 }}>Status Change Notes</Typography>
+            <Typography variant="body1" color="text.primary">{changeStatusNotes || 'No change notes.'}</Typography>
+            <Typography variant="h6" color="primary" sx={{ mt: 2 }}>Last Status Change At</Typography>
+            <Typography variant="body1" color="text.primary">
+              {changeStatusAt ? new Date(changeStatusAt).toLocaleString() : 'Not Available'}
+            </Typography>
+          </CardContent>
+        </Card>
   
         {/* Company and Customer Details */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-            Company and Customer Details
-          </Typography>
-          <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e', width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Company</Typography>
-              <Typography variant="body1" color="text.primary">{company || 'Not Available'}</Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mt: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">Customer Name</Typography>
-              <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e', mb: 4 }}>
+          <CardContent>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Company and Customer Details
+            </Typography>
+            <Typography variant="h6" color="primary">Company</Typography>
+            <Typography variant="body1" color="text.primary">{company || 'Not Available'}</Typography>
+            <Typography variant="h6" color="primary" sx={{ mt: 2 }}>Customer Name</Typography>
+            <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
+          </CardContent>
+        </Card>
   
         {/* Supervisor and Co-Supervisors */}
-        {coSupervisors && coSupervisors.length > 0 && (
-          <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mt: 2, width: '100%' }}>
+        {supervisorName && supervisorJoinAt && (
+          <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', mb: 4 }}>
             <CardContent>
-              <Typography variant="h6" color="primary">Co-Supervisors</Typography>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Supervisor Details
+              </Typography>
+              <Typography variant="h6" color="primary">Supervisor Name</Typography>
+              <Typography variant="body1" color="text.primary">{supervisorName}</Typography>
+              <Typography variant="h6" color="primary" sx={{ mt: 2 }}>Joined At</Typography>
+              <Typography variant="body1" color="text.primary">
+                {new Date(supervisorJoinAt).toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        )}
+  
+        {coSupervisors && coSupervisors.length > 0 && (
+          <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mb: 4 }}>
+            <CardContent>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Co-Supervisors
+              </Typography>
               <List>
                 {coSupervisors.map((coSupervisor, index) => (
                   <ListItem key={index}>
@@ -220,105 +211,86 @@ const ProjectDetails = () => {
           </Card>
         )}
   
-        {/* Supervisor Details */}
-        {supervisorName && supervisorJoinAt && (
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Supervisor Details
-            </Typography>
-            <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', width: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">Supervisor Name</Typography>
-                <Typography variant="body1" color="text.primary">{supervisorName}</Typography>
-                <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                  Joined At
-                </Typography>
-                <Typography variant="body1" color="text.primary">
-                  {new Date(supervisorJoinAt).toLocaleString()}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        )}
-  
         {/* Favorite Status */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-            Favorite Status
-          </Typography>
-          <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784', width: '100%' }}>
-            <CardContent>
-              <Typography variant="body1" color="text.primary">
-                {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784', mb: 4 }}>
+          <CardContent>
+            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+              Favorite Status
+            </Typography>
+            <Typography variant="body1" color="text.primary">
+              {favorite ? 'This project is marked as favorite.' : 'This project is not marked as favorite.'}
+            </Typography>
+          </CardContent>
+        </Card>
   
         {/* Team Members */}
         {team && team.length > 0 && (
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Team Members
-            </Typography>
-            <List>
-              {team.map((member, index) => (
-                <Card key={index} sx={{ mb: 2, width: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6">{member.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Joined At: {new Date(member.joinAt).toLocaleString()}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            </List>
-          </Box>
+          <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mb: 4 }}>
+            <CardContent>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Team Members
+              </Typography>
+              <List>
+                {team.map((member, index) => (
+                  <Card key={index} sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Joined At: {new Date(member.joinAt).toLocaleString()}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
         )}
   
         {/* Project Details Sections */}
-        {sections && sections.length > 0 ? (
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
-              Project Details
-            </Typography>
-            <List>
-              {sections.map((section) => (
-                <Box key={section.sectionId} sx={{ mb: 3 }}>
-                  <Card sx={{ width: '100%' }}>
-                    <CardContent>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h6">{section.sectionName}</Typography>
-                        <IconButton onClick={() => {
-                          setSectionDetails(prev => ({ ...prev, [section.sectionId]: !prev[section.sectionId] }));
-                        }}>
-                          {sectionDetails[section.sectionId] ? <ExpandLess /> : <ExpandMore />}
-                        </IconButton>
-                      </Box>
-                      <Divider sx={{ my: 2 }} />
-                      <Collapse in={sectionDetails[section.sectionId]}>
-                        <Typography variant="body1">{section.sectionDescription}</Typography>
-                        {section.details && section.details.length > 0 && (
-                          <List>
-                            {section.details.map((detail, index) => (
-                              <Box key={index} sx={{ mt: 2 }}>
-                                <Typography variant="h6">{detail.title}</Typography>
-                                <Typography variant="body1">{detail.description}</Typography>
-                                {detail.imagePath && (
-                                  <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
-                                )}
-                              </Box>
-                            ))}
-                          </List>
-                        )}
-                      </Collapse>
-                    </CardContent>
-                  </Card>
-                </Box>
-              ))}
-            </List>
-          </Box>
-        ) : null}
+        {sections && sections.length > 0 && (
+          <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mb: 4 }}>
+            <CardContent>
+              <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
+                Project Details
+              </Typography>
+              <List>
+                {sections.map((section) => (
+                  <Box key={section.sectionId} sx={{ mb: 3 }}>
+                    <Card sx={{ width: '100%' }}>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="h6">{section.sectionName}</Typography>
+                          <IconButton onClick={() => {
+                            setSectionDetails(prev => ({ ...prev, [section.sectionId]: !prev[section.sectionId] }));
+                          }}>
+                            {sectionDetails[section.sectionId] ? <ExpandLess /> : <ExpandMore />}
+                          </IconButton>
+                        </Box>
+                        <Divider sx={{ my: 2 }} />
+                        <Collapse in={sectionDetails[section.sectionId]}>
+                          <Typography variant="body1">{section.sectionDescription}</Typography>
+                          {section.details && section.details.length > 0 && (
+                            <List>
+                              {section.details.map((detail, index) => (
+                                <Box key={index} sx={{ mt: 2 }}>
+                                  <Typography variant="h6">{detail.title}</Typography>
+                                  <Typography variant="body1">{detail.description}</Typography>
+                                  {detail.imagePath && (
+                                    <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
+                                  )}
+                                </Box>
+                              ))}
+                            </List>
+                          )}
+                        </Collapse>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        )}
   
         {/* Archived Users */}
         <Box sx={{ mb: 4 }}>
