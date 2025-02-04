@@ -695,6 +695,51 @@ export const fetchStudents = async () => {
   }
 };
 
+export const fetchCoSupervisors = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token not found. Please log in.");
+    }
+
+    const response = await fetch(`http://spcs.somee.com/api/users/co-supervisor`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("HTTP error! status:", response.status);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("API response data:", data);
+
+    // التأكد أن البيانات تحتوي على coSupervisor داخل result
+    if (!data || !data.result || !Array.isArray(data.result.coSupervisor)) {
+      console.error("Unexpected data format:", data);
+      throw new Error("Unexpected data format from API");
+    }
+
+    // تحويل البيانات إلى الشكل المناسب
+    const coSupervisors = data.result.coSupervisor.map((coSupervisor) => ({
+      id: coSupervisor.id,
+      fullName: `${coSupervisor.firstName} ${coSupervisor.middleName || ""} ${coSupervisor.lastName}`,
+      email: coSupervisor.email,
+      projects: coSupervisor.projects && coSupervisor.projects.length > 0 ? coSupervisor.projects : [],
+    }));
+
+    console.log("Fetched co-supervisors:", coSupervisors);
+    return coSupervisors; // إرجاع البيانات بشكل مباشر
+  } catch (error) {
+    console.error("Error fetching co-supervisors:", error);
+    throw error;
+  }
+};
+
+
 export const fetchSupervisors = async () => {
   const token = localStorage.getItem('token');
   if (!token) {

@@ -44,45 +44,72 @@ const ProjectPage = () => {
 
   const toggleFavorite = async (id, projectName, isFavorite) => {
     const confirmationMessage = isFavorite
-      ? `Are you sure you want to remove "${projectName}" from favorites?`
-      : `Are you sure you want to add "${projectName}" to favorites?`;
-
-    if (window.confirm(confirmationMessage)) {
-      try {
-        const result = await setFavoriteProject(id);
-        if (result.isSuccess) {
+      ? `"${projectName}" will be removed from favorites. Do you want to continue?`
+      : `"${projectName}" will be added to favorites. Do you want to continue?`;
+  
+    Swal.fire({
+      title: "Are you sure?",
+      text: confirmationMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await setFavoriteProject(id);
+          if (response.isSuccess) {
+            Swal.fire({
+              title: "Updated!",
+              text: isFavorite
+                ? `"${projectName}" has been removed from favorites.`
+                : `"${projectName}" has been added to favorites.`,
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+  
+            setFavoriteProjects((prev) => ({
+              ...prev,
+              [id]: !isFavorite,
+            }));
+            refetch();
+          }
+        } catch (error) {
           Swal.fire({
-            title: 'Updated!',
-            text: isFavorite
-              ? `"${projectName}" has been removed from favorites.`
-              : `"${projectName}" has been added to favorites.`,
-            icon: 'success',
-            confirmButtonText: 'OK',
+            title: "Error!",
+            text: error.message || "An error occurred while updating the favorite status.",
+            icon: "error",
+            confirmButtonText: "OK",
           });
-
-          setFavoriteProjects((prev) => ({
-            ...prev,
-            [id]: !isFavorite,
-          }));
-          refetch();
         }
-      } catch (error) {
-        Swal.fire({
-          title: 'Error!',
-          text: error.message || 'An error occurred while updating the favorite status.',
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
       }
-    }
+    });
   };
-
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <Typography color="error" textAlign="center">Error Loading projects: {error.message}</Typography>;
-
+  
+  if (isLoading)
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <LoadingSpinner />
+      </Box>
+    );
+  
+  if (error)
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography color="error" textAlign="center">
+          Error Loading projects: {error.message}
+        </Typography>
+      </Box>
+    );
+  
   if (!data || !data.isSuccess) {
-    return <Typography color="error">Invalid data format received from API.</Typography>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography color="error">Invalid data format received from API.</Typography>
+      </Box>
+    );
   }
+  
 
   const projects = data.result.projects || [];
 

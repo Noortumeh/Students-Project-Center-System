@@ -10,6 +10,7 @@ import Home from './Admin/Pages/Admin/home/Home.jsx';
 import IndexStudent from './Admin/Pages/Admin/users/Index-student.jsx';
 import IndexCustomer from './Admin/Pages/Admin/users/Index-customer.jsx';
 import IndexSupervisor from './Admin/Pages/Admin/users/Index-supervisior.jsx';
+import IndexCouspervisor from './Admin/Pages/Admin/users/index-Cosupervisor.jsx';
 import IndexUsers from './Admin/Pages/Admin/users/Index-users.jsx';
 import TermOfServices from './Admin/Pages/Admin/termofservices/TermOfServices.jsx';
 import WorkGroup from './Admin/Pages/Admin/workgroup/WorkGroup.jsx';
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
               { path: 'student', element: <IndexStudent /> },
               { path: 'customer', element: <IndexCustomer /> },
               { path: 'supervisor', element: <IndexSupervisor /> },
+              { path: 'Couspervisor', element: <IndexCouspervisor /> },
               { path: 'users', element: <IndexUsers /> },
             ]
           },
