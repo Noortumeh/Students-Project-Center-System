@@ -38,6 +38,7 @@ function Dashboard({ children }) {
     if (currentPath.includes("/users/student")) return "students";
     if (currentPath.includes("/users/customer")) return "customers";
     if (currentPath.includes("/users/supervisor")) return "supervisors";
+    if (currentPath.includes("/users/Couspervisor")) return "Couspervisor";
     if (currentPath.includes("/users/users")) return "users";
     if (currentPath.includes("/termofservices")) return "termOfServices";
     return "home";
@@ -142,6 +143,19 @@ function Dashboard({ children }) {
                 </ListItemIcon>
                 <ListItemText primary="Supervisors" />
               </ListItem>
+
+              <ListItem
+                component={Link}
+                to="/admin/users/Couspervisor
+"
+                selected={activeLink === "Couspervisor"}
+              >
+                <ListItemIcon>
+                  <SupervisorAccountIcon />
+                </ListItemIcon>
+                <ListItemText primary="Couspervisor"/>
+              </ListItem>
+              
               <ListItem
                 component={Link}
                 to="/admin/users/users"
