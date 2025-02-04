@@ -42,7 +42,6 @@ const CreateProject = () => {
 
   const handleAddProject = async () => {
     if (!projectName || !selectedSupervisor || !selectedCustomer || !companyName) {
-      toast.error('Please fill in all fields before submitting.');
       return;
     }
 
