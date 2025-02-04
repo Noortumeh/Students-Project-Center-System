@@ -81,7 +81,7 @@ export const fetchTermsOfService = async () => {
         }
 
         const data = await response.json();
-        return data.result[0];
+        return data.result;
     } catch (error) {
         console.error('Error sending contact message:', error);
         throw error;

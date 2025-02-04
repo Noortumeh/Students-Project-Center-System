@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Container, Grid2, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { createProjectSection, fetchProjectDetails, updateProjectOverview } from "./httpProjects";
@@ -16,7 +16,7 @@ export default function ProjectDetailsWork() {
     const [newSection, setNewSection] = useState({ name: '' });
     const [overviewText, setOverviewText] = useState('');
     const isSupervisor = JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
-    const isStudent = JSON.parse(localStorage.getItem('userInfo')).role.includes('student');
+    const isStudent = !JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
 
     // Project Details
     const { data: projectDetails, isLoading: detailsLoading, error: detailsError } = useQuery({
@@ -106,9 +106,12 @@ export default function ProjectDetailsWork() {
             {/* Overview Section */}
             <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Typography variant="h4" sx={{ mb: 2, color: '#3f51b5' }}>Overview</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Box component="img" src={OverviewSectionImage} alt="Project Overview" sx={{ width: 400, height: 300 }} />
-                    <Box sx={{ flex: 1 }}>
+                <Grid2 display={{lg: "flex"}} columns={12} alignItems={'center'} justifyContent={'center'} >
+                    {/* sx={{ display: 'flex', alignItems: 'center', gap: 4 }} */}
+                    <Grid2 size={{ xs: 12, md: 6 }}>
+                        <Box component="img" src={OverviewSectionImage} alt="Project Overview" sx={{ width: {xs: 200, sm:300, md:400}, height: {xs: 200, sm:300} }} />
+                    </Grid2>
+                    <Grid2 size={{ xs: 12, md: 6 }} sx={{ flex: 1, width: {xs: "90%", md:"60%"} }}>
                         <TextField
                             label="Project Overview"
                             variant="outlined"
@@ -129,8 +132,8 @@ export default function ProjectDetailsWork() {
                             >
                                 {updateOverviewMutation.isLoading ? <CircularProgress size={24} /> : 'Save Overview'}
                             </Button>}
-                    </Box>
-                </Box>
+                    </Grid2>
+                </Grid2>
             </Container>
 
             {/* Add Section */}

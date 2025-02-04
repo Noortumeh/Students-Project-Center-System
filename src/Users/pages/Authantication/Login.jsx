@@ -4,6 +4,7 @@ import {
     Button,
     Typography,
     Box,
+    Alert,
 } from "@mui/material";
 import { Form, Link, Navigate, redirect, useNavigate } from "react-router-dom";
 //Style
@@ -17,7 +18,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { loginMutate, isPending, error, isError } = useLogin();
     const { isAuth } = useUser();
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -34,91 +35,91 @@ const LoginPage = () => {
         <SignUpContainer>
             {/* القسم الأيسر */}
             <Grid
-                item="true"
-                xs={12}
-                md={6}
-                display="flex"
+                container
+                spacing={2}
+                columns={12}
                 justifyContent="center"
-                alignItems="center"
+                alignItems='center'
+                gap={2}
+                sx={{ mt: { xs: 8, sm: 8 } }}
             >
-                <FormContainer>
-                    <Typography variant="h4" gutterBottom>
-                        Login
-                    </Typography>
-                    <Form onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            name="email"
-                            type="email"
-                            required
-                            margin="normal"
-                            variant="outlined"
-                        />
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            name="password"
-                            type="password"
-                            required
-                            margin="normal"
-                            variant="outlined"
-                        />
-                        <Box mt={2}>
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                            >
-                                Login
-                            </Button>
-                        </Box>
-                    </Form>
-                    {isPending && "Submitting..."}
-                    {isError && (
-                        <Typography
-                            variant="body1"
-                            color="error"
-                        >
-                            {error.info?.message +", Please check your inputs and try again." ||
-                            "Failed to login. Please check your inputs and try again."}
+                <Grid size={{ xs: 12, sm: 12, md: 6 }}>
+                    <FormContainer>
+                        <Typography variant="h4" gutterBottom>
+                            Login
                         </Typography>
-                    )}
-                    <Box
-                        mt={2}
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                        }}
-                    >
-                        <Link to="/forgot-password" style={{ color: "white", marginBottom: 6 }}>
-                            Forgot password?
-                        </Link>
-                        <Link to="/signup" style={{ color: "white" }}>
-                            Don't have an account? Signup
-                        </Link>
-                    </Box>
-                </FormContainer>
-            </Grid>
+                        <Form onSubmit={handleSubmit}>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                type="email"
+                                required
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Password"
+                                name="password"
+                                type="password"
+                                required
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <Box mt={2}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Login
+                                </Button>
+                            </Box>
+                        </Form>
+                        {isPending && "Submitting..."}
+                        {isError && (
+                            <Alert severity="error" sx={{ mt: 1 }}>
+                                {error.info?.message + ", Please check your inputs and try again." ||
+                                    "Failed to login. Please check your inputs and try again."}
+                            </Alert>
+                        )}
+                        <Box
+                            mt={2}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "column",
+                            }}
+                        >
+                            <Link to="/forgot-password" style={{ color: "white", marginBottom: 6 }}>
+                                Forgot password?
+                            </Link>
+                            <Link to="/signup" style={{ color: "white" }}>
+                                Don't have an account? Signup
+                            </Link>
+                        </Box>
+                    </FormContainer>
+                </Grid>
 
-            {/* القسم الأيمن */}
-            <Grid
-                item="true"
-                xs={12}
-                md={6}
-                sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-            >
-                <RightSection>
-                    <Typography
-                        variant="h1"
-                        sx={{ fontWeight: "bold", fontSize: "90px" }}
-                    >
-                        Welcome Back!
-                    </Typography>
-                </RightSection>
+
+                {/* القسم الأيمن */}
+                <Grid
+                    item="true"
+                    size={{ xs: 12, sm: 12, md: 6 }}
+                    sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                >
+                    <RightSection>
+                        <Typography
+                            variant="h1"
+                            sx={{ fontWeight: "bold", fontSize: "90px" }}
+                        >
+                            Welcome Back!
+                        </Typography>
+                    </RightSection>
+                </Grid>
             </Grid>
         </SignUpContainer>
     );

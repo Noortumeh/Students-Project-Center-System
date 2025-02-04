@@ -9,7 +9,8 @@ import image from "../../assets/images/SignBg.jpg";
 
 export default function DescriptionCard({ title, description, action, link}) {
     return (
-        <Card sx={{  width: 320,  // عرض ثابت للبطاقة
+        <Card sx={{  
+            width: 350,  // يضمن أن البطاقة لا تصبح كبيرة جدًا
             minHeight: 350, // ارتفاع ثابت للبطاقة
             display: 'flex',
             flexDirection: 'column',justifyContent: 'space-between',m: 2,

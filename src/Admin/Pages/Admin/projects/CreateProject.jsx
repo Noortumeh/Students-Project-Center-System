@@ -102,7 +102,7 @@ const CreateProject = () => {
 
         toast.success('Project added successfully!');
         setTimeout(() => {
-          navigate('/projects');
+          navigate('/admin/projects');
         }, 1500);
       } else {
         toast.error('Failed to add project.');

@@ -39,7 +39,7 @@ export default function WorkgroupsProjects() {
         content = (
             <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.projects.map((project) => (
-                    <Grid xs={12} sm={6} md={4} key={project.id}>
+                    <Grid key={project.id}>
                         <DescriptionCard
                             key={project.id}
                             title={project.name}

@@ -109,10 +109,10 @@ const ProjectPage = () => {
       width: 200,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => navigate(`/projects/${params.row.id}`)}>
+          <IconButton onClick={() => navigate(`${params.row.id}`)}>
             <VisibilityIcon color="primary" />
           </IconButton>
-          <IconButton onClick={() => navigate(`/projects/EditProject/${params.row.id}`)}>
+          <IconButton onClick={() => navigate(`EditProject/${params.row.id}`)}>
             <EditIcon color="secondary" />
           </IconButton>
           <IconButton

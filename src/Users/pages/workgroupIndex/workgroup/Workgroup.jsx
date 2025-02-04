@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Container } from '@mui/material';
+import { Alert, Box, CircularProgress, Container } from '@mui/material';
 import TaskProgressCard from '../../../components/TaskProgressCard';
 import { useWorkgroup } from './WorkgroupCustomHook/useWorkgroup';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +17,14 @@ export default function WorkgroupHome() {
         );
     }
     if (error) {
-        return <div>Error: {error.message}</div>;
+        return <Alert severity="error" sx={{ mt: 1, width: { xs: '100%', md: '50%' } }}>
+            Error: {error.message}
+        </Alert>;
+    }
+    if (!data) {
+        return <Alert severity="error" sx={{ mt: 1, width: { xs: '100%', md: '50%' } }}>
+            Failed to Load Workgroup Data. Please try again Later.
+        </Alert>;
     }
     const columns = [
         { id: 'fullName', label: 'Full Name', minWidth: 170 },
@@ -36,7 +43,7 @@ export default function WorkgroupHome() {
             </CustomButton>}
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mr: 5, mt: 3, mb: 5 }}>
                 <Box sx={{ mb: 5 }}>
-                    <TaskProgressCard title='Task Name' buttonName='Go to Tasks' link="./tasks" percentage={data.progress} />
+                    <TaskProgressCard title={data.name} buttonName='Go to Tasks' link="./tasks" percentage={data.progress} />
                 </Box>
                 <MemberTable
                     columns={columns}
