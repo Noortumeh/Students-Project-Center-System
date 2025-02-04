@@ -272,12 +272,16 @@ const ProjectDetails = () => {
                           {section.details && section.details.length > 0 && (
                             <List>
                               {section.details.map((detail, index) => (
-                                <Box key={index} sx={{ mt: 2 }}>
-                                  <Typography variant="h6">{detail.title}</Typography>
-                                  <Typography variant="body1">{detail.description}</Typography>
+                                <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                                       
                                   {detail.imagePath && (
-                                    <img src={detail.imagePath} alt={detail.title} style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }} />
+                                    <img src={detail.imagePath} alt={detail.title} width={200} height={200} />
+
                                   )}
+                                  <Box sx={{ ml: 3 }}> 
+                                    <Typography variant="h6">{detail.title}</Typography>
+                                     <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
+                                      </Box>
                                 </Box>
                               ))}
                             </List>

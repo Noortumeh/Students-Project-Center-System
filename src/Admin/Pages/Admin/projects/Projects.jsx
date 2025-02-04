@@ -86,6 +86,8 @@ const ProjectPage = () => {
     });
   };
   
+
+  
   if (isLoading)
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -118,7 +120,6 @@ const ProjectPage = () => {
     { field: 'name', headerName: 'Project Name', width: 250, headerAlign: 'center', align: 'center' },
     { field: 'supervisorName', headerName: 'Supervisor Name', width: 250, headerAlign: 'center', align: 'center' },
     { field: 'customerName', headerName: 'Customer Name', width: 250, headerAlign: 'center', align: 'center' },
-    { field: 'workgroupName', headerName: 'Workgroup Name', width: 250, headerAlign: 'center', align: 'center' },
     {
       field: 'status',
       headerName: 'Status',
