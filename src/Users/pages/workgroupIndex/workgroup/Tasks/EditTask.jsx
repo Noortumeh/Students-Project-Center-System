@@ -69,6 +69,7 @@ export default function EditTask() {
                     onCancel={() => navigate(-1)}
                     isPending={isPending}
                 />
+                {isError && <Typography color="error">{error.message}</Typography>}
                 <Box sx={{ mt: 2 }}>
                     <Button
                         type="button"
@@ -80,7 +81,6 @@ export default function EditTask() {
                         {isDeleting ? "Deleting..." : "Delete Task"}
                     </Button>
                 </Box>
-                {isError && <Typography color="error">{error.message}</Typography>}
             </Paper>
         </Container>
     );

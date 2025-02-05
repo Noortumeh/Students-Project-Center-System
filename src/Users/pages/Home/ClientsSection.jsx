@@ -4,15 +4,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useQuery } from "@tanstack/react-query";
 import { getOurClients } from "./HttpHome";
 
-// const clients = [
-//     { name: "Palestine Technical uneversity Kadoori", logo: null },
-//     { name: "Company Name Client", logo: null },
-//     { name: "Company Name Client", logo: null }, // بدون شعار
-//     { name: "Company Name Client", logo: null }, // بدون شعار
-//     { name: "Company Name Client", logo: null }, // بدون شعار
-//     { name: "Company Name Client", logo: null }, // بدون شعار
-// ];
-
 export default function OurClientsSection() {
     const { data: clients, isLoading, error } = useQuery({
         queryKey: ['ourClients'],

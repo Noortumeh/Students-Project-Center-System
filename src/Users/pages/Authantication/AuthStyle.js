@@ -36,4 +36,5 @@ export const RightSection = styled(Box)({
     textAlign: "center",
     color: "white",
     zIndex: 1,
+    width: '47rem'
 });

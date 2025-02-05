@@ -33,18 +33,27 @@ export default function DataTable({ columns, rows, title, children }) {
                                 hover
                                 key={index}
                                 sx={{
+
                                     '&:nth-of-type(odd)': { backgroundColor: '#fafafa' }
                                 }}>
                                 {columns.map((column) => (
                                     <TableCell key={column.id}>
                                         <Typography
-                                            component="span">
-                                            {column.id === 'action' ?
-                                                <Stack direction={"row"} gap={1}>
-                                                    <Button variant="contained" href={`viewtask/${row.id}?workgroupId=${row.workgroupId}`}>view</Button>
-                                                    <Button variant="contained" href={`edittask/${row.id}`}>edit</Button>
-                                                </Stack>
-                                                : row[column.id]}
+                                            component="span"
+                                            sx={{
+                                                color:
+                                                    row[column.id] === 'completed' ? 'success.main' :
+                                                        (row[column.id] === 'canceled' || row[column.id] === 'rejected') ? "error.main" : '#543DE4',
+                                            }}
+                                        >
+                                            {
+                                                column.id === 'action' ?
+                                                    <Stack direction={"row"} gap={1}>
+                                                        <Button variant="contained" href={`viewtask/${row.id}?workgroupId=${row.workgroupId}`}>view</Button>
+                                                        <Button variant="contained" href={`edittask/${row.id}`}>edit</Button>
+                                                    </Stack>
+                                                    : row[column.id]
+                                            }
                                         </Typography>
 
                                     </TableCell>
@@ -54,6 +63,6 @@ export default function DataTable({ columns, rows, title, children }) {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Container>
+        </Container >
     );
 };
