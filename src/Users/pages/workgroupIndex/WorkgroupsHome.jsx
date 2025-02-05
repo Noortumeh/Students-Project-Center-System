@@ -36,14 +36,15 @@ export default function WorkgroupsHome() {
         );
     }
     if (data) {
+        console.log(data)
         content = (
             <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '70vh' }} spacing={3} columns={12}>
                 {data.workgroups.map((workgroup) => (
-                    <Grid xs={12} sm={6} md={4} key={workgroup.id}>
+                    <Grid key={workgroup.id}>
                         <DescriptionCard
                             key={workgroup.id}
                             title={workgroup.name}
-                            description={`Team: ${workgroup.team}, Customer: ${workgroup.customerName}, Supervisor: ${workgroup.supervisorName}`}
+                            description={`Team: ${workgroup.team.length > 0 ? workgroup.team : 'no team'}, Customer: ${workgroup.customerName}, Supervisor: ${workgroup.supervisorName}`}
                             action={'Enter'}
                             link={`workgroups/${workgroup.id}`}
                         />

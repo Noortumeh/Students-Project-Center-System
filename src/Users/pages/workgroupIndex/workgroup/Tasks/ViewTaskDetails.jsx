@@ -154,6 +154,7 @@ export default function ViewTaskDetails() {
                             variant="contained"
                             color="primary"
                             onClick={() => setOpenSubmitDialog(true)}
+                            disabled={task.status === 'canceled' || task.status === 'overdue'}
                         >
                             Submit Task
                         </Button>
@@ -216,7 +217,7 @@ export default function ViewTaskDetails() {
                                 multiple // إضافة خاصية multiple
                                 onChange={handleFileSubmit}
                             />
-                        </Button>
+                        </Button> 
 
                         {/* عرض الملفات المحددة */}
                         {submitFiles.length > 0 && (

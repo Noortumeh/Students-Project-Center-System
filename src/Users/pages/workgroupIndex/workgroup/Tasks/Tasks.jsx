@@ -1,4 +1,4 @@
-import { Box, Grid2 as Grid, Container, CircularProgress, Typography } from "@mui/material";
+import { Box, Grid2 as Grid, Container, CircularProgress, Typography, Alert } from "@mui/material";
 import ProgressCircle from "../../../../components/ProgressCircle";
 import CustomButton from "../../../../components/CustomButton";
 import { useState } from "react";
@@ -30,12 +30,19 @@ export default function TasksPage() {
         );
     }
     if (error || tasksErr) {
-        return <div>Error: {error.message || tasksErr.message}</div>;
+        return <Alert severity="error" sx={{ mt: 1, width: { xs: '100%', md: '50%' } }}>
+        {error.message || tasksErr.message}
+    </Alert>;
+    }
+    if(!WorkgroupData){
+        <Alert severity="error" sx={{ mt: 1, width: { xs: '100%', md: '50%' } }}>
+            Failed to Load Workgroup Data. Please try again Later.
+        </Alert>;
     }
     return (
         <Container maxWidth="lg"
         >
-            {WorkgroupData.role === 'supervisor' || WorkgroupData.role === 'co-supervisor' && <CustomButton
+            {WorkgroupData && (WorkgroupData.role === "supervisor" || WorkgroupData.role === 'co-supervisor') && <CustomButton
                 onClick={() => { navigate('addtask') }}
                 sx={{ flex: 1 }}
             >Add Task</CustomButton>}
@@ -51,7 +58,7 @@ export default function TasksPage() {
                     justifyContent: 'center'
                 }}>
                     <ProgressCircle
-                        percentage={WorkgroupData.progress}
+                        percentage={WorkgroupData ? WorkgroupData.progress : null}
                         style={{
                             pathColor: `#A259FF`,
                             textColor: '#A259FF',
@@ -82,7 +89,7 @@ export default function TasksPage() {
                         sx={{ flex: 1 }}
                     >To Do</CustomButton>
                     <CustomButton
-                        onClick={() => handleFilterClick('inProgress')}
+                        onClick={() => handleFilterClick('in progress')}
                         isActive={activeFilter === 'inProgress'}
                         sx={{ flex: 1 }}
                     >In Progress</CustomButton>
@@ -110,7 +117,7 @@ export default function TasksPage() {
                                         }
                                     }}
                                 >
-                                    {WorkgroupData.role === 'supervisor' || WorkgroupData.role === 'co-supervisor' && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
+                                    {WorkgroupData && (WorkgroupData.role === 'supervisor' || WorkgroupData.role === 'co-supervisor') && <CustomButton onClick={() => navigate(`edittask/${task.id}`)}>edit</CustomButton>}
                                 </TaskProgressCard>
                             </Grid>
                         ))
