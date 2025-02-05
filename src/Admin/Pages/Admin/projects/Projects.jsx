@@ -15,7 +15,7 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { toast, ToastContainer } from 'react-toastify';
+import {  ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../Components/generalcomponent/LoadingSpinner.jsx';
