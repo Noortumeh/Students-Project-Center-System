@@ -1,17 +1,20 @@
+// ProjectNameField.jsx
+import React from 'react';
 import { TextField } from '@mui/material';
-/* eslint-disable react/prop-types */
-const ProjectNameField = ({ projectName, setProjectName }) => {
+
+const ProjectNameField = ({ projectName, setProjectName, sx }) => {
   return (
     <TextField
-    label="Project Name"
-    variant="outlined"
-    fullWidth
-    required
-    value={projectName}
-    onChange={(e) => setProjectName(e.target.value)}
-    sx={{ mb: 3 }} // هذه المسافة بين حقل المشروع وبقية الحقول
-  />
-  
+      label="Project Name"
+      variant="outlined"
+      fullWidth
+      required
+      value={projectName}
+      onChange={(e) => setProjectName(e.target.value)}
+      sx={sx}
+      InputProps={{ sx: { height: '60px', fontSize: '1.2rem' } }}
+    />
   );
 };
+
 export default ProjectNameField;

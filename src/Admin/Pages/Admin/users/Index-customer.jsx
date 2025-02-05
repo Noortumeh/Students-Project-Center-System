@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { CircularProgress, Box, Typography } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchCustomers } from '../../../../util/http for admin/http.js';
@@ -45,16 +44,15 @@ export default function IndexCustomer() {
   console.log("Processed Customers:", customersWithFullName);
 
   const columns = [
-    { field: 'fullName', headerName: 'Name', width: 200, headerClassName: 'header' },
-    { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header' },
-    { field: 'company', headerName: 'Company', width: 200, headerClassName: 'header' },
-    { field: 'workgroupName', headerName: 'Workgroup', width: 200, headerClassName: 'header' },
-    { field: 'projects', headerName: 'Projects', width: 300, headerClassName: 'header' },
+    { field: 'fullName', headerName: 'Name', width: 200, headerClassName: 'header', headerAlign: 'center', align: 'center' },
+    { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header', headerAlign: 'center', align: 'center' },
+    { field: 'company', headerName: 'Company', width: 200, headerClassName: 'header', headerAlign: 'center', align: 'center' },
+    { field: 'workgroupName', headerName: 'Workgroup', width: 200, headerClassName: 'header', headerAlign: 'center', align: 'center' },
   ];
-
+  
   return (
-      <Box p={3} sx={{ mt: 6 }}>
-        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+      <Box p={3} sx={{ mt:6, }}>
+        <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center',mt:3 }}>
           Customers
         </Typography>
   

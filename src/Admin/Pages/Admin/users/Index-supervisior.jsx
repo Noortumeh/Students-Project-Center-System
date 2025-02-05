@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
+import { useState } from 'react';
 import { CircularProgress, Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { fetchSupervisors } from '../../../../util/http for admin/http.js';
 
 export default function IndexSupervisor() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(6);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
 
   const { data: supervisors = [], isLoading, error } = useQuery({
     queryKey: ['supervisors', page, pageSize],
     queryFn: () => fetchSupervisors(pageSize, page + 1),
   });
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-  const navigate = useNavigate();
 
   const handleOpenDialog = (supervisor) => {
     setSelectedSupervisor(supervisor);
@@ -46,15 +42,17 @@ export default function IndexSupervisor() {
   }
 
   const columns = [
-    { field: 'fullName', headerName: 'Name', width: 250, headerClassName: 'header' },
-    { field: 'email', headerName: 'Email', width: 250, headerClassName: 'header' },
+    { field: 'fullName', headerName: 'Name', width: 250, headerAlign: 'center', align: 'left' },
+    { field: 'email', headerName: 'Email', width: 250, headerAlign: 'center', align: 'left' },
     {
       field: 'projectsName',
       headerName: 'Projects',
       width: 300,
+      headerAlign: 'center',
+      align: 'left',
       renderCell: (params) => {
         const projects = params.value || [];
-        return projects.length > 3 ? (
+        return projects.length > 1 ? (
           <Button size="small" color="primary" onClick={() => handleOpenDialog(params.row)}>
             View Projects
           </Button>
@@ -63,8 +61,10 @@ export default function IndexSupervisor() {
         );
       }
     },
+    { field: 'countActive', headerName: 'Count Active', width: 200, headerAlign: 'center', align: 'center' }, 
+    { field: 'countCompleted', headerName: 'Count Completed', width: 200, headerAlign: 'center', align: 'center' }, 
   ];
-
+  
   const supervisorsWithFullName = supervisors.map((supervisor) => ({
     ...supervisor,
     id: supervisor.id,
@@ -72,8 +72,9 @@ export default function IndexSupervisor() {
   }));
 
   return (
+    
     <Box p={3} sx={{ mt: 6 }}>
-      <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold' }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#2c3e50', fontWeight: 'bold', textAlign: 'center', mt: 3 }}>
         Supervisors
       </Typography>
 
@@ -88,10 +89,21 @@ export default function IndexSupervisor() {
           onPageChange={(newPage) => setPage(newPage)}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
           pagination
-
+          sx={{
+            '& .MuiDataGrid-row': {
+              borderBottom: '1px solid #ddd',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#f5f5f5',
+              fontWeight: 'bold',
+            },
+            '& .MuiDataGrid-cell': {
+              padding: '12px',
+              textAlign: 'center', // جعل جميع الخلايا في المنتصف
+            },
+          }}
         />
       </Box>
-
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Projects of {selectedSupervisor?.firstName} {selectedSupervisor?.lastName}</DialogTitle>
