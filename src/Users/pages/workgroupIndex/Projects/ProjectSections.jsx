@@ -18,6 +18,7 @@ export default function ProjectSections({ data, projectId, isSupervisor, isStude
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [newSubSection, setNewSubSection] = useState({ title: "", description: "" });
 
+
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -169,11 +170,11 @@ export default function ProjectSections({ data, projectId, isSupervisor, isStude
                                             <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
                                                 <Card>
                                                     <CardContent>
-                                                        <Grid display={{lg: "flex"}} columns={12} alignItems={'center'} justifyContent={'center'} >
-                                                            <Grid size={{xs: 12, sm:6}}>
+                                                        <Grid display={{ lg: "flex" }} columns={12} alignItems={'center'} justifyContent={'center'} >
+                                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                                 {detail.imagePath && <img src={detail.imagePath} alt="icon" width={200} height={200} />}
                                                             </Grid>
-                                                            <Grid size={{xs:12, sm:6}} sx={{ ml: 5, maxWidth: "50rem" }}>
+                                                            <Grid size={{ xs: 12, sm: 6 }} sx={{ ml: 5, maxWidth: "50rem" }}>
                                                                 <Typography variant="h6">{detail.title}</Typography>
                                                                 <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
                                                             </Grid>

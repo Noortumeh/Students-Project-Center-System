@@ -5,7 +5,7 @@ export const postContactUs = async (contactData) => {
     try {
         const response = await fetch(`${API_URL}/contact-us/contact-us`, {
             method: 'POST',
-            headers: addAuthToken({
+            headers: ({
                 'Content-Type': 'application/json',
             }),
             body: JSON.stringify(contactData),
@@ -74,12 +74,10 @@ export const fetchTermsOfService = async () => {
                 'Content-Type': 'application/json',
             },
         });
-
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         return data.result;
     } catch (error) {

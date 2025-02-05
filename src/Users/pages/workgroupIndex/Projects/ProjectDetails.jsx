@@ -16,8 +16,7 @@ export default function ProjectDetailsWork() {
     const [newSection, setNewSection] = useState({ name: '' });
     const [overviewText, setOverviewText] = useState('');
     const isSupervisor = JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
-    const isStudent = !JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
-
+    let isStudent = false;
     // Project Details
     const { data: projectDetails, isLoading: detailsLoading, error: detailsError } = useQuery({
         queryKey: ['projectDetails', projectId],
@@ -36,6 +35,7 @@ export default function ProjectDetailsWork() {
         if (projectDetails?.overview) {
             setOverviewText(projectDetails.overview);
         }
+        isStudent = !JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor') || !JSON.parse(localStorage.getItem('userInfo')).user.id === projectDetails.customerId;
     }, [projectDetails]);
 
     const createSectionMutation = useMutation({
