@@ -8,27 +8,27 @@ export default function TermsOfServicePage() {
         queryKey: ['termsOfService'],
         queryFn: fetchTermsOfService,
     });
-    console.log(data)
+    
     return (
-        <Box sx={{ maxWidth: 800, mx: 'auto', mt: 5, p: 3 }}>
+        <Box sx={{ maxWidth: 800, mx: 'auto', mt: 10, p: 3 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                {isLoading ? 'Loading...' : data?.title || 'Terms of Service'}
+                {isLoading ? 'Loading...' : (data && data[0].title) || 'Terms of Service'}
             </Typography>
 
             {isLoading && <CircularProgress />}
             {error && <Alert severity="error">Failed to load terms of service.</Alert>}
 
-            {data && (
+            {data ? (
                 <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
                     <Typography
                         variant="body1"
                         component="div"
                         sx={{ whiteSpace: 'pre-line' }} // يحافظ على الفقرات والفواصل
                     >
-                        {data.description}
+                        {data[0].description}
                     </Typography>
                 </Paper>
-            )}
+            ) : <Alert severity="error">Failed to load terms of service.</Alert>}
         </Box>
     );
 }

@@ -1,5 +1,5 @@
 import { Add, Delete, Edit, ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, Collapse, Container, Divider, Grid, IconButton, List, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, Card, CardContent, Collapse, Container, Divider, Grid2 as Grid, IconButton, List, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -17,6 +17,7 @@ export default function ProjectSections({ data, projectId, isSupervisor, isStude
     const [newIcon, setNewIcon] = useState(null);
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [newSubSection, setNewSubSection] = useState({ title: "", description: "" });
+
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -169,13 +170,15 @@ export default function ProjectSections({ data, projectId, isSupervisor, isStude
                                             <Box key={detail.id} sx={{ pl: 4, mt: 2 }}>
                                                 <Card>
                                                     <CardContent>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                                                            {detail.imagePath && <img src={detail.imagePath} alt="icon" width={200} height={200} />}
-                                                            <Box sx={{ ml: 3 }}>
+                                                        <Grid display={{ lg: "flex" }} columns={12} alignItems={'center'} justifyContent={'center'} >
+                                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                                {detail.imagePath && <img src={detail.imagePath} alt="icon" width={200} height={200} />}
+                                                            </Grid>
+                                                            <Grid size={{ xs: 12, sm: 6 }} sx={{ ml: 5, maxWidth: "50rem" }}>
                                                                 <Typography variant="h6">{detail.title}</Typography>
                                                                 <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
-                                                            </Box>
-                                                        </Box>
+                                                            </Grid>
+                                                        </Grid>
                                                         {isStudent &&
                                                             <Box sx={{ mt: 2 }}>
                                                                 <IconButton color="primary" onClick={() => handleEditClick(detail, true)}>

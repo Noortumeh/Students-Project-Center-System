@@ -71,12 +71,14 @@ const ProjectDetails = () => {
   const columns = [
     { field: 'username', headerName: 'Username', width: 250 },
     { field: 'roleInProject', headerName: 'Role in Project', width: 200 },
-    { field: 'joinAt', headerName: 'Join Date', width: 200, 
-      renderCell: (params) => new Date(params.value).toLocaleString() 
+    {
+      field: 'joinAt', headerName: 'Join Date', width: 200,
+      renderCell: (params) => new Date(params.value).toLocaleString()
     },
     { field: 'deletedNotes', headerName: 'Deleted Notes', width: 250 },
-    { field: 'deletededAt', headerName: 'Deleted At', width: 200, 
-      renderCell: (params) => new Date(params.value).toLocaleString() 
+    {
+      field: 'deletededAt', headerName: 'Deleted At', width: 200,
+      renderCell: (params) => new Date(params.value).toLocaleString()
     },
   ];
 
@@ -116,7 +118,7 @@ const ProjectDetails = () => {
         <Typography variant="h3" sx={{ mb: 4, color: theme.palette.primary.main }}>
           {name}
         </Typography>
-  
+
         {/* Project Overview */}
         <Card sx={{ backgroundColor: '#e3f2fd', borderLeft: '5px solid #2196f3', mb: 4 }}>
           <CardContent>
@@ -126,7 +128,7 @@ const ProjectDetails = () => {
             <Typography variant="body1" color="text.primary">{overview || 'No overview available.'}</Typography>
           </CardContent>
         </Card>
-  
+
         {/* Project Dates and Status */}
         <Card sx={{ backgroundColor: '#e8f5e9', borderLeft: `5px solid ${theme.palette.primary.main}`, mb: 4 }}>
           <CardContent>
@@ -151,7 +153,7 @@ const ProjectDetails = () => {
             </Typography>
           </CardContent>
         </Card>
-  
+
         {/* Company and Customer Details */}
         <Card sx={{ backgroundColor: '#f5f5f5', borderLeft: '5px solid #9e9e9e', mb: 4 }}>
           <CardContent>
@@ -164,7 +166,7 @@ const ProjectDetails = () => {
             <Typography variant="body1" color="text.primary">{customerName || 'Not Available'}</Typography>
           </CardContent>
         </Card>
-  
+
         {/* Supervisor and Co-Supervisors */}
         {supervisorName && supervisorJoinAt && (
           <Card sx={{ backgroundColor: '#ffebee', borderLeft: '5px solid #e57373', mb: 4 }}>
@@ -181,7 +183,7 @@ const ProjectDetails = () => {
             </CardContent>
           </Card>
         )}
-  
+
         {coSupervisors && coSupervisors.length > 0 && (
           <Card sx={{ backgroundColor: '#f3e5f5', borderLeft: '5px solid #9c27b0', mb: 4 }}>
             <CardContent>
@@ -210,7 +212,7 @@ const ProjectDetails = () => {
             </CardContent>
           </Card>
         )}
-  
+
         {/* Favorite Status */}
         <Card sx={{ backgroundColor: favorite ? '#e8f5e9' : '#ffebee', borderLeft: '5px solid #81c784', mb: 4 }}>
           <CardContent>
@@ -222,7 +224,7 @@ const ProjectDetails = () => {
             </Typography>
           </CardContent>
         </Card>
-  
+
         {/* Team Members */}
         {team && team.length > 0 && (
           <Card sx={{ backgroundColor: '#fff3e0', borderLeft: '5px solid #ff9800', mb: 4 }}>
@@ -245,7 +247,7 @@ const ProjectDetails = () => {
             </CardContent>
           </Card>
         )}
-  
+
         {/* Project Details Sections */}
         {sections && sections.length > 0 && (
           <Card sx={{ backgroundColor: '#e0f7fa', borderLeft: '5px solid #00bcd4', mb: 4 }}>
@@ -273,15 +275,15 @@ const ProjectDetails = () => {
                             <List>
                               {section.details.map((detail, index) => (
                                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                                       
+
                                   {detail.imagePath && (
                                     <img src={detail.imagePath} alt={detail.title} width={200} height={200} />
 
                                   )}
-                                  <Box sx={{ ml: 3 }}> 
+                                  <Box sx={{ ml: 3 }}>
                                     <Typography variant="h6">{detail.title}</Typography>
-                                     <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
-                                      </Box>
+                                    <Typography variant="body2" color="text.secondary">{detail.description}</Typography>
+                                  </Box>
                                 </Box>
                               ))}
                             </List>
@@ -295,7 +297,7 @@ const ProjectDetails = () => {
             </CardContent>
           </Card>
         )}
-  
+
         {/* Archived Users */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" sx={{ mb: 2, color: theme.palette.primary.main }}>
