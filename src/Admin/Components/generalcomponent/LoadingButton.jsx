@@ -8,7 +8,7 @@ const LoadingButton = ({ loading, onClick, children, variant, color }) => {
       color={color} 
       type="submit"
       fullWidth
-      sx={{ py: 1.5, fontWeight: 'bold', fontSize: '1rem', mb: 2 }}
+      sx={{ py: 1.5, fontWeight: 'bold', fontSize: '1.3rem', mb: 2,mt:5 }}
       disabled={loading}
       onClick={onClick}
     >

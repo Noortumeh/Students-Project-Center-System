@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Paper, Typography } from '@mui/material';
+import { Container, Paper, Typography, TextField, Grid, Box } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -8,70 +8,45 @@ import 'react-toastify/dist/ReactToastify.css';
 import LoadingButton from '../../../Components/generalcomponent/LoadingButton.jsx';
 import ProjectNameField from '../../../Components/generalcomponent/ProjectNameField.jsx';
 import { fetchUsers, createProject, fetchSupervisors } from '../../../../util/http for admin/http.js';
+import projectImage from '../../../../assets/images/createproject.jpeg';
 
 const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [companyName, setCompanyName] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Fetch supervisors
-  const { data: supervisorsData, error: supervisorsError } = useQuery({
+  const { data: supervisorsData } = useQuery({
     queryKey: ['supervisors'],
     queryFn: fetchSupervisors,
   });
 
-  // Fetch users (customers)
-  const { data: usersData, error: usersError } = useQuery({
+  const { data: usersData } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
 
-  // Handle errors
-  if (supervisorsError) {
-    toast.error('Failed to fetch supervisors');
-    console.error('Supervisors Error:', supervisorsError);
-  }
-
-  if (usersError) {
-    toast.error('Failed to fetch users');
-    console.error('Users Error:', usersError);
-  }
-
-  // Format supervisors data
   const supervisors = supervisorsData?.map((supervisor) => ({
     value: supervisor.id,
     label: `${supervisor.firstName} ${supervisor.lastName}`,
   })) || [];
 
-  // Format customers data with additional checks
-  const customers = usersData?.map((user) => {
-    if (!user.id || !user.firstName || !user.lastName) {
-      console.error('Invalid user data:', user);
-      return null;
-    }
-    return {
-      value: user.id,
-      label: `${user.firstName} ${user.lastName}`,
-    };
-  }).filter(Boolean) || []; // Remove null values
-
-  console.log('Fetched Users Data:', usersData); // طباعة بيانات المستخدمين التي تم جلبها من الـ API
-  console.log('Processed Customers Data:', customers); // طباعة بيانات العملاء بعد المعالجة
+  const customers = usersData?.map((user) => ({
+    value: user.id,
+    label: `${user.fullName}`,
+  })).filter(Boolean) || [];
 
   const handleAddProject = async () => {
-    if (!projectName || !selectedSupervisor || !selectedCustomer) {
-      toast.error('Please fill in all fields before submitting.');
+    if (!projectName || !selectedSupervisor || !selectedCustomer || !companyName) {
       return;
     }
 
     const isConfirmed = window.confirm('Are you sure you want to add this project?');
-    if (!isConfirmed) {
-      return;
-    }
+    if (!isConfirmed) return;
 
     setLoading(true);
     try {
@@ -79,28 +54,14 @@ const CreateProject = () => {
         name: projectName,
         supervisorId: selectedSupervisor.value,
         customerId: selectedCustomer.value,
+        companyName,
       };
-
-      console.log('Project Data to be sent:', projectData); // طباعة بيانات المشروع قبل الإرسال
 
       const newProject = await createProject(projectData);
 
-      if (newProject.isSuccess) {
-        queryClient.setQueryData(['projects'], (oldData) => {
-          const updatedData = oldData
-            ? {
-                ...oldData,
-                result: oldData.result
-                  ? [...oldData.result, newProject.result]
-                  : [newProject.result],
-              }
-            : { result: [newProject.result] };
-
-          console.log('Updated Projects Data:', updatedData); // طباعة البيانات المحدثة بعد إضافة المشروع الجديد
-          return updatedData;
-        });
-
+      if (newProject?.isSuccess) {
         toast.success('Project added successfully!');
+        await queryClient.invalidateQueries(['projects']);
         setTimeout(() => {
           navigate('/admin/projects');
         }, 1500);
@@ -108,7 +69,6 @@ const CreateProject = () => {
         toast.error('Failed to add project.');
       }
     } catch (error) {
-      console.error('Error:', error.message);
       toast.error(error.message || 'Failed to add project.');
     } finally {
       setLoading(false);
@@ -116,54 +76,112 @@ const CreateProject = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: { xs: 5, sm: 15, md: 12, lg: 20 }, width: { xs: '90%', sm: '90%', md: '100%' }, ml:{ xs: 1, sm: 5, md: 14, lg: 25 } }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
-          Create New Project
-        </Typography>
-        <form>
-          <ProjectNameField projectName={projectName} setProjectName={setProjectName} />
-          <Select
-            options={supervisors}
-            getOptionLabel={(option) => option.label}
-            getOptionValue={(option) => option.value}
-            onChange={(selectedOption) => {
-              setSelectedSupervisor(selectedOption);
-              console.log('Selected Supervisor:', selectedOption); // طباعة المشرف المحدد
-            }}
-            placeholder="Select a Supervisor"
-            isClearable
-            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
-          />
-          <Select
-            options={customers}
-            getOptionLabel={(option) => option.label}
-            getOptionValue={(option) => option.value}
-            onChange={(selectedOption) => {
-              setSelectedCustomer(selectedOption);
-              console.log('Selected Customer:', selectedOption); // طباعة العميل المحدد
-            }}
-            placeholder="Select a Customer"
-            isClearable
-            styles={{ container: (base) => ({ ...base, marginTop: '16px' }) }}
-          />
-          <LoadingButton
-            loading={loading}
-            label="Create Project"
-            onClick={handleAddProject}
+    <Container maxWidth="xl" sx={{ mt: 5 }}>
+      <ToastContainer />
+      <Grid container spacing={6} alignItems="center">
+        {/* نصف الصفحة للـ Paper */}
+        <Grid item xs={12} md={6}>
+          <Paper
+            elevation={6}
             sx={{
-              mt: 2,
-              width: '100%',
-              backgroundColor: '#1976d2',
-              '&:hover': {
-                backgroundColor: '#115293',
-              },
+              borderRadius: 6,
+              overflow: "hidden",
+              background: "#f5f5f5",
+              p: 5,
+              height: "100%",
+              mt: { xs: 2, md: 5 }, // تقليل الهامش في الشاشات الصغيرة
+            }}
+          >
+            <Typography
+              variant="h3"
+              gutterBottom
+              sx={{
+                textAlign: "center",
+                color: "#1976d2",
+                fontWeight: "bold",
+                mb: 4,
+                fontSize: { xs: "2rem", md: "3rem" }, // تصغير العنوان في الشاشات الصغيرة
+              }}
+            >
+              Create New Project
+            </Typography>
+            <form>
+              <ProjectNameField
+                projectName={projectName}
+                setProjectName={setProjectName}
+                sx={{ width: "100%" }}
+              />
+              <TextField
+                label="Company Name"
+                variant="outlined"
+                fullWidth
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                sx={{ mt: 3, fontSize: "1.2rem" }}
+                InputProps={{ sx: { height: "60px", fontSize: "1.2rem" } }}
+              />
+              <Select
+                options={supervisors}
+                onChange={setSelectedSupervisor}
+                placeholder="Select a Supervisor"
+                isClearable
+                styles={{
+                  container: (base) => ({ ...base, marginTop: "24px", width: "100%" }),
+                  control: (base) => ({ ...base, height: "60px" }),
+                }}
+              />
+              <Select
+                options={customers}
+                onChange={setSelectedCustomer}
+                placeholder="Select a Customer"
+                isClearable
+                styles={{
+                  container: (base) => ({ ...base, marginTop: "24px", width: "100%" }),
+                  control: (base) => ({ ...base, height: "60px" }),
+                }}
+              />
+              <LoadingButton
+                loading={loading}
+                label="Create Project"
+                onClick={handleAddProject}
+                sx={{
+                  mt: 5,
+                  width: "100%",
+                  height: "60px",
+                  fontSize: "1.2rem",
+                  backgroundColor: "#1976d2",
+                  "&:hover": {
+                    backgroundColor: "#115293",
+                  },
+                }}
+              />
+            </form>
+          </Paper>
+        </Grid>
+  
+        {/* نصف الصفحة للصورة */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        >
+          <Box
+            sx={{
+              width: { xs: "100%", sm: "30rem", md: "45rem" }, // تصغير الصورة على الشاشات الصغيرة
+              height: { xs: "300px", sm: "400px", md: "600px" }, // ضبط الطول
+              backgroundImage: `url(${projectImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              borderRadius: "10px",
+              mt: { xs: 3, md: 7 }, // تقليل الهامش في الهواتف
             }}
           />
-        </form>
-      </Paper>
+        </Grid>
+      </Grid>
     </Container>
   );
-};
+}  
 
 export default CreateProject;

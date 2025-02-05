@@ -6,6 +6,7 @@ export const fetchUsers = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing. Please login to get a token.');
+      return; // إضافة return للخروج إذا كان التوكن مفقودًا
     }
 
     const response = await fetch('http://spcs.somee.com/api/users', {
@@ -26,34 +27,22 @@ export const fetchUsers = async () => {
     }
 
     const data = await response.json();
-console.log("data",data)
-    // تحويل البيانات إلى الشكل المطلوب
+    console.log("data", data);
+
+    // إذا كانت البيانات موجودة وصحيحة، يتم إرجاعها كما هي
     if (data.result && Array.isArray(data.result)) {
-      const formattedUsers = data.result.map((user) => {
-        const names = user.fullName.split(' ');
-        const firstName = names[0];
-        const lastName = names.slice(1).join(' ');
-
-        return {
-          id: user.id,
-          firstName,
-          lastName,
-          fullName: `${firstName} ${lastName}`,
-          email: user.email,
-          role: user.role,
-        };
-      });
-
-      console.log('Formatted users:', formattedUsers);
-      return formattedUsers;
+      console.log('Users data:', data.result);
+      return data.result;
+    } else {
+      throw new Error('No valid result data found.');
     }
 
-    return [];
   } catch (error) {
     console.error('Error fetching users:', error.message);
     throw new Error('An error occurred while fetching users: ' + error.message);
   }
 };
+
 export const fetchProjects = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -317,8 +306,6 @@ export const putTerm = async (term) => {
   }
 };
 
-
-
 export const deleteTerm = async (id) => {
   try {
     const token = localStorage.getItem('token'); 
@@ -346,42 +333,6 @@ export const deleteTerm = async (id) => {
     return { success: true, message: responseData.message };
   } catch (error) {
     console.error('Error deleting term:', error.message);
-    throw error;
-  }
-};
-
-const getAuthToken = () => {
-  return localStorage.getItem('authToken');
-};
-
-const addAuthToken = (headers = {}) => {
-  const token = getAuthToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return headers;
-};
-
-export const postContactUs = async (contactData) => {
-  try {
-    const response = await fetch('http://spcs.somee.com/api/contact-us/contact-us', {
-      method: 'POST',
-      headers: addAuthToken({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(contactData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Contact message sent:', data);
-    return data;
-  } catch (error) {
-    console.error('Error sending contact message:', error);
     throw error;
   }
 };
@@ -418,13 +369,14 @@ export const createProjectSection = async (projectId, sectionData) => {
   if (!projectId || !sectionData || !sectionData.name) {
     throw new Error('Project ID and section name are required');
   }
+  const token = localStorage.getItem('token');
 
   try {
     const response = await fetch(`${API_BASE_URL}/project-sections?projectId=${projectId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(sectionData),
     });
@@ -447,12 +399,18 @@ export const updateProjectSection = async (sectionId, sectionData) => {
     throw new Error('Section ID and section name are required');
   }
 
+  const token = localStorage.getItem('token'); // ✅ جلب التوكن من localStorage
+  if (!token) {
+    throw new Error('Authentication token not found. Please log in again.');
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/project-sections/${sectionId}`, {
       method: 'PUT',
-      headers: addAuthToken({
+      headers: {
+        'Authorization': `Bearer ${token}`, // ✅ تمرير التوكن بالشكل الصحيح
         'Content-Type': 'application/json',
-      }),
+      },
       body: JSON.stringify(sectionData),
     });
 
@@ -469,17 +427,24 @@ export const updateProjectSection = async (sectionId, sectionData) => {
   }
 };
 
+
 export const deleteProjectSection = async (sectionId) => {
   if (!sectionId) {
     throw new Error('Section ID is required');
   }
 
+  const token = localStorage.getItem('token'); // ✅ جلب التوكن من localStorage
+  if (!token) {
+    throw new Error('Authentication token not found. Please log in again.');
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/project-sections/${sectionId}`, {
       method: 'DELETE',
-      headers: addAuthToken({
-        'Accept': 'text/plain', 
-      }),
+      headers: {
+        'Authorization': `Bearer ${token}`, // ✅ تمرير التوكن بشكل صحيح
+        'Accept': 'text/plain',
+      },
     });
 
     if (!response.ok) {
@@ -488,12 +453,13 @@ export const deleteProjectSection = async (sectionId) => {
     }
 
     const textData = await response.text();
-    return textData; 
+    return textData;
   } catch (error) {
     console.error('Error deleting project section:', error);
     throw error;
   }
 };
+
 
 export const fetchProjectDetails = async (id) => {
   const token = localStorage.getItem('token');
@@ -571,31 +537,32 @@ export const createProjectDetails = async (sectionId, detailsData) => {
   }
 };
 export const updateProjectDetails = async (detailId, detailsData) => {
-  console.log("detailId",detailId)
-  console.log("detailsData",detailsData)
-  console.log("detailsData.title",detailsData.title)
-  console.log("detailsData.description",detailsData.description)
-  console.log("detailsData.section",detailsData.section)
-  // if (!detailId || !detailsData || !detailsData.title || !detailsData.description || !detailsData.section) {
-  //   throw new Error('Detail ID, title, description, and section are required');
-  // }
+  if (!detailId || !detailsData) {
+    throw new Error("Detail ID and details data are required");
+  }
+
+  const token = localStorage.getItem("token"); // ✅ جلب التوكن يدويًا
+  if (!token) {
+    throw new Error("Authentication token not found. Please log in again.");
+  }
 
   try {
     const updatedData = {
       title: detailsData.title,
       description: detailsData.description,
-      section: detailsData.section, // إضافة الحقل المطلوب
-      iconData: detailsData.iconData ? btoa(detailsData.iconData) : "defaultIcon", // تحويل iconData إلى base64 إذا كان string
+      section: detailsData.section, // ✅ إضافة الحقل المطلوب
+      iconData: detailsData.iconData ? btoa(detailsData.iconData) : "defaultIcon", // ✅ تحويل iconData إلى base64
     };
 
-    console.log('Updating detail with:', updatedData); // تحقق من البيانات
+    console.log("Updating detail with:", updatedData); // ✅ تحقق من البيانات قبل الإرسال
 
     const response = await fetch(`${API_BASE_URL}/project-details/${detailId}`, {
-      method: 'PUT',
-      headers: addAuthToken({
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain',
-      }),
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`, // ✅ تمرير التوكن يدويًا
+        "Content-Type": "application/json",
+        "Accept": "text/plain",
+      },
       body: JSON.stringify(updatedData),
     });
 
@@ -607,37 +574,43 @@ export const updateProjectDetails = async (detailId, detailsData) => {
     const textData = await response.text();
     return textData;
   } catch (error) {
-    console.error('Error updating project details:', error);
+    console.error("Error updating project details:", error);
     throw error;
   }
 };
 
+
 export const deleteProjectDetails = async (detailId) => {
   if (!detailId || isNaN(detailId)) {
     console.error("Invalid detail ID:", detailId);
-    throw new Error('Detail ID must be a valid number');
+    throw new Error("Detail ID must be a valid number");
+  }
+
+  const token = localStorage.getItem("token"); // ✅ جلب التوكن يدويًا
+  if (!token) {
+    throw new Error("Authentication token not found. Please log in again.");
   }
 
   try {
     const response = await fetch(`http://spcs.somee.com/api/project-details/${detailId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer your-auth-token' // إذا كان هناك توثيق
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`, // ✅ تمرير التوكن يدويًا
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error:', errorData);
-      throw new Error(errorData.message || 'Failed to delete detail');
+      console.error("Error:", errorData);
+      throw new Error(errorData.message || "Failed to delete detail");
     }
 
     const result = await response.json();
-    console.log('Deleted successfully:', result);
+    console.log("Deleted successfully:", result);
     return result;
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     throw error;
   }
 };
@@ -722,12 +695,66 @@ export const fetchStudents = async () => {
   }
 };
 
+export const fetchCoSupervisors = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token not found. Please log in.");
+    }
+
+    const response = await fetch(`http://spcs.somee.com/api/users/co-supervisor`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("HTTP error! status:", response.status);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("API response data:", data);
+
+    // التأكد أن البيانات تحتوي على coSupervisor داخل result
+    if (!data || !data.result || !Array.isArray(data.result.coSupervisor)) {
+      console.error("Unexpected data format:", data);
+      throw new Error("Unexpected data format from API");
+    }
+
+    // تحويل البيانات إلى الشكل المناسب
+    const coSupervisors = data.result.coSupervisor.map((coSupervisor) => ({
+      id: coSupervisor.id,
+      fullName: `${coSupervisor.firstName} ${coSupervisor.middleName || ""} ${coSupervisor.lastName}`,
+      email: coSupervisor.email,
+      projects: coSupervisor.projects && coSupervisor.projects.length > 0 ? coSupervisor.projects : [],
+    }));
+
+    console.log("Fetched co-supervisors:", coSupervisors);
+    return coSupervisors; // إرجاع البيانات بشكل مباشر
+  } catch (error) {
+    console.error("Error fetching co-supervisors:", error);
+    throw error;
+  }
+};
+
+
 export const fetchSupervisors = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    toast.error('Authentication token not found. Please log in again.');
+    return []; // التأكد من إعادة مصفوفة فارغة إذا لم يوجد توكن
+  }
+
   try {
     const response = await fetch('http://spcs.somee.com/api/users/supervisors', {
-      headers: addAuthToken(),
+      headers: {
+        'Authorization': `Bearer ${token}`, // ✅ التوكن بشكل صحيح
+        'Content-Type': 'application/json',
+      },
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -737,13 +764,15 @@ export const fetchSupervisors = async () => {
       throw new Error(data.message);
     }
 
-    return data.result || [];  // يجب أن تكون البيانات في `data.result` وليس `data.supervisors`
+    console.log("Data received:", data);
+    return data.result || [];  // ✅ تأكد من أن البيانات تأتي من `data.result`
 
   } catch (error) {
     console.error('Error fetching supervisors:', error);
-    return [];  
+    return []; // ✅ تجنب حدوث كراش بإرجاع مصفوفة فارغة في حالة الخطأ
   }
 };
+
 
 export const fetchRoles = async () => {
   const token = localStorage.getItem('token');

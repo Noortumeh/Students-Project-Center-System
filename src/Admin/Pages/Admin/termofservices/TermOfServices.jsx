@@ -16,7 +16,6 @@ import {
   Container,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Dashboard from '../../../Components/generalcomponent/dashbord/Dashbord.jsx';
 import { fetchTerms, postTerm, deleteTerm, putTerm } from '../../../../util/http for admin/http.js';
 
 const styles = {
@@ -33,9 +32,10 @@ const styles = {
     fontWeight: '600',
     color: '#424242',
     marginBottom: '15px',
-    textAlign: 'left',
+    textAlign: 'center', // توسيط العنوان الفرعي
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center', // توسيط العنوان الفرعي
     borderBottom: '3px solid #1E88E5',
     paddingBottom: '5px',
   },
@@ -128,7 +128,6 @@ export default function TermOfServices() {
     },
   });
 
-  // دالة لفتح الـ Modal مع تعبئة البيانات
   const handleEdit = () => {
     if (termsData?.result?.[0]) {
       const term = termsData.result[0];
@@ -187,18 +186,37 @@ export default function TermOfServices() {
 
   return (
     <Container>
-      <Box sx={{ mt: 12, mx: 'auto', maxWidth: 'lg' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <Typography variant="h4" sx={styles.title}>
+      <Box sx={{ mt: 12, mx: 'auto', maxWidth: '100%', width: { xs: '100%', md: '80rem' } }}>
+        <Box 
+          display="flex" 
+          justifyContent="center" 
+          alignItems="center" 
+          flexDirection="column" 
+          mb={4}
+        >
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              ...styles.title, 
+              fontSize: { xs: '1.8rem', md: '2.5rem' }, 
+              textAlign: 'center', 
+              width: '100%', 
+            }}
+          >
             Terms Of Services
           </Typography>
+        
           {!hasTerms && (
-            <Button variant="contained" sx={styles.button} onClick={() => { setIsCreating(true); setShowModal(true); }}>
+            <Button 
+              variant="contained" 
+              sx={{ ...styles.button, mt: { xs: 2, sm: 0 }, width: { xs: '100%', sm: 'auto' } }} 
+              onClick={() => { setIsCreating(true); setShowModal(true); }}
+            >
               Create Term of Services
             </Button>
           )}
         </Box>
-
+  
         <Card sx={styles.card}>
           <CardContent>
             <Typography variant="h5" sx={styles.sectionTitle}>
@@ -208,50 +226,49 @@ export default function TermOfServices() {
               Last updated: {termsData?.result?.[0]?.lastUpdatedAt ? new Date(termsData?.result[0]?.lastUpdatedAt).toLocaleString() : 'N/A'}
             </Typography>
             <Divider sx={styles.divider} />
-
+  
             {isLoading ? (
-  <Box sx={styles.loader}>
-    <CircularProgress />
-  </Box>
-) : error ? (
-  <Typography color="error">Failed to load Terms of Services. Please try again later.</Typography>
-) : (
-  <>
-    <Typography variant="body1" sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2 }}>
-      {termsData?.result?.[0]?.description || 'No terms available.'}
-    </Typography>
-
-    {/* عرض تاريخ الإنشاء */}
-    <Typography variant="body2" color="textSecondary">
-      Created By: {termsData?.result[0]?.createdBy || 'N/A'}
-    </Typography>
-
-    {/* عرض تاريخ الإنشاء */}
-    <Typography variant="body2" color="textSecondary" mt={1}>
-      Created At: {termsData?.result[0]?.createdAt ? new Date(termsData?.result[0]?.createdAt).toLocaleString() : 'N/A'}
-    </Typography>
-
-    {/* عرض من قام بالتحديث */}
-    <Typography variant="body2" color="textSecondary" mt={1}>
-      Updated By: {termsData?.result[0]?.updatedBy || 'N/A'}
-    </Typography>
-  </>
-)}
-
-
+              <Box sx={styles.loader}>
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Typography color="error">Failed to load Terms of Services. Please try again later.</Typography>
+            ) : (
+              <>
+                <Typography 
+                  variant="body1" 
+                  sx={{ ...styles.paragraph, whiteSpace: 'pre-wrap', mt: 2, fontSize: { xs: '1rem', md: '1.2rem' } }}
+                >
+                  {termsData?.result?.[0]?.description || 'No terms available.'}
+                </Typography>
+  
+                <Typography variant="body2" color="textSecondary">
+                  Created By: {termsData?.result[0]?.createdBy || 'N/A'}
+                </Typography>
+  
+                <Typography variant="body2" color="textSecondary" mt={1}>
+                  Created At: {termsData?.result[0]?.createdAt ? new Date(termsData?.result[0]?.createdAt).toLocaleString() : 'N/A'}
+                </Typography>
+  
+                <Typography variant="body2" color="textSecondary" mt={1}>
+                  Updated By: {termsData?.result[0]?.updatedBy || 'N/A'}
+                </Typography>
+              </>
+            )}
+  
             {hasTerms && (
-              <Box display="flex" justifyContent="center" mt={4}>
-                <Button variant="contained" sx={styles.button} onClick={handleEdit}>
+              <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="center" mt={4} gap={2}>
+                <Button variant="contained" sx={{ ...styles.button, width: { xs: '100%', sm: 'auto' } }} onClick={handleEdit}>
                   Edit
                 </Button>
-                <Button variant="contained" sx={styles.deleteButton} onClick={handleDelete}>
+                <Button variant="contained" sx={{ ...styles.deleteButton, width: { xs: '100%', sm: 'auto' } }} onClick={handleDelete}>
                   Delete
                 </Button>
               </Box>
             )}
           </CardContent>
         </Card>
-
+  
         <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="md" fullWidth>
           <DialogTitle>{isCreating ? 'Create Term of Services' : 'Edit Term of Services'}</DialogTitle>
           <DialogContent>
@@ -279,7 +296,7 @@ export default function TermOfServices() {
             <Button onClick={handleSave} variant="contained" color="primary">Save</Button>
           </DialogActions>
         </Dialog>
-
+  
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
