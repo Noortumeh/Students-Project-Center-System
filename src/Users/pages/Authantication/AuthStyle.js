@@ -12,6 +12,8 @@ export const SignUpContainer = styled(Box)({
     backgroundSize: "cover",
     backgroundPosition: "center",
     paddingTop: "20px",
+    position: "relative", // إضافة هذا السطر
+
     "&::before": {
         content: '""',
         position: "absolute",
@@ -20,6 +22,8 @@ export const SignUpContainer = styled(Box)({
         right: 0,
         bottom: 0,
         backgroundColor: "rgba(0, 0, 0, 0.2)", // تضيف طبقة معتمة فوق الخلفية
+        zIndex: -1, // إضافة هذا السطر لجعل الطبقة خلفية فقط
+        pointerEvents: "none", // يمنع التأثير على التفاعل مع العناصر الأخرى
     },
     zIndex: 1,
 });

@@ -6,13 +6,14 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import { Form, Link, Navigate, redirect, useNavigate } from "react-router-dom";
+import { Form , useNavigate } from "react-router-dom";
 //Style
 import { FormContainer, RightSection, SignUpContainer } from "./AuthStyle";
 //
 import { useLogin } from "./CustomHook/useLogin.js";
 import { useUser } from "./CustomHook/useUser.js";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -94,7 +95,7 @@ const LoginPage = () => {
                                 flexDirection: "column",
                             }}
                         >
-                            <Link to="/forgot-password" style={{ color: "white", marginBottom: 6 }}>
+                            <Link to="/" style={{ color: "white", marginBottom: 6 }}>
                                 Forgot password?
                             </Link>
                             <Link to="/signup" style={{ color: "white" }}>
@@ -102,6 +103,7 @@ const LoginPage = () => {
                             </Link>
                         </Box>
                     </FormContainer>
+
                 </Grid>
 
 
