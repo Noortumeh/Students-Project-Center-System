@@ -119,8 +119,8 @@ const SignUpPage = () => {
               {isPending && "Submitting..."}
               {isError &&
                 <Alert severity="error" sx={{ mt: 1 }}>
-                  {(error.info?.message ||
-                    "Failed to Sign up. Please check your inputs and try again later.")}
+                  {(error.info?.errors?.map((error) => <Typography>{error}</Typography>) ||
+                    error.info?.message || "Failed to Sign up. Please check your inputs and try again later.")}
                 </Alert>
               }
             </Form>
