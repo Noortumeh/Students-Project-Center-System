@@ -6,6 +6,7 @@ import SummaryCard from '../../../Components/generalcomponent/SummaryCard .jsx';
 import ProjectStatusChart from '../../../Components/home/ProjectStatusChart .jsx';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStatistics } from '../../../../util/http for admin/http.js';
+
 export default function Home() {
   const { data: statistics, error: statisticsError, isLoading: statisticsLoading } = useQuery({
     queryKey: ['statistics'],
@@ -33,14 +34,15 @@ export default function Home() {
   const result = statistics || {};
 
   return (
-    <Box mt="4rem">
+    <Box sx={{ overflowX: 'hidden' }}>
       <Box 
         sx={{ 
           padding: { xs: 2, sm: 4 }, 
           backgroundColor: "#f5f5f5", 
           minHeight: "100vh", 
           borderRadius: 2, 
-          mt: 5 
+          mt: 5,
+          overflowX: 'hidden' 
         }}
       >
         <Typography 
@@ -50,13 +52,14 @@ export default function Home() {
             fontWeight: "bold", 
             color: "#3f51b5", 
             textAlign: "center", 
-            fontSize: { xs: "2rem", md: "3rem" } 
+            fontSize: { xs: "2rem", md: "3rem" },
+            maxWidth: '100%',
           }}
         >
           Home Overview
         </Typography>
   
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ maxWidth: '100%', overflowX: 'hidden' }}>
           {[
             { label: "Total Users", value: result.usersCount, icon: <Group />, color: "#4caf50" },
             { label: "Active Users", value: result.usersActiveCount, icon: <People />, color: "#2196f3" },
@@ -71,7 +74,7 @@ export default function Home() {
             { label: "Complete Projects", value: result.projectsCompletedCount, icon: <CheckCircle />, color: "#4caf50" },
             { label: "Canceled Projects", value: result.projectsCanceledCount, icon: <CheckCircle />, color: "#e91e63" },
           ].map((stat, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index} sx={{ maxWidth: '100%', overflowX: 'hidden' }}>
               <SummaryCard
                 bgcolor={stat.color}
                 icon={stat.icon}
@@ -85,7 +88,7 @@ export default function Home() {
         <Divider sx={{ my: 5 }} />
   
         {/* الرسوم البيانية */}
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ maxWidth: '100%', overflowX: 'hidden' }}>
           <Grid item xs={12} md={6}>
             <ProjectStatusChart
               data={{
@@ -176,4 +179,4 @@ export default function Home() {
       </Box>
     </Box>
   );
-}  
+}

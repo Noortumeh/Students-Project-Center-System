@@ -33,8 +33,8 @@ export default function IndexUsers() {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState([]);
-
-  // استعلام للحصول على المستخدمين
+  const [toastDisplayed, setToastDisplayed] = useState(false);
+    // استعلام للحصول على المستخدمين
   const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
@@ -121,8 +121,8 @@ export default function IndexUsers() {
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
     setSelectedUser(null);
+    setToastDisplayed(false); // إعادة تعيين الحالة
   };
-
   const handleAssignRole = () => {
     console.log('selectedRole:', selectedRole);
     console.log('selectedUser:', selectedUser);
@@ -155,42 +155,60 @@ export default function IndexUsers() {
 
   const handleRemoveRole = () => {
     if (!selectedUser || !selectedUser.role) {
-      toast.error('No user or role selected.');
+      if (!toastDisplayed) {
+        toast.error('No user or role selected.');
+        setToastDisplayed(true); // تعيين حالة أن التوست قد عُرضت
+      }
       return;
     }
-
-    // تحليل السلسلة النصية لفصل الأدوار
+  
     const roles = selectedUser.role.split(',').map(role => role.trim());
-
-    // تحديد الأدوار التي يمكن حذفها (ما عدا الأساسية)
     const rolesToRemove = roles.filter(role => !['Supervisor', 'Admin', 'user'].includes(role));
-
+  
     if (rolesToRemove.length === 0) {
-      toast.error('No removable roles found.');
+      if (!toastDisplayed) {
+        toast.error('No removable roles found.');
+        setToastDisplayed(true); // تعيين حالة أن التوست قد عُرضت
+      }
       return;
     }
-
+  
     if (!selectedRole || selectedRole.length === 0) {
-      toast.error('Please select a role to remove.');
+      if (!toastDisplayed) {
+        toast.error('Please select a role to remove.');
+        setToastDisplayed(true); // تعيين حالة أن التوست قد عُرضت
+      }
       return;
     }
-
+  
     const roleToRemove = rolesToRemove.find(role => role === allRoles.find(r => r.id === selectedRole[0]).name);
-
+  
     if (roleToRemove) {
-      // حذف الدور المحدد فقط
       const roleToRemoveObj = allRoles.find(r => r.name === roleToRemove);
       if (roleToRemoveObj) {
+        // إضافة التحقق إذا كانت دور 'Supervisor' ويجب منع إزالته
+        if (roleToRemoveObj.name.toLowerCase() === 'supervisor') {
+          if (!toastDisplayed) {
+            toast.error('Cannot remove the "supervisor" role. The user is active in an ongoing project.');
+            setToastDisplayed(true); // تعيين حالة أن التوست قد عُرضت
+          }
+          return; // إيقاف العملية في حال كان الدور هو 'supervisor'
+        }
+  
         removeRoleMutation.mutate({
           roleId: roleToRemoveObj.id,
           userId: selectedUser.id,
         });
       }
     } else {
-      toast.error('Invalid role selected for removal.');
+      if (!toastDisplayed) {
+        toast.error('Invalid role selected for removal.');
+        setToastDisplayed(true); // تعيين حالة أن التوست قد عُرضت
+      }
     }
   };
-
+  
+  
   // تحضير البيانات لعرضها في الجدول
   const formattedUsers = users.map((user, index) => {
     console.log("User data:", user);  // إضافة هذا السطر للتأكد من وجود رقم الهاتف
@@ -382,9 +400,13 @@ export default function IndexUsers() {
           <Button onClick={handleCloseDeleteDialog} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleRemoveRole} color="primary">
-            Remove Role
-          </Button>
+          <Button
+  onClick={handleRemoveRole}
+  color="primary"
+  disabled={removeRoleMutation.isLoading} // تعطيل الزر أثناء التنفيذ
+>
+  Remove Role
+</Button>
         </DialogActions>
       </Dialog>
     </Container>
