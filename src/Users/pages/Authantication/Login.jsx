@@ -95,7 +95,7 @@ const LoginPage = () => {
                                 flexDirection: "column",
                             }}
                         >
-                            <Link to="/" style={{ color: "white", marginBottom: 6 }}>
+                            <Link to="/forgot-password" style={{ color: "white", marginBottom: 6 }}>
                                 Forgot password?
                             </Link>
                             <Link to="/signup" style={{ color: "white" }}>
