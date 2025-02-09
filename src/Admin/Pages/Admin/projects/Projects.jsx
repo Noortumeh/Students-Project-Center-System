@@ -221,7 +221,7 @@ const ProjectPage = () => {
       </Box>
 
       {/* DataGrid Section */}
-      <Box sx={{ height: { xs: 450, sm: 500, md: 600 } }}>
+      <Box sx={{ height: { xs: 450, sm: 500, md: 600 }, width: {xs: '12rem', sm: '25rem', md: '40rem',lg:'58rem',xl: '100%'} }}>
         <DataGrid
           rows={projects}
           columns={columns}

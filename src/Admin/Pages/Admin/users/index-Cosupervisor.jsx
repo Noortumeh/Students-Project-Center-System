@@ -99,7 +99,7 @@ export default function IndexCoSupervisors() {
   
 
   return (
-    <Box sx={{ padding: 3, mt: 6, ml: 10 }}>
+    <Box sx={{ padding: 3, mt: 6 }}>
       <Typography variant="h4" gutterBottom sx={{ color: "#2c3e50", fontWeight: "bold", textAlign: "center", mt: 3 }}>
         Co-Supervisors
       </Typography>
@@ -108,7 +108,7 @@ export default function IndexCoSupervisors() {
         sx={{
           padding: 2,
           backgroundColor: "#f5f5f5",
-          width: { xs: "11rem", sm: "25rem", md: "45rem", lg: "70rem" },
+          width: { xs: "11rem", sm: "25rem", md: "45rem", lg: '60rem', xl:'70rem' },
         }}
       >
         <Box sx={{ width: "100%" }}>

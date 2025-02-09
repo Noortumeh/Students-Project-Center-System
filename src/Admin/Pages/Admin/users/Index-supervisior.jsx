@@ -78,7 +78,7 @@ export default function IndexSupervisor() {
         Supervisors
       </Typography>
 
-      <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '72rem' } }}>
+      <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '60rem', xl:'74rem' } }}>
         <DataGrid
           rows={supervisorsWithFullName || []}
           columns={columns}

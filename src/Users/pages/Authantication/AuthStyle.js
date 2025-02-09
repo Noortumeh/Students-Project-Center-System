@@ -12,7 +12,7 @@ export const SignUpContainer = styled(Box)({
     backgroundSize: "cover",
     backgroundPosition: "center",
     paddingTop: "20px",
-    position: "relative", // إضافة هذا السطر
+    position: "relative",
 
     "&::before": {
         content: '""',

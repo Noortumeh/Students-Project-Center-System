@@ -317,9 +317,8 @@ export default function IndexUsers() {
           Users
         </Typography>
 
-        <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '75rem' }, Height: "100vh" }}>
+        <Paper sx={{ width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '60rem', xl:'75rem' }, height: "100vh" }}>
           <DataGrid
-            autoHeight
             rows={formattedUsers}
             columns={columns}
             getRowId={(row) => row.id}
