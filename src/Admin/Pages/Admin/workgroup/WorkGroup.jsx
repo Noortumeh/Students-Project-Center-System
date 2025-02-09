@@ -78,10 +78,11 @@ const WorkgroupPage = () => {
     <Container
       maxWidth="xl"
       sx={{
-        mt: { xs: 4, md: 10 },
-        px: { xs: 2, sm: 3, md: 4 },
+        mt: 10,
+        px: { xs: 2, sm: 3, md: 5 },
         overflowX: "hidden",
       }}
+      
     >
       {/* Header */}
       <Box
@@ -114,10 +115,10 @@ const WorkgroupPage = () => {
           Error Loading workgroups
         </Typography>
       ) : (
-        <Paper elevation={3} sx={{ p: 2 }}>
+        <Paper elevation={3} sx={{ p: 2, width: {xs: '12rem', sm: '25rem', md: '40rem',lg: '58rem',xl: '70rem'} }}>
           <Box
             sx={{
-              width: "100%",
+              maxWidth: "100%",
               height: { xs: 450, sm: 500, md: 600 },
               overflowX: "auto",
             }}
