@@ -129,7 +129,7 @@ export default function ProjectSections({ data, projectId, isSupervisor, isStude
         });
         setOpenSubDialog(false);
     };
-    console.log(data)
+    
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Typography variant="h4" sx={{ mb: 3, color: '#3f51b5' }}>Existing Project Sections</Typography>

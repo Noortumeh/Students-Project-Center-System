@@ -16,7 +16,7 @@ export default function ProjectDetailsWork() {
     const [newSection, setNewSection] = useState({ name: '' });
     const [overviewText, setOverviewText] = useState('');
     const isSupervisor = JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor');
-    let isStudent = false;
+    const [isStudent, setIsStudent] = useState(false);
     // Project Details
     const { data: projectDetails, isLoading: detailsLoading, error: detailsError } = useQuery({
         queryKey: ['projectDetails', projectId],
@@ -24,7 +24,6 @@ export default function ProjectDetailsWork() {
         enabled: Boolean(projectId),
         onSuccess: (data) => {
             setOverviewText(data.overview || '');
-            console.log(data.overview)
         },
         onError: () => {
             toast.error('Failed to fetch project details');
@@ -35,7 +34,7 @@ export default function ProjectDetailsWork() {
         if (projectDetails?.overview) {
             setOverviewText(projectDetails.overview);
         }
-        isStudent = !JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor') || !JSON.parse(localStorage.getItem('userInfo')).user.id === projectDetails.customerId;
+        setIsStudent(!(JSON.parse(localStorage.getItem('userInfo')).role.includes('supervisor')) && !(JSON.parse(localStorage.getItem('userInfo')).user.id === projectDetails?.customerId));
     }, [projectDetails]);
 
     const createSectionMutation = useMutation({
@@ -97,7 +96,7 @@ export default function ProjectDetailsWork() {
             </Box>
         );
     }
-    console.log(projectDetails)
+    
     return (
         <Box>
             {/* Project Details Section */}
