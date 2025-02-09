@@ -56,7 +56,7 @@ export default function IndexCustomer() {
           Customers
         </Typography>
   
-        <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '72rem' } }}>
+        <Box sx={{ height: 600, width: { xs: '11rem', sm: '25rem', md: '45rem', lg: '60rem', xl:'70rem' } }}>
           <DataGrid
             rows={customersWithFullName || []}
             columns={columns}
