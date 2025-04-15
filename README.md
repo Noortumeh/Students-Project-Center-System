@@ -93,3 +93,18 @@ The application is built using a modular and scalable architecture, including:
 1. **Clone the repository**  
    ```bash
    git clone https://github.com/yourusername/student-project-center-system.git
+
+## 🛠 Contributions
+
+> This system was developed collaboratively as part of a graduation project.  
+> Below are the key contributions made by each team member:
+
+### 👨‍💻 NoorAldeen Tumeh
+- ✅ User Authentication (Login & Registration)
+- ✅ Home Page UI and Navigation
+- ✅ Workgroup Module: including entering, viewing, and managing workgroup interactions
+
+### 👨‍💻 Mustafa Hasan
+- ✅ Admin Dashboard: including full control panel for managing users, projects, and system data
+- ✅ Data Management Features: implemented functionality to handle user roles, permissions, and project statuses
+
